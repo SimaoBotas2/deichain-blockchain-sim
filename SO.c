@@ -21,6 +21,7 @@ typedef struct Configuration {
     int TX_POOL_SIZE;
     int TRANSACTIONS_PER_BLOCK;
     int BLOCKCHAIN_BLOCKS;
+    int TRANSACTION_POOL_SIZE;
 } Config;
 
 // Estrutura para transações
@@ -29,21 +30,24 @@ typedef struct Transaction {
     char details[50];
 } Transaction;
 
-typedef struct SharedMemory{
+typedef struct SharedMemory {
+    Transaction transactions[100];   //Temporario
+    int transaction_count;
 
-    Transaction transactions[]; //Não sei que tamanho dou a este array
-    
-    
 } SharedMemory;
 
 void controller();
 void read_config(const char *filename, Config *config);
 void create_ipcs();
-void * miner();
+void * miner(Config * config);
+void * miner_action();
 
 
 // Variáveis globais
-int shmid,shrd;
+int shmid;
+
+SharedMemory *shrd;
+
 
 int main() {
     controller();
@@ -53,16 +57,60 @@ int main() {
 
 //Processo Miner
 
-void * miner(Config config){
+void * miner(Config * config){
 
-    pthread_t threads[config.NUM_MINER];
+    int i =0;
+
+    Config * c = config;
+
+    int NUM_MINER = c->NUM_MINER;
+
+    pthread_t miner_threads[config.NUM_MINER];
+    int ids[NUM_MINER];
+
+    for(i=0;i<NUM_MINER;i++){
+        ids[i] = i;
+        pthread_create(&miner_threads[i],NULL,miner_action,&ids[i]);
+        }
+
+    for (i = 0; i < NUM_MINER; i++) {
+        pthread_join(miner_threads[i],NULL);
+        }
 
 
-
-
+    return NULL;
 }
 
 
+    void *miner_action(void *arg) {
+        int miner_id = *(int *)arg;
+    
+        while (1) {
+            pthread_mutex_lock(&shrd->mutex);
+    
+            if (shrd->transaction_count == 0) {
+                pthread_mutex_unlock(&shrd->mutex);
+                break;  // Stop if no transactions are left
+            }
+    
+            Transaction tx = shrd->transactions[0];
+    
+            for (int i = 0; i < shrd->transaction_count - 1; i++) {
+                shrd->transactions[i] = shrd->transactions[i + 1];
+            }
+            shrd->transaction_count++;
+    
+            pthread_mutex_unlock(&shrd->mutex);
+    
+        
+            printf("Miner %d a processar transação %d: %s\n", miner_id, tx.id, tx.details);
+            sleep(1); 
+    
+            printf("Miner %d minerou com sucessou a transação %d\n", miner_id, tx.id);
+        }
+    
+        return NULL;
+    }
 
 
 
@@ -83,7 +131,7 @@ void controller(Config config) {
     #endif
 
     create_ipcs();
-    miner(config);
+    miner(&config);
 }
 
 // Função para ler o arquivo de configuração
@@ -120,6 +168,26 @@ void create_ipcs() {
         exit(1);
     }
     // Anexar a memória compartilhada
-    shm = (SharedMemory *)shmat(shmid, NULL, 0);
-   
+    shrd = (SharedMemory *)shmat(shmid, NULL, 0);
+    if (shrd == (SharedMemory *)(-1)) {
+        perror("shmat error\n");
+        exit(1);
+    }
+    
+    // Iniciar o mutex na memória compartilhada
+    pthread_mutex_init(&shrd->mutex, NULL);
+
+    // Inicia o counter de transações da memória partilhada
+    shrd->transaction_count = 0; 
+
 }
+
+void add_transaction(Transaction t) {
+
+    pthread_mutex_lock(&shrd->mutex);
+
+
+
+    pthread_mutex_unlock(&shrd->mutex);
+} 
+
