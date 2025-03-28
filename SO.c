@@ -13,7 +13,7 @@
 #include <semaphore.h>
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
-#define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
+#define SHM_KEY 1234 // Chave para segmento de memória compartilhado
 
 // Estrutura de configuração
 typedef struct Configuration {
@@ -21,6 +21,7 @@ typedef struct Configuration {
     int TX_POOL_SIZE;
     int TRANSACTIONS_PER_BLOCK;
     int BLOCKCHAIN_BLOCKS;
+    int TRANSACTION_POOL_SIZE;
 } Config;
 
 // Estrutura para transações
@@ -30,44 +31,26 @@ typedef struct Transaction {
 } Transaction;
 
 typedef struct SharedMemory{
-
-    Transaction transactions[]; //Não sei que tamanho dou a este array
-    
-    
+    int transaction_count; // Número atual de transações na pool
+    Transaction transactions[100]; //Não sei que tamanho dou a este array
+    pthread_mutex_t mutex;
 } SharedMemory;
 
 void controller();
 void read_config(const char *filename, Config *config);
 void create_ipcs();
-void * miner();
-
 
 // Variáveis globais
-int shmid,shrd;
+int shmid;
+SharedMemory *shrd;
 
 int main() {
     controller();
     return 0;
 }
 
-
-//Processo Miner
-
-void * miner(Config config){
-
-    pthread_t threads[config.NUM_MINER];
-
-
-
-
-}
-
-
-
-
-
 // Função Controller
-void controller(Config config) {
+void controller() {
 
     // Iniciar estrutura
     Config config;
@@ -80,10 +63,10 @@ void controller(Config config) {
     printf("TX_POOL_SIZE: %d\n", config.TX_POOL_SIZE);
     printf("TRANSACTIONS_PER_BLOCK: %d\n", config.TRANSACTIONS_PER_BLOCK);
     printf("BLOCKCHAIN_BLOCKS: %d\n", config.BLOCKCHAIN_BLOCKS);
+    printf("TRANSACTION_POOL_SIZE: %d\n", config.TRANSACTION_POOL_SIZE);
     #endif
 
     create_ipcs();
-    miner(config);
 }
 
 // Função para ler o arquivo de configuração
@@ -96,7 +79,7 @@ void read_config(const char *filename, Config *config) {
 
     char key[50];
     int value;
-    // Verifica se tem o nome do atributo o seu devido valor
+    // Verifica se tem o nome do atributo e o seu devido valor
     while (fscanf(file, "%s - %d", key, &value) == 2) {
         if (strcmp(key, "NUM_MINERS") == 0)
             config->NUM_MINER = value;
@@ -106,6 +89,8 @@ void read_config(const char *filename, Config *config) {
             config->TRANSACTIONS_PER_BLOCK = value;
         else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
             config->BLOCKCHAIN_BLOCKS = value;
+        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
+            config->TRANSACTION_POOL_SIZE = value;
     }
     fclose(file);
 }
@@ -120,6 +105,25 @@ void create_ipcs() {
         exit(1);
     }
     // Anexar a memória compartilhada
-    shm = (SharedMemory *)shmat(shmid, NULL, 0);
-   
+    shrd = (SharedMemory *)shmat(shmid, NULL, 0);
+    if (shrd == (SharedMemory *)(-1)) {
+        perror("shmat error\n");
+        exit(1);
+    }
+    
+    // Iniciar o mutex na memória compartilhada
+    pthread_mutex_init(&shrd->mutex, NULL);
+
+    // Inicia o counter de transações da memória partilhada
+    shrd->transaction_count = 0; 
+
 }
+
+void add_transaction(Transaction t) {
+
+    pthread_mutex_lock(&shrd->mutex);
+
+
+
+    pthread_mutex_unlock(&shrd->mutex);
+} 
