@@ -115,7 +115,7 @@ void * miner(Config * config){
 
 
 // Função Controller
-void controller(Config config) {
+void controller() {
 
     // Iniciar estrutura
     Config config;
