@@ -14,8 +14,19 @@
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
+#define MAX_TRANSACTIONS 100
 
 // Estrutura para transações
+typedef struct Configuration {
+    int NUM_MINER;
+    int TX_POOL_SIZE;
+    int TRANSACTIONS_PER_BLOCK;
+    int BLOCKCHAIN_BLOCKS;
+    int TRANSACTION_POOL_SIZE;
+} Config;
+
+
+
 typedef struct Transaction {
     int id;
     char details[50];
@@ -29,8 +40,36 @@ typedef struct SharedMemory {
 } SharedMemory;
 
 
+void read_config(const char *filename, Config *config) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        perror("Erro ao abrir arquivo de configuração");
+        exit(1);
+    }
+
+    char key[50];
+    int value;
+    // Verifica se tem o nome do atributo o seu devido valor
+    while (fscanf(file, "%s - %d", key, &value) == 2) {
+        if (strcmp(key, "NUM_MINERS") == 0)
+            config->NUM_MINER = value;
+        else if (strcmp(key, "TX_POOL_SIZE") == 0)
+            config->TX_POOL_SIZE = value;
+        else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0)
+            config->TRANSACTIONS_PER_BLOCK = value;
+        else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
+            config->BLOCKCHAIN_BLOCKS = value;
+    }
+    fclose(file);
+}
+
+
+
 int main(int argc, char * argv[]){
 
+	Config config;
+	
+	
 
     if(argc != 3){
         printf("Uso errado : <reward> <sleep time>");
@@ -75,18 +114,18 @@ int main(int argc, char * argv[]){
             shrd->transaction_count++;
 
             printf("Transação gerada %d: %s\n", new_tx.id, new_tx.details);
-        } else {
+        } 
+        else {
             printf("Transaction buffer cheio. À espera...\n");
         }
-        pthread_mutex_unlock(&(shrd->mutex))
+        pthread_mutex_unlock(&(shrd->mutex));
 
         sleep(sleeptime);
 
 
 
     shmdt(shrd);
-
+	}
 
     return 0;
-
 }
