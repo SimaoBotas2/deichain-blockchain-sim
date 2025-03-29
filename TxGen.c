@@ -23,6 +23,7 @@ typedef struct Transaction {
 
 typedef struct SharedMemory {
     int transaction_count;
+    Transaction transactions[MAX_TRANSACTIONS];
     pthread_mutex_t mutex;
 
 } SharedMemory;
@@ -45,16 +46,47 @@ int main(int argc, char * argv[]){
     int shmid = shmget(SHM_KEY,sizeof(SharedMemory),0666);
 
     if(shmid < 0){
-        perror("shmget error\n (TxGen)");
+        perror("shmget error (TxGen)");
         exit(1);
     }
     
     //Anexar a memória compartilhada
     SharedMemory *shrd = (SharedMemory * )shmat(shmid,NULL,0);
-    shrd = (SharedMemory *)shmat(shmid, NULL, 0);
-    if (shrd == (SharedMemory *)(-1)) {
-        perror("shmat error\n");
+    if (shrd == (void *)(-1)) {
+        perror("shmat error");
         exit(1);
     }
+
+    pthread_mutex_init(&(shrd->mutex), NULL);
+
+    //Geração de transações
+    int transaction_id = 1;  
+
+    while (1) {
+        pthread_mutex_lock(&(shrd->mutex));
+
+        if (shrd->transaction_count < MAX_TRANSACTIONS) {
+            Transaction new_tx;
+            new_tx.id = transaction_id++;
+            snprintf(new_tx.details, sizeof(new_tx.details), "Transaction %d - Reward: %d", new_tx.id, reward);
+
+            //Guardar na memoria partilhada
+            shrd->transactions[shrd->transaction_count] = new_tx;
+            shrd->transaction_count++;
+
+            printf("Transação gerada %d: %s\n", new_tx.id, new_tx.details);
+        } else {
+            printf("Transaction buffer cheio. À espera...\n");
+        }
+        pthread_mutex_unlock(&(shrd->mutex))
+
+        sleep(sleeptime);
+
+
+
+    shmdt(shrd);
+
+
+    return 0;
 
 }
