@@ -1,2 +1,26 @@
-[30-03-2025 18:12:07] Simulação iniciada.
-[30-03-2025 18:12:07] Simulação finalizada.
+[31-03-2025 00:02:08] Simulação iniciada
+[31-03-2025 00:02:08] [CONTROLLER] Processo Controller começou (PID: 1064)
+[31-03-2025 00:02:08] Configurações carregadas:
+[31-03-2025 00:02:08] NUM_MINERS: 5
+[31-03-2025 00:02:08] POOL_SIZE: 50
+[31-03-2025 00:02:08] TRANSACTIONS_PER_BLOCK: 10
+[31-03-2025 00:02:08] BLOCKCHAIN_BLOCKS: 50000
+[31-03-2025 00:02:08] TRANSACTION_POOL_SIZE: 10000
+[31-03-2025 00:02:08] Processo Miner começou (PID: 0)
+[31-03-2025 00:02:08] Processo Validator começou (PID: 0)
+[31-03-2025 00:02:08] Processo Statistics começou (PID: 0)
+[31-03-2025 00:02:08] [MINER] Thread 2 inicializada
+[31-03-2025 00:02:08] [VALIDATOR] Processo Validator inicializado
+[31-03-2025 00:02:08] [STATISTICS] Processo Statistics inicializado
+[31-03-2025 00:02:08] Miner 0 terminou
+[31-03-2025 00:02:08] Miner 0 terminou
+[31-03-2025 00:02:08] Miner 0 terminou
+[31-03-2025 00:02:08] Miner 0 terminou
+[31-03-2025 00:02:08] Miner 2 terminou
+[31-03-2025 00:02:08] [STATISTICS] Processo Statistics terminado
+[31-03-2025 00:02:08] [VALIDATOR] Processo Validator terminado
+[31-03-2025 00:02:08] Miner 3 terminou
+[31-03-2025 00:02:08] Miner 3 terminou
+[31-03-2025 00:02:08] Miner 3 terminou
+[31-03-2025 00:02:08] Miner 3 terminou
+[31-03-2025 00:02:08] Simulação finalizada

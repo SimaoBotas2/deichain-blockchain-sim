@@ -1,3 +1,11 @@
+/*
+    DEIChain: A Concurrency-Focused Blockchain Simulation
+    Copyright (c) 2025
+    Authors: Francisco Teixeira (2023223276)
+             Simão Botas (2021223055)
+ 
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -12,24 +20,12 @@
 #include <string.h>
 #include <semaphore.h>
 
+#include "structs.h"
+
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
 
 #define MAX_TRANSACTIONS 100 // Temporário
-
-// Estrutura para transações
-typedef struct Transaction {
-    int id;
-    char details[50];
-} Transaction;
-
-typedef struct SharedMemory {
-    int transaction_count;
-    Transaction transactions[MAX_TRANSACTIONS];
-    pthread_mutex_t mutex;
-
-} SharedMemory;
-
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -42,14 +38,14 @@ int main(int argc, char *argv[]) {
 
     int shmid = shmget(SHM_KEY, sizeof(SharedMemory), 0666);
     if (shmid < 0) {
-        perror("shmget error (TxGen)");
+        perror("Erro shmget (TxGen)");
         exit(1);
     }
 
     // Anexar a memória compartilhada
     SharedMemory *shrd = (SharedMemory *)shmat(shmid, NULL, 0);
     if (shrd == (void *)(-1)) {
-        perror("shmat error");
+        perror("Erro shmat (TxGen)");
         exit(1);
     }
 
@@ -59,7 +55,7 @@ int main(int argc, char *argv[]) {
     int transaction_id = 1;
 
     while (1) {
-        pthread_mutex_lock(&(shrd->mutex));
+        sem_wait(&(shrd->sem));
 
         if (shrd->transaction_count < MAX_TRANSACTIONS) {
             Transaction new_tx;
@@ -76,7 +72,7 @@ int main(int argc, char *argv[]) {
             printf("Transaction buffer cheio. À espera...\n");
         }
         
-        pthread_mutex_unlock(&(shrd->mutex));
+        sem_post(&(shrd->sem));
 
         sleep(sleeptime);
     }
