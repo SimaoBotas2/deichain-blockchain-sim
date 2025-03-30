@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <string.h>
 #include <semaphore.h>
+#include <time.h>
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 1234 // Chave para segmento de memória compartilhado
@@ -41,6 +42,9 @@ void read_config(const char *filename, Config *config);
 void create_ipcs();
 void *miner(Config *config);
 void *miner_action();
+void *validator(Config *config);
+void *statistics(Config *config);
+void log_file(const char *message);
 
 
 // Variáveis globais
@@ -48,7 +52,9 @@ int shmid;
 SharedMemory *shrd;
 
 int main() {
+    log_file("Simulação iniciada.");
     controller();
+    log_file("Simulação finalizada.");
     return 0;
 }
 
@@ -71,21 +77,46 @@ void controller() {
 
     create_ipcs();
 
-    pid_t pid = fork();
+    pid_t pid_miner, pid_validator, pid_statistics;
     
-        if (pid < 0) {
-            perror("Erro ao criar processo miner");
-            exit(1);
-        } 
-        else if (pid == 0) {
-            // Processo filho (Miner)
-            printf("Processo Miner começou (PID: %d)\n", pid);
-            miner(&config);
-            exit(0);
-        }
+    pid_miner = fork();
+    if (pid_miner < 0) {
+        perror("Erro ao criar o processo miner");
+        exit(1);
+    } 
+    else if (pid_miner == 0) {
+        // Processo filho (Miner)
+        printf("Processo Miner começou (PID: %d)\n", pid_miner);
+        miner(&config);
+        exit(0);
+    }
+
+    pid_validator = fork();
+    if (pid_validator < 0) {
+        perror("Erro ao criar o processo validator");
+        exit(1);
+    }
+    else if (pid_validator == 0) {
+        // Processo filho (Validator)
+        printf("Processo Validator começou\n");
+        validator(&config);
+        exit(0);
+    }
+
+    pid_statistics = fork();
+    if (pid_statistics < 0) {
+        perror("Erro ao criar o processo statistics");
+        exit(1);
+    }
+    else if (pid_statistics == 0) {
+        // Processo filho (Statistics)
+        printf("Processo Statistics começou\n");
+        statistics(&config);
+        exit(0);
+    }
     
-        // Processo pai continua sem esperar
-        printf("Controller process (PID: %d) finished startup\n", getpid());
+    // Processo pai continua sem esperar
+    printf("Controller process (PID: %d) finished startup\n", getpid());
 
 }
 
@@ -121,35 +152,65 @@ void create_ipcs() {
     // Criar a memória compartilhada
     shmid = shmget(SHM_KEY, sizeof(SharedMemory), IPC_CREAT | 0666);
     if (shmid < 0) {
-        perror("shmget error\n");
+        perror("shmget error");
         exit(1);
     }
     // Anexar a memória compartilhada
     shrd = (SharedMemory *)shmat(shmid, NULL, 0);
     if (shrd == (SharedMemory *)(-1)) {
-        perror("shmat error\n");
+        perror("shmat error");
         exit(1);
     }
     
     // Iniciar o mutex na memória compartilhada
     pthread_mutex_init(&shrd->mutex, NULL);
 
+    // Inicar o semáforo para a memória compartilhada (unnamed, uma vez que é shared-memmory)
+    //sem_init(&shrd->semaphore,1,1);
+
+    // Iniciar filas de mensagens 
+    
+
     // Inicia o counter de transações da memória partilhada
-    shrd->transaction_count = 0; 
+    /*shrd->transaction_count = 0; */
 
 }
 
-// Processo Miner
-void * miner(Config * config){
+// Função para escrever 
+void log_file(const char *message) {
+    FILE *log_file = fopen("DEIChain_log.txt", "a");
+    if (log_file == NULL) {
+        perror("Erro ao abrir arquivo de log");
+        return;
+    }
+   // Obter data e hora atual
+   time_t now = time(NULL);
+   struct tm *t = localtime(&now);
 
-    int i =0;
+   fprintf(log_file, "[%02d-%02d-%04d %02d:%02d:%02d] %s\n",
+            t->tm_mday, t->tm_mon + 1, t->tm_year + 1900,
+            t->tm_hour, t->tm_min, t->tm_sec, message);
+   
+   fclose(log_file);
+
+   // Também imprimir na tela para fácil visualização
+   printf("[%02d-%02d-%04d %02d:%02d:%02d] %s\n",
+            t->tm_mday, t->tm_mon + 1, t->tm_year + 1900,
+            t->tm_hour, t->tm_min, t->tm_sec, message);
+}
+
+
+// Processo Miner
+void *miner(Config * config){
+
+    int i;
 
     int NUM_MINER = config->NUM_MINER;
 
     pthread_t miner_threads[NUM_MINER];
     int ids[NUM_MINER];
 
-    for(i=0;i<NUM_MINER;i++){
+    for(i = 0;i<NUM_MINER;i++){
         ids[i] = i;
         pthread_create(&miner_threads[i],NULL,miner_action,&ids[i]);
         }
@@ -193,10 +254,26 @@ void *miner_action(void *arg) {
     return NULL;
 }
 
+void *validator(Config *config) {
 
-void add_transaction(Transaction t) {
 
-    /*
+
+
+    return NULL;
+}
+
+void *statistics(Config *config) {
+
+
+
+
+    return NULL;
+}
+
+
+/*void add_transaction(Transaction t) {
+
+    
     pthread_mutex_lock(&shrd->mutex);
 
     if (shrd->transaction_count < 100) {  // Não deixar overflow
@@ -206,5 +283,5 @@ void add_transaction(Transaction t) {
         printf("Transaction pool cheia!\n");
     }
 
-    pthread_mutex_unlock(&shrd->mutex);*/
-} 
+    pthread_mutex_unlock(&shrd->mutex);
+} */
