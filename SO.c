@@ -18,7 +18,7 @@
 // Estrutura de configuração
 typedef struct Configuration {
     int NUM_MINER;
-    int TX_POOL_SIZE;
+    int POOL_SIZE;
     int TRANSACTIONS_PER_BLOCK;
     int BLOCKCHAIN_BLOCKS;
     int TRANSACTION_POOL_SIZE;
@@ -32,13 +32,16 @@ typedef struct Transaction {
 
 typedef struct SharedMemory{
     int transaction_count; // Número atual de transações na pool
-    Transaction transactions[100]; //Não sei que tamanho dou a este array
+    Transaction transactions[100]; //Temporário
     pthread_mutex_t mutex;
 } SharedMemory;
 
 void controller();
 void read_config(const char *filename, Config *config);
 void create_ipcs();
+void *miner(Config *config);
+void *miner_action();
+
 
 // Variáveis globais
 int shmid;
@@ -60,13 +63,30 @@ void controller() {
     #ifdef DEBUG
     printf("Configurações carregadas:\n");
     printf("NUM_MINERS: %d\n", config.NUM_MINER);
-    printf("TX_POOL_SIZE: %d\n", config.TX_POOL_SIZE);
+    printf("POOL_SIZE: %d\n", config.POOL_SIZE);
     printf("TRANSACTIONS_PER_BLOCK: %d\n", config.TRANSACTIONS_PER_BLOCK);
     printf("BLOCKCHAIN_BLOCKS: %d\n", config.BLOCKCHAIN_BLOCKS);
     printf("TRANSACTION_POOL_SIZE: %d\n", config.TRANSACTION_POOL_SIZE);
     #endif
 
     create_ipcs();
+
+    pid_t pid = fork();
+    
+        if (pid < 0) {
+            perror("Erro ao criar processo miner");
+            exit(1);
+        } 
+        else if (pid == 0) {
+            // Processo filho (Miner)
+            printf("Processo Miner começou (PID: %d)\n", pid);
+            miner(&config);
+            exit(0);
+        }
+    
+        // Processo pai continua sem esperar
+        printf("Controller process (PID: %d) finished startup\n", getpid());
+
 }
 
 // Função para ler o arquivo de configuração
@@ -83,8 +103,8 @@ void read_config(const char *filename, Config *config) {
     while (fscanf(file, "%s - %d", key, &value) == 2) {
         if (strcmp(key, "NUM_MINERS") == 0)
             config->NUM_MINER = value;
-        else if (strcmp(key, "TX_POOL_SIZE") == 0)
-            config->TX_POOL_SIZE = value;
+        else if (strcmp(key, "POOL_SIZE") == 0)
+            config->POOL_SIZE = value;
         else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0)
             config->TRANSACTIONS_PER_BLOCK = value;
         else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
@@ -119,11 +139,72 @@ void create_ipcs() {
 
 }
 
+// Processo Miner
+void * miner(Config * config){
+
+    int i =0;
+
+    int NUM_MINER = config->NUM_MINER;
+
+    pthread_t miner_threads[NUM_MINER];
+    int ids[NUM_MINER];
+
+    for(i=0;i<NUM_MINER;i++){
+        ids[i] = i;
+        pthread_create(&miner_threads[i],NULL,miner_action,&ids[i]);
+        }
+
+    for (i = 0; i < NUM_MINER; i++) {
+        pthread_join(miner_threads[i],NULL);
+        }
+
+    return NULL;
+}
+
+void *miner_action(void *arg) {
+
+    int miner_id = *(int *)arg;
+    Config *miner_info;
+    int TRANSACTIONS_PER_BLOCK = miner_info->TRANSACTIONS_PER_BLOCK; //Claramente devemos ter de enviar o config para aqui
+
+    while (1) {
+        pthread_mutex_lock(&shrd->mutex);
+
+        if (shrd->transaction_count < TRANSACTIONS_PER_BLOCK) {
+            pthread_mutex_unlock(&shrd->mutex);
+            break; 
+        }
+
+        Transaction tx[TRANSACTIONS_PER_BLOCK];
+
+        for (int i = 0; i < TRANSACTIONS_PER_BLOCK; i++) {
+            shrd->transactions[i] = shrd->transactions[i + TRANSACTIONS_PER_BLOCK];
+        }
+        shrd->transaction_count-= TRANSACTIONS_PER_BLOCK;
+
+        pthread_mutex_unlock(&shrd->mutex);
+        
+        printf("Miner %d a processar transação %d: %s\n", miner_id, tx[0].id, tx[0].details);
+        sleep(1); 
+
+        printf("Miner %d minerou com sucessou a transação %d\n", miner_id, tx[0].id);
+    }
+
+    return NULL;
+}
+
+
 void add_transaction(Transaction t) {
 
+    /*
     pthread_mutex_lock(&shrd->mutex);
 
+    if (shrd->transaction_count < 100) {  // Não deixar overflow
+        shrd->transactions[shrd->transaction_count] = t;
+        shrd->transaction_count++;
+    } else {
+        printf("Transaction pool cheia!\n");
+    }
 
-
-    pthread_mutex_unlock(&shrd->mutex);
+    pthread_mutex_unlock(&shrd->mutex);*/
 } 
