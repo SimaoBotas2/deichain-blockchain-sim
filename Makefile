@@ -1,7 +1,7 @@
 all: txgen SO
 
 txgen: txgen.c
-	gcc -pthread txgen.c -o txgen
+	gcc -pthread TxGen.c -o TxGen
 
 SO: SO.c
 	gcc -pthread SO.c -o SO
