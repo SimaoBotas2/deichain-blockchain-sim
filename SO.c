@@ -42,10 +42,16 @@ void log_file(const char *message);
 int shmid;
 SharedMemory *shrd;
 char msg[BUFFER_SIZE];
+sem_t log_sem;
 
 int main() {
+
+    sem_init(&log_sem,1,1);
+
+
     log_file("Simulação iniciada\n");
     controller();
+    sem_destroy(&shrd->sem);
     sem_destroy(&shrd->sem);
     log_file("Simulação finalizada\n");
     return 0;
@@ -208,11 +214,17 @@ void create_ipcs() {
 
 // Função para escrever no ficheiro .txt aquilo que acontece no código
 void log_file(const char *message) {
+    
+    
     FILE *log_file = fopen("DEIChain_log.txt", "a");
     if (log_file == NULL) {
         perror("[LOG FILE] Erro ao abrir arquivo de log\n");
         return;
     }
+
+
+
+    sem_wait(&log_sem);
    // Obter data e hora atual
    time_t now = time(NULL);
    struct tm *t = localtime(&now);
@@ -232,6 +244,8 @@ void log_file(const char *message) {
 
    // Imprimir na tela 
    printf("[%02d-%02d-%04d %02d:%02d:%02d] %s",day, month, year, hours, minutes, seconds, message);
+
+   sem_post(&log_sem);
 }
 
 
@@ -272,8 +286,13 @@ void *miner_action(void *arg) {
     //Config *config = (Config *)arg;
     int miner_id = *(int *)arg;
 
-    sprintf(msg,"[MINER] Thread %d inicializada\n",miner_id);
-    log_file(msg);
+
+
+    char msg_local[BUFFER_SIZE];
+
+    sprintf(msg_local,"[MINER] Thread %d inicializada\n",miner_id);
+
+    log_file(msg_local);
 
     /*
     while (1) {
@@ -299,8 +318,8 @@ void *miner_action(void *arg) {
         printf("Miner %d minerou com sucessou a transação %d\n", miner_id, tx[0].id);
     }*/
 
-    sprintf(msg,"Miner %d terminou\n",miner_id);
-    log_file(msg);
+    sprintf(msg_local,"Miner %d terminou\n",miner_id);
+    log_file(msg_local);
 
     return NULL;
 }
