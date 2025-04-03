@@ -52,6 +52,9 @@ SharedMemory *shrd;
 
 int main() {
     controller();
+    sem_destroy(&shrd->sem);
+    sem_destroy(&log_sem);
+    log_file("Simulação finalizada\n");
     return 0;
 }
 
@@ -156,7 +159,8 @@ void read_config(const char *filename, Config *config) {
 
     char key[50];
     int value;
-    // Verifica se tem o nome do atributo o seu devido valor
+    // Verifica se tem o nome do atributo e o seu devido valor
+    // falta verificar os valores para ver se fazem sentido
     while (fscanf(file, "%s - %d", key, &value) == 2) {
         if (strcmp(key, "NUM_MINERS") == 0)
             config->NUM_MINER = value;
@@ -173,6 +177,10 @@ void read_config(const char *filename, Config *config) {
 // Função para criar IPCs
 void create_ipcs() {
 
+
+    //falta uma shared memory
+    //blockchain ledger
+
     // Criar a memória compartilhada
     shmid = shmget(SHM_KEY, sizeof(SharedMemory), IPC_CREAT | 0666);
     if (shmid < 0) {
@@ -186,16 +194,170 @@ void create_ipcs() {
         exit(1);
     }
     
-    // Iniciar o mutex na memória compartilhada
-    pthread_mutex_init(&shrd->mutex, NULL);
+    shrd->transaction_count = 0;
+    
+    // Inicializar semáforo na memória compartilhada
+    sem_init(&shrd->sem, 1, 1);
 
-    // Inicia o counter de transações da memória partilhada
-    shrd->transaction_count = 0; 
 
-
+    // Iniciar filas de mensagens, entre outros...
+    
 }
 
-void add_transaction(Transaction t) {
+// Função para escrever no ficheiro .txt aquilo que acontece no código
+void log_file(const char *message) {
+    
+    
+
+    //passar isto para abrir apenas uma vez e fechar apenas uma vez
+    FILE *log_file = fopen("DEIChain_log.txt", "a");
+    if (log_file == NULL) {
+        perror("[LOG FILE] Erro ao abrir arquivo de log\n");
+        return;
+    }
+
+
+
+    sem_wait(&log_sem);
+   // Obter data e hora atual
+   time_t now = time(NULL);
+   struct tm *t = localtime(&now);
+
+    int year = t->tm_year + 1900; // Desde 1900
+    int month = t->tm_mon + 1; // o mês vai de 0 a 11
+    int day = t->tm_mday;
+
+    int hours = t->tm_hour;
+    int minutes = t->tm_min;
+    int seconds = t->tm_sec;
+
+    // Escreve no ficheiro 
+   fprintf(log_file, "[%02d-%02d-%04d %02d:%02d:%02d] %s", day, month, year, hours, minutes, seconds, message);
+   
+   fclose(log_file);
+
+   // Imprimir na tela 
+   printf("[%02d-%02d-%04d %02d:%02d:%02d] %s",day, month, year, hours, minutes, seconds, message);
+
+   sem_post(&log_sem);
+}
+
+
+// Processo Miner
+void *miner(Config * config){
+
+    int i;
+    int NUM_MINER = config->NUM_MINER;
+    pthread_t miner_threads[NUM_MINER];
+    int miner_ids[NUM_MINER];
+
+    for(i = 0;i<NUM_MINER;i++){
+        miner_ids[i] = i;
+        if (pthread_create(&miner_threads[i],NULL,miner_action,&miner_ids[i]) != 0) {
+            #ifdef DEBUG
+            sprintf(msg,"[MINER] Erro ao criar Miner Thread %d\n",miner_ids[i]);   
+            log_file(msg);
+            #endif
+            exit(1);
+        }
+    }
+
+    for (i = 0; i < NUM_MINER; i++) {
+        if (pthread_join(miner_threads[i],NULL) != 0) {
+            #ifdef DEBUG
+            sprintf(msg,"[MINER] Erro ao juntar Miner Thread %d\n",miner_ids[i]);
+            log_file(msg);
+            #endif
+            exit(1);
+        }
+    }
+
+    return NULL;
+}
+
+void *miner_action(void *arg) {
+
+    //Config *config = (Config *)arg;
+    int miner_id = *(int *)arg;
+
+    char msg_local[BUFFER_SIZE];
+
+    sprintf(msg_local,"[MINER] Thread %d inicializada\n",miner_id);
+
+    log_file(msg_local);
+
+    /*
+    while (1) {
+        sem_wait(&sem);
+
+        if (shrd->transaction_count < TRANSACTIONS_PER_BLOCK) {
+            pthread_mutex_unlock(&sem);
+            break; 
+        }
+
+        Transaction tx[TRANSACTIONS_PER_BLOCK];
+
+        for (int i = 0; i < TRANSACTIONS_PER_BLOCK; i++) {
+            shrd->transactions[i] = shrd->transactions[i + TRANSACTIONS_PER_BLOCK];
+        }
+        shrd->transaction_count-= TRANSACTIONS_PER_BLOCK;
+
+        sem_post(&sem);
+
+        printf("Miner %d a processar transação %d: %s\n", miner_id, tx[0].id, tx[0].details);
+        sleep(1); 
+
+        printf("Miner %d minerou com sucessou a transação %d\n", miner_id, tx[0].id);
+    }*/
+
+    sprintf(msg_local,"Miner %d terminou\n",miner_id);
+    log_file(msg_local);
+
+    return NULL;
+}
+
+void *validator() {
+
+    sprintf(msg,"[VALIDATOR] Processo Validator inicializado\n");
+    log_file(msg);
+
+    /*while (1) {
+        #ifdef DEBUG
+        //log_file("A funcionar...\n");
+        sleep(1);
+        #endif
+    
+        Code...
+    }*/
+    
+    log_file("[VALIDATOR] Processo Validator terminado\n");
+
+    return NULL;
+}
+
+void *statistics() {
+
+    sprintf(msg,"[STATISTICS] Processo Statistics inicializado\n");
+    log_file(msg);
+
+    /*for(i = 0; i < 5; i++) {
+        #ifdef DEBUG
+        log_file("A funcionar...\n");
+        sleep(1);
+        #endif
+    
+        Code...
+    }*/
+    
+    log_file("[STATISTICS] Processo Statistics terminado\n");
+
+    return NULL;
+}
+
+
+/*void add_transaction(Transaction t) {
+
+    
     pthread_mutex_lock(&shrd->mutex);
 
     if (shrd->transaction_count < 100) {  // Não deixar overflow

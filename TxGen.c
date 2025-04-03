@@ -14,78 +14,42 @@
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
-#define MAX_TRANSACTIONS 100
 
-// Estrutura para transações
-typedef struct Configuration {
-    int NUM_MINER;
-    int TX_POOL_SIZE;
-    int TRANSACTIONS_PER_BLOCK;
-    int BLOCKCHAIN_BLOCKS;
-    int TRANSACTION_POOL_SIZE;
-} Config;
+#define MAX_TRANSACTIONS 100 // Temporário
 
 
-
-typedef struct Transaction {
-    int id;
-    char details[50];
-} Transaction;
-
-typedef struct SharedMemory {
-    int transaction_count;
-    Transaction transactions[MAX_TRANSACTIONS];
-    pthread_mutex_t mutex;
-
-} SharedMemory;
-
-
-void read_config(const char *filename, Config *config) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        perror("Erro ao abrir arquivo de configuração");
-        exit(1);
-    }
-
-    char key[50];
-    int value;
-    // Verifica se tem o nome do atributo o seu devido valor
-    while (fscanf(file, "%s - %d", key, &value) == 2) {
-        if (strcmp(key, "NUM_MINERS") == 0)
-            config->NUM_MINER = value;
-        else if (strcmp(key, "TX_POOL_SIZE") == 0)
-            config->TX_POOL_SIZE = value;
-        else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0)
-            config->TRANSACTIONS_PER_BLOCK = value;
-        else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
-            config->BLOCKCHAIN_BLOCKS = value;
-    }
-    fclose(file);
+void sleep_ms(int sleeptime){
+    struct timespec ts;
+    ts.tv_sec = sleeptime / 1000;
+    ts.tv_nsec = (sleeptime %1000) * 1000000;
+    nanosleep(&ts,NULL);
 }
 
 
 
-int main(int argc, char * argv[]){
-
-	Config config;
-	
-	
-
-    if(argc != 3){
-        printf("Uso errado : <reward> <sleep time>");
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        printf("Uso correto: %s <reward> <sleep time>\n", argv[0]);
         return -1;
     }
 
-    
-    int reward = atoi(argv[1]);
-    
+    int reward = atoi(argv[1]); //verificar intervalos
+
+    if(reward <1 || reward >3){
+        printf("Reward deve ser entre 1 e 3\n");
+        return -1;
+    }
+
     int sleeptime = atoi(argv[2]);
 
+    if(sleeptime <200 || sleeptime >3000){
+        printf("Sleeptime deve ser entre 200 e 3000 (ms)\n");
+        return -1;
+    }
 
-    int shmid = shmget(SHM_KEY,sizeof(SharedMemory),0666);
-
-    if(shmid < 0){
-        perror("shmget error (TxGen)");
+    int shmid = shmget(SHM_KEY, sizeof(SharedMemory), 0666);
+    if (shmid < 0) {
+        perror("Erro shmget (TxGen)");
         exit(1);
     }
     
@@ -120,9 +84,8 @@ int main(int argc, char * argv[]){
         }
         pthread_mutex_unlock(&(shrd->mutex));
 
-        sleep(sleeptime);
-
-
+        sleep_ms(sleeptime);
+    }
 
     shmdt(shrd);
 	}
