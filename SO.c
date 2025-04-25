@@ -15,20 +15,25 @@
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
+#define BUFFER_SIZE 100 //apenas temporário, mudar pra malloc dps
 
-// Estrutura de configuração
+
+// Variáveis globais
+int shmid;
+TransactionPool *shrd;
+sem_t log_sem;
+char msg[BUFFER_SIZE];
+Config config;
+
+
+//Funcoes 
 
 void controller();
 void read_config(const char *filename, Config *config);
 void create_ipcs();
 void * miner(Config * config);
 void * miner_action();
-
-
-// Variáveis globais
-int shmid;
-
-TransactionPool *shrd;
+void log_file(const char *msg);
 
 
 int main() {
@@ -39,73 +44,15 @@ int main() {
     return 0;
 }
 
-
-//Processo Miner
-
-void * miner(Config * config){
-
-    int i =0;
-
-    int NUM_MINER = config->NUM_MINER;
-
-    pthread_t miner_threads[NUM_MINER];
-    int ids[NUM_MINER];
-
-    for(i=0;i<NUM_MINER;i++){
-        ids[i] = i;
-        pthread_create(&miner_threads[i],NULL,miner_action,&ids[i]);
-        }
-
-    for (i = 0; i < NUM_MINER; i++) {
-        pthread_join(miner_threads[i],NULL);
-        }
-
-
-    return NULL;
-}
-
-void *miner_action(void *arg) {
-    int miner_id = *(int *)arg;
-
-    while (1) {
-        pthread_mutex_lock(&shrd->mutex);
-
-        if (shrd->transaction_count == 0) {
-            pthread_mutex_unlock(&shrd->mutex);
-            break; 
-        }
-
-        Transaction tx = shrd->transactions[0];
-
-        for (int i = 0; i < shrd->transaction_count - 1; i++) {
-            shrd->transactions[i] = shrd->transactions[i + 1];
-        }
-        shrd->transaction_count++;
-
-        pthread_mutex_unlock(&shrd->mutex);
-
-        printf("Miner %d a processar transação %d: %s\n", miner_id, tx.id, tx.details);
-        sleep(1); 
-
-        printf("Miner %d minerou com sucessou a transação %d\n", miner_id, tx.id);
-    }
-
-    return NULL;
-}
-
-
-
 // Função Controller
     void controller() {
         // Iniciar estrutura
-        Config config;
-    
         read_config("config.cfg", &config);
     
         #ifdef DEBUG
         printf("Configurações carregadas:\n");
         printf("NUM_MINERS: %d\n", config.NUM_MINER);
-        printf("TX_POOL_SIZE: %d\n", config.TX_POOL_SIZE);
+        printf("TX_POOL_SIZE: %d\n", config.TRANSACTION_POOL_SIZE);
         printf("TRANSACTIONS_PER_BLOCK: %d\n", config.TRANSACTIONS_PER_BLOCK);
         printf("BLOCKCHAIN_BLOCKS: %d\n", config.BLOCKCHAIN_BLOCKS);
         #endif
@@ -145,8 +92,8 @@ void read_config(const char *filename, Config *config) {
     while (fscanf(file, "%s - %d", key, &value) == 2) {
         if (strcmp(key, "NUM_MINERS") == 0)
             config->NUM_MINER = value;
-        else if (strcmp(key, "TX_POOL_SIZE") == 0)
-            config->TX_POOL_SIZE = value;
+        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
+            config->TRANSACTION_POOL_SIZE = value;
         else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0)
             config->TRANSACTIONS_PER_BLOCK = value;
         else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
@@ -159,26 +106,48 @@ void read_config(const char *filename, Config *config) {
 void create_ipcs() {
 
 
-    //falta uma shared memory
-    //blockchain ledger
+    
 
-    // Criar a memória compartilhada
-    shmid = shmget(SHM_KEY, sizeof(SharedMemory), IPC_CREAT | 0666);
+
+    //Garantir que a memória alocada aguenta tudo
+    size_t total_size = sizeof(TransactionPool) + (config.TRANSACTION_POOL_SIZE* sizeof(TransactionEntry));
+
+    // Criar a memória compartilhada da transaction pool
+    shmid = shmget(SHM_KEY, total_size, IPC_CREAT | 0666);
     if (shmid < 0) {
         perror("shmget error\n");  
         exit(1);
     }
     // Anexar a memória compartilhada
-    shrd = (SharedMemory *)shmat(shmid, NULL, 0);
-    if (shrd == (SharedMemory *)(-1)) {
+    shrd = (TransactionPool *)shmat(shmid, NULL, 0);
+    if (shrd == (TransactionPool*)(-1)) {
         perror("shmat error\n");
         exit(1);
     }
     
-    shrd->transaction_count = 0;
-    
+    shrd->entries = (TransactionEntry *)(shrd + 1); //alocar o vetor a seguir à main struct
+    shrd->transaction_pending_set = 0;
+    shrd->pool_size = config.TRANSACTION_POOL_SIZE;
+ 
+
+    //Inicializar todas as transaction entries vazias
+    for(int i =0;i<shrd->pool_size;i++){
+        shrd->entries[i].empty =true;
+    }
+
+
+
+    //Falta ver erros de init do semaforo !!!!
+    //Falta mutex para as threads do miner
+    //Falta inicializar a memória do blockchain ledger
+
+
+
     // Inicializar semáforo na memória compartilhada
     sem_init(&shrd->sem, 1, 1);
+
+    // Inicializar semáforo para o log
+    sem_init(&log_sem,1,1);
 
 
     // Iniciar filas de mensagens, entre outros...
@@ -188,16 +157,12 @@ void create_ipcs() {
 // Função para escrever no ficheiro .txt aquilo que acontece no código
 void log_file(const char *message) {
     
-    
-
     //passar isto para abrir apenas uma vez e fechar apenas uma vez
-    FILE *log_file = fopen("DEIChain_log.txt", "a");
-    if (log_file == NULL) {
+    FILE *file = fopen("DEIChain_log.txt", "a");
+    if (file == NULL) {
         perror("[LOG FILE] Erro ao abrir arquivo de log\n");
         return;
     }
-
-
 
     sem_wait(&log_sem);
    // Obter data e hora atual
@@ -213,9 +178,9 @@ void log_file(const char *message) {
     int seconds = t->tm_sec;
 
     // Escreve no ficheiro 
-   fprintf(log_file, "[%02d-%02d-%04d %02d:%02d:%02d] %s", day, month, year, hours, minutes, seconds, message);
+   fprintf(file, "[%02d-%02d-%04d %02d:%02d:%02d] %s", day, month, year, hours, minutes, seconds, message);
    
-   fclose(log_file);
+   fclose(file);
 
    // Imprimir na tela 
    printf("[%02d-%02d-%04d %02d:%02d:%02d] %s",day, month, year, hours, minutes, seconds, message);
@@ -350,4 +315,7 @@ void *statistics() {
 
     pthread_mutex_unlock(&shrd->mutex);
 }
+
+
+*/
 
