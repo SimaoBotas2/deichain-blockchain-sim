@@ -7,6 +7,7 @@
 */
 
 #include <semaphore.h>
+#include <stdbool.h>
 
 #ifndef STRUCTS_H
 #define STRUCTS_H
@@ -24,8 +25,6 @@ typedef struct Configuration {
 typedef struct Transaction {
     int id;
     int reward;
-    int sender_id;
-    int receiver_id;
     int value;
     char details[50];
 } Transaction;
@@ -33,9 +32,9 @@ typedef struct Transaction {
 //Estrutura para guardar dados sobre as transações
 typedef struct TransactionEntry{
     bool empty; //indica se a entry está disponível ou não
-    int age; //contador para idade da entrie (usada no validator)
+    int age; //contador para idade da entry (usada no validator)
     Transaction tx;
-}TransactionEntry
+}TransactionEntry;
 
 
 typedef struct TransactionPool{

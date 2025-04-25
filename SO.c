@@ -11,31 +11,12 @@
 #include <signal.h>
 #include <string.h>
 #include <semaphore.h>
+#include "structs.h"
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
 
 // Estrutura de configuração
-typedef struct Configuration {
-    int NUM_MINER;
-    int TX_POOL_SIZE;
-    int TRANSACTIONS_PER_BLOCK;
-    int BLOCKCHAIN_BLOCKS;
-    int TRANSACTION_POOL_SIZE;
-} Config;
-
-// Estrutura para transações
-typedef struct Transaction {
-    int id;
-    char details[50];
-} Transaction;
-
-typedef struct SharedMemory {
-    Transaction transactions[100];   //Temporario
-    int transaction_count;
-    pthread_mutex_t mutex;
-
-} SharedMemory;
 
 void controller();
 void read_config(const char *filename, Config *config);
@@ -47,7 +28,7 @@ void * miner_action();
 // Variáveis globais
 int shmid;
 
-SharedMemory *shrd;
+TransactionPool *shrd;
 
 
 int main() {
