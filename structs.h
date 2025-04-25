@@ -7,7 +7,10 @@
 */
 
 #include <semaphore.h>
+<<<<<<< HEAD
 #include <stdbool.h>
+=======
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
 
 #ifndef STRUCTS_H
 #define STRUCTS_H
@@ -25,10 +28,16 @@ typedef struct Configuration {
 typedef struct Transaction {
     int id;
     int reward;
+<<<<<<< HEAD
+=======
+    int sender_id;
+    int receiver_id;
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
     int value;
     char details[50];
 } Transaction;
 
+<<<<<<< HEAD
 //Estrutura para guardar dados sobre as transações
 typedef struct TransactionEntry{
     bool empty; //indica se a entry está disponível ou não
@@ -47,5 +56,12 @@ typedef struct TransactionPool{
 
 
 
+=======
+typedef struct SharedMemory{
+    int transaction_count; // Número atual de transações na pool
+    Transaction transactions[100]; //Temporário
+    sem_t sem;
+} SharedMemory;
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
 
 #endif

@@ -1,3 +1,11 @@
+/*
+    DEIChain: A Concurrency-Focused Blockchain Simulation
+    Copyright (c) 2025
+    Authors: Francisco Teixeira (2023223276)
+             Simão Botas (2021223055)
+ 
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,6 +19,7 @@
 #include <signal.h>
 #include <string.h>
 #include <semaphore.h>
+<<<<<<< HEAD
 #include "structs.h"
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
@@ -27,23 +36,59 @@ Config config;
 
 
 //Funcoes 
+=======
+#include <time.h>
+#include <sys/wait.h>
+
+#include "structs.h"
+
+#define DEBUG // Remove esta linha para remover as mensagens de debug
+#define SHM_KEY 1234 // Chave para segmento de memória compartilhado
+#define BUFFER_SIZE 100
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
 
 void controller();
 void read_config(const char *filename, Config *config);
 void create_ipcs();
+<<<<<<< HEAD
 void * miner(Config * config);
 void * miner_action();
 void log_file(const char *msg);
 
 
+=======
+void *miner(Config *config);
+void *miner_action();
+void *validator();
+void *statistics();
+void log_file(const char *message);
+
+
+// Variáveis globais
+int shmid;
+SharedMemory *shrd;
+char msg[BUFFER_SIZE];
+sem_t log_sem;
+
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
 int main() {
+
+    sem_init(&log_sem,1,1);
+
+
+    log_file("Simulação iniciada\n");
     controller();
     sem_destroy(&shrd->sem);
+<<<<<<< HEAD
     sem_destroy(&log_sem);
+=======
+    sem_destroy(&shrd->sem);
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
     log_file("Simulação finalizada\n");
     return 0;
 }
 
+<<<<<<< HEAD
 // Função Controller
     void controller() {
         // Iniciar estrutura
@@ -76,28 +121,136 @@ int main() {
         printf("Controller process (PID: %d) finished startup\n", getpid());
     }
 
+=======
+// Processo Controller
+void controller() {
+
+    sprintf(msg, "[CONTROLLER] Processo Controller começou (PID: %d)\n", getpid());
+    log_file(msg);
+
+    // Iniciar estrutura
+    Config config;
+    read_config("config.cfg", &config);
+
+    #ifdef DEBUG
+    log_file("Configurações carregadas:\n");
+    sprintf(msg,"NUM_MINERS: %d\n", config.NUM_MINER);
+    log_file(msg);
+    sprintf(msg,"POOL_SIZE: %d\n", config.POOL_SIZE);
+    log_file(msg);
+    sprintf(msg,"TRANSACTIONS_PER_BLOCK: %d\n", config.TRANSACTIONS_PER_BLOCK);
+    log_file(msg);
+    sprintf(msg,"BLOCKCHAIN_BLOCKS: %d\n", config.BLOCKCHAIN_BLOCKS);
+    log_file(msg);
+    sprintf(msg,"TRANSACTION_POOL_SIZE: %d\n", config.TRANSACTION_POOL_SIZE);
+    log_file(msg);
+    #endif
+
+    create_ipcs();
+
+    pid_t pid_miner, pid_validator, pid_statistics;
+    
+    pid_miner = fork();
+    if (pid_miner < 0) {
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar o processo miner\n");
+        log_file(msg);
+        #endif
+        exit(1);
+    } 
+    else if (pid_miner == 0) {
+        // Processo filho (Miner)
+        #ifdef DEBUG
+        sprintf(msg,"Processo Miner começou (PID: %d)\n", pid_miner);
+        log_file(msg);
+        #endif
+        miner(&config);
+        exit(0);
+    }
+
+    pid_validator = fork();
+    if (pid_validator < 0) {
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar o processo validator\n");
+        log_file(msg);
+        #endif
+        exit(1);
+    }
+    else if (pid_validator == 0) {
+        // Processo filho (Validator)
+        #ifdef DEBUG
+        sprintf(msg,"Processo Validator começou (PID: %d)\n", pid_validator);
+        log_file(msg);
+        #endif
+        validator(&config);
+        exit(0);
+    }
+
+    pid_statistics = fork();
+    if (pid_statistics < 0) {
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar o processo statistics\n");
+        log_file(msg);
+        #endif
+        exit(1);
+    }
+    else if (pid_statistics == 0) {
+        // Processo filho (Statistics)
+        #ifdef DEBUG
+        sprintf(msg,"Processo Statistics começou (PID: %d)\n", pid_statistics);      
+        log_file(msg);
+        #endif
+        statistics(&config);
+        exit(0);
+    }
+
+    waitpid(pid_miner, NULL, 0);
+    waitpid(pid_validator, NULL, 0);
+    waitpid(pid_statistics, NULL, 0);
+    
+    /*// Processo pai continua sem esperar
+    #ifdef DEBUG
+    sprintf(msg,"Processo Controller (PID: %d) inicio corretamente\n", getpid());
+    log_file(msg);
+    #endif*/
+
+}
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
 
 // Função para ler o arquivo de configuração
 void read_config(const char *filename, Config *config) {
     FILE *file = fopen(filename, "r");
     if (!file) {
-        perror("Erro ao abrir arquivo de configuração");
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao abrir arquivo de configuração\n");
+        log_file(msg);
+        #endif
         exit(1);
     }
 
-    char key[50];
+    char key[BUFFER_SIZE];
     int value;
     // Verifica se tem o nome do atributo e o seu devido valor
+<<<<<<< HEAD
     // falta verificar os valores para ver se fazem sentido
     while (fscanf(file, "%s - %d", key, &value) == 2) {
         if (strcmp(key, "NUM_MINERS") == 0)
             config->NUM_MINER = value;
         else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
             config->TRANSACTION_POOL_SIZE = value;
+=======
+    while (fscanf(file, "%s - %d", key, &value) == 2) {
+        if (strcmp(key, "NUM_MINERS") == 0)
+            config->NUM_MINER = value;
+        else if (strcmp(key, "POOL_SIZE") == 0)
+            config->POOL_SIZE = value;
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
         else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0)
             config->TRANSACTIONS_PER_BLOCK = value;
         else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
             config->BLOCKCHAIN_BLOCKS = value;
+        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
+            config->TRANSACTION_POOL_SIZE = value;
     }
     fclose(file);
 }
@@ -115,6 +268,7 @@ void create_ipcs() {
     // Criar a memória compartilhada da transaction pool
     shmid = shmget(SHM_KEY, total_size, IPC_CREAT | 0666);
     if (shmid < 0) {
+<<<<<<< HEAD
         perror("shmget error\n");  
         exit(1);
     }
@@ -149,6 +303,29 @@ void create_ipcs() {
     // Inicializar semáforo para o log
     sem_init(&log_sem,1,1);
 
+=======
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar a Shared Memory\n");
+        log_file(msg);
+        #endif
+        exit(1);
+    }
+    // Anexar a memória compartilhada
+    shrd = (SharedMemory *)shmat(shmid, NULL, 0);
+    if (shrd == (SharedMemory *)(-1)) {
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao anexar a Shared Memory\n");
+        log_file(msg);
+        #endif
+        exit(1);
+    }
+    
+    shrd->transaction_count = 0;
+    
+    // Inicializar semáforo na memória compartilhada
+    sem_init(&shrd->sem, 1, 1);
+
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
 
     // Iniciar filas de mensagens, entre outros...
     
@@ -157,13 +334,24 @@ void create_ipcs() {
 // Função para escrever no ficheiro .txt aquilo que acontece no código
 void log_file(const char *message) {
     
+<<<<<<< HEAD
     //passar isto para abrir apenas uma vez e fechar apenas uma vez
     FILE *file = fopen("DEIChain_log.txt", "a");
     if (file == NULL) {
+=======
+    
+    FILE *log_file = fopen("DEIChain_log.txt", "a");
+    if (log_file == NULL) {
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
         perror("[LOG FILE] Erro ao abrir arquivo de log\n");
         return;
     }
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
     sem_wait(&log_sem);
    // Obter data e hora atual
    time_t now = time(NULL);
@@ -178,9 +366,15 @@ void log_file(const char *message) {
     int seconds = t->tm_sec;
 
     // Escreve no ficheiro 
+<<<<<<< HEAD
    fprintf(file, "[%02d-%02d-%04d %02d:%02d:%02d] %s", day, month, year, hours, minutes, seconds, message);
    
    fclose(file);
+=======
+   fprintf(log_file, "[%02d-%02d-%04d %02d:%02d:%02d] %s", day, month, year, hours, minutes, seconds, message);
+   
+   fclose(log_file);
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
 
    // Imprimir na tela 
    printf("[%02d-%02d-%04d %02d:%02d:%02d] %s",day, month, year, hours, minutes, seconds, message);
@@ -226,6 +420,11 @@ void *miner_action(void *arg) {
     //Config *config = (Config *)arg;
     int miner_id = *(int *)arg;
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
     char msg_local[BUFFER_SIZE];
 
     sprintf(msg_local,"[MINER] Thread %d inicializada\n",miner_id);
@@ -314,8 +513,12 @@ void *statistics() {
     }
 
     pthread_mutex_unlock(&shrd->mutex);
+<<<<<<< HEAD
 }
 
 
 */
 
+=======
+} */
+>>>>>>> 6546a6966b5c518be8791208f715995792999644
