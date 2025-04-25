@@ -30,10 +30,23 @@ typedef struct Transaction {
     char details[50];
 } Transaction;
 
-typedef struct SharedMemory{
-    int transaction_count; // Número atual de transações na pool
-    Transaction transactions[100]; //Temporário  , array dinamico, stack, etc...
+//Estrutura para guardar dados sobre as transações
+typedef struct TransactionEntry{
+    bool empty; //indica se a entry está disponível ou não
+    int age; //contador para idade da entrie (usada no validator)
+    Transaction tx;
+}TransactionEntry
+
+
+typedef struct TransactionPool{
+    int transaction_pending_set; // Número atual de transações na pool
+    int pool_size;  //Tamanho da transaction pool, definido pelo ficheiro de configuração
+    TransactionEntry * entries;
     sem_t sem;
-} SharedMemory;
+}TransactionPool;
+
+
+
+
 
 #endif
