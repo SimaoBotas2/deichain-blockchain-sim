@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
     DEIChain: A Concurrency-Focused Blockchain Simulation
     Copyright (c) 2025
@@ -8,7 +6,6 @@
  
 */
 
->>>>>>> 6546a6966b5c518be8791208f715995792999644
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -22,16 +19,11 @@
 #include <signal.h>
 #include <string.h>
 #include <semaphore.h>
-<<<<<<< HEAD
-=======
-
->>>>>>> 6546a6966b5c518be8791208f715995792999644
 #include "structs.h"
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
 
-<<<<<<< HEAD
 
 void sleep_ms(int sleeptime){
     struct timespec ts;
@@ -41,9 +33,6 @@ void sleep_ms(int sleeptime){
 }
 
 
-=======
-#define MAX_TRANSACTIONS 100 // Temporário
->>>>>>> 6546a6966b5c518be8791208f715995792999644
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -51,7 +40,6 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-<<<<<<< HEAD
     //Verificação de Inputs
 
 
@@ -70,17 +58,10 @@ int main(int argc, char *argv[]) {
     }
 
     int shmid = shmget(SHM_KEY, sizeof(TransactionPool), 0666);
-=======
-    int reward = atoi(argv[1]);
-    int sleeptime = atoi(argv[2]);
-
-    int shmid = shmget(SHM_KEY, sizeof(SharedMemory), 0666);
->>>>>>> 6546a6966b5c518be8791208f715995792999644
     if (shmid < 0) {
         perror("Erro shmget (TxGen)");
         exit(1);
     }
-<<<<<<< HEAD
     
     //Anexar a memória compartilhada
     TransactionPool *shrd = (TransactionPool * )shmat(shmid,NULL,0);
@@ -91,25 +72,10 @@ int main(int argc, char *argv[]) {
 
     //Geração de transações
     int transaction_id = 1;  
-=======
-
-    // Anexar a memória compartilhada
-    SharedMemory *shrd = (SharedMemory *)shmat(shmid, NULL, 0);
-    if (shrd == (void *)(-1)) {
-        perror("Erro shmat (TxGen)");
-        exit(1);
-    }
-
-    // NÃO inicializar o mutex aqui! Ele já deve estar inicializado no controller.
-
-    // Geração de transações
-    int transaction_id = 1;
->>>>>>> 6546a6966b5c518be8791208f715995792999644
 
     while (1) {
         sem_wait(&(shrd->sem));
 
-<<<<<<< HEAD
         for(int i =0;i<shrd->pool_size;i++){
 
         //Procura uma entry vazia
@@ -125,23 +91,12 @@ int main(int argc, char *argv[]) {
             shrd->entries[i].empty = false;
             shrd->entries[i].age = 0;
             shrd->transaction_pending_set++;
-=======
-        if (shrd->transaction_count < MAX_TRANSACTIONS) {
-            Transaction new_tx;
-            new_tx.id = transaction_id++;
-            snprintf(new_tx.details, sizeof(new_tx.details), "Transaction %d - Reward: %d", new_tx.id, reward);
-
-            // Guardar na memória compartilhada
-            shrd->transactions[shrd->transaction_count] = new_tx;
-            shrd->transaction_count++;
->>>>>>> 6546a6966b5c518be8791208f715995792999644
 
             printf("Transação gerada %d: %s\n", new_tx.id, new_tx.details);
         } 
         else {
             printf("Transaction buffer cheio. À espera...\n");
         }
-<<<<<<< HEAD
         sem_post(&(shrd->sem));
 
         sleep_ms(sleeptime);
@@ -153,15 +108,3 @@ int main(int argc, char *argv[]) {
 	}
 
 
-=======
-        
-        sem_post(&(shrd->sem));
-
-        sleep(sleeptime);
-    }
-
-    shmdt(shrd);
-
-    return 0;
-}
->>>>>>> 6546a6966b5c518be8791208f715995792999644
