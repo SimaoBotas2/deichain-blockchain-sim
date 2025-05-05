@@ -48,8 +48,13 @@ void log_file(const char *message);
 
 int main() {
 
-    sem_init(&log_sem,1,1);
-
+// Inicializar semáforo para o log
+    if(sem_init(&log_sem,1,1)==-1){
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar semáforo do log\n");
+        log_file(msg);
+        #endif
+    }
 
     log_file("Simulação iniciada\n");
     controller();
@@ -167,7 +172,7 @@ void read_config(const char *filename, Config *config) {
     char key[BUFFER_SIZE];
     int value;
     // Verifica se tem o nome do atributo e o seu devido valor
-    // falta verificar os valores para ver se fazem sentido
+    // Fatla verificar os valores para ver se fazem sentido
     while (fscanf(file, "%s - %d", key, &value) == 2) {
         if (strcmp(key, "NUM_MINERS") == 0)
             config->NUM_MINER = value;
@@ -186,6 +191,7 @@ void read_config(const char *filename, Config *config) {
 // Função para criar IPCs
 void create_ipcs() {
 
+    //Transaction POOL início
 
     //Garantir que a memória alocada aguenta tudo
     size_t total_size = sizeof(TransactionPool) + (config.TRANSACTION_POOL_SIZE* sizeof(TransactionEntry));
@@ -207,32 +213,21 @@ void create_ipcs() {
     shrd->transaction_pending_set = 0;
     shrd->pool_size = config.TRANSACTION_POOL_SIZE;
  
-
     //Inicializar todas as transaction entries vazias
     for(int i =0;i<shrd->pool_size;i++){
         shrd->entries[i].empty =true;
     }
 
+    //Transaction Pool fim
 
 
-    //Falta ver erros de init do semaforo !!!!
     //Falta mutex para as threads do miner
     //Falta inicializar a memória do blockchain ledger
 
-
-
-    // Inicializar semáforo na memória compartilhada
+    // Inicializar semáforo da transaction pool
     if(sem_init(&shrd->sem, 1, 1)==-1){
         #ifdef DEBUG
         sprintf(msg,"Erro ao criar semáforo da transaction pool\n");
-        log_file(msg);
-        #endif
-    }
-
-    // Inicializar semáforo para o log
-    if(sem_init(&log_sem,1,1)==-1){
-        #ifdef DEBUG
-        sprintf(msg,"Erro ao criar semáforo do log\n");
         log_file(msg);
         #endif
     }
@@ -389,21 +384,4 @@ void *statistics() {
 }
 
 
-/*void add_transaction(Transaction t) {
-
-    
-    pthread_mutex_lock(&shrd->mutex);
-
-    if (shrd->transaction_count < 100) {  // Não deixar overflow
-        shrd->transactions[shrd->transaction_count] = t;
-        shrd->transaction_count++;
-    } else {
-        printf("Transaction pool cheia!\n");
-    }
-
-    pthread_mutex_unlock(&shrd->mutex);
-}
-
-
-*/
 
