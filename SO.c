@@ -222,10 +222,20 @@ void create_ipcs() {
 
 
     // Inicializar semáforo na memória compartilhada
-    sem_init(&shrd->sem, 1, 1);
+    if(sem_init(&shrd->sem, 1, 1)==-1){
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar semáforo da transaction pool\n");
+        log_file(msg);
+        #endif
+    }
 
     // Inicializar semáforo para o log
-    sem_init(&log_sem,1,1);
+    if(sem_init(&log_sem,1,1)==-1){
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar semáforo do log\n");
+        log_file(msg);
+        #endif
+    }
 
 
     // Iniciar filas de mensagens, entre outros...
