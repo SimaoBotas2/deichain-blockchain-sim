@@ -24,11 +24,14 @@
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
 #define BUFFER_SIZE 100 //apenas temporário, mudar pra malloc dps
-
+#define VALIDATOR_PIPE "VALIDATOR_PIPE"
 
 // Variáveis globais
+
+pthread_mutex_t mutex;
 int shmid;
 TransactionPool *shrd;
+pthread_t *miner_threads = NULL; 
 sem_t log_sem;
 char msg[BUFFER_SIZE];
 Config config;
@@ -44,6 +47,7 @@ void *miner_action();
 void *validator();
 void *statistics();
 void log_file(const char *message);
+void cleanup();
 
 
 int main() {
@@ -71,7 +75,6 @@ void controller() {
     log_file(msg);
 
     // Iniciar estrutura
-    Config config;
     read_config("config.cfg", &config);
 
     #ifdef DEBUG
@@ -192,7 +195,8 @@ void read_config(const char *filename, Config *config) {
 void create_ipcs() {
 
     //Transaction POOL início
-
+    //Ainda por testar
+   
     //Garantir que a memória alocada aguenta tudo
     size_t total_size = sizeof(TransactionPool) + (config.TRANSACTION_POOL_SIZE* sizeof(TransactionEntry));
 
@@ -230,6 +234,25 @@ void create_ipcs() {
         sprintf(msg,"Erro ao criar semáforo da transaction pool\n");
         log_file(msg);
         #endif
+    }
+
+     // Criar Named Pipe para comunicação Miner -> Validator
+     if (mkfifo(VALIDATOR_PIPE, 0666) == -1) {
+        if (errno != EEXIST) { 
+            #ifdef DEBUG
+            sprintf(msg,"Erro ao criar named pipe do validator\n");
+            log_file(msg);
+            #endif
+        }
+    }
+
+    //Criar Mutex para threads do miner
+    int r = pthread_mutex_init(&mutex,NULL);
+    if(r != 0){
+        #ifdef DEBUG
+            sprintf(msg,"Erro ao criar mutex das threads miner");
+            log_file(msg);
+            #endif
     }
 
 
@@ -273,11 +296,11 @@ void log_file(const char *message) {
 
 
 // Processo Miner
-void *miner(Config * config){
+void *miner(){
 
     int i;
     int NUM_MINER = config->NUM_MINER;
-    pthread_t miner_threads[NUM_MINER];
+    miner_threads = malloc(NUM_MINER * sizeof(pthread_t)); //possivel solução para alocar previamente e ser global
     int miner_ids[NUM_MINER];
 
     for(i = 0;i<NUM_MINER;i++){
@@ -306,7 +329,6 @@ void *miner(Config * config){
 
 void *miner_action(void *arg) {
 
-    //Config *config = (Config *)arg;
     int miner_id = *(int *)arg;
 
     char msg_local[BUFFER_SIZE];
@@ -315,28 +337,25 @@ void *miner_action(void *arg) {
 
     log_file(msg_local);
 
-    /*
-    while (1) {
-        sem_wait(&sem);
+    while (1) { //adicionar variavel de sincronização para parar a thread caso receba sinal
+        pthread_mutex_lock(&mutex);
 
         if (shrd->transaction_count < TRANSACTIONS_PER_BLOCK) {
-            pthread_mutex_unlock(&sem);
+            pthread_mutex_unlock(&mutex);
             break; 
         }
 
-        Transaction tx[TRANSACTIONS_PER_BLOCK];
+        //Código de execução da thread
 
-        for (int i = 0; i < TRANSACTIONS_PER_BLOCK; i++) {
-            shrd->transactions[i] = shrd->transactions[i + TRANSACTIONS_PER_BLOCK];
-        }
-        shrd->transaction_count-= TRANSACTIONS_PER_BLOCK;
+        pthread_mutex_lock(&mutex);
 
-        sem_post(&sem);
 
-        printf("Miner %d a processar transação %d: %s\n", miner_id, tx[0].id, tx[0].details);
+        //Depois alterar isto para dar match à nova transaction structure
+        
+        //printf("Miner %d a processar transação %d: %s\n", miner_id, tx[0].id, tx[0].details);
         sleep(1); 
 
-        printf("Miner %d minerou com sucessou a transação %d\n", miner_id, tx[0].id);
+        //printf("Miner %d minerou com sucessou a transação %d\n", miner_id, tx[0].id);
     }*/
 
     sprintf(msg_local,"Miner %d terminou\n",miner_id);
@@ -383,5 +402,34 @@ void *statistics() {
     return NULL;
 }
 
+void cleanup(){
+//Função que vai limpar todos os recursos utilizados
+    
 
+
+    free(miner_threads);
+
+    sem_destroy(&shrd->sem);
+
+
+    //Eliminar Transaction Pool Memory
+    if(shrd != NULL){
+        shmdt(shrd);
+        shrd = NULL;
+    }
+
+    if(shmid == -1){
+        shmctl(shmid,IPC_RMID,NULL);
+        shmid = -1;
+    }
+
+    //Destruir mutex (é preciso confirmar??), visto que deixamos a thread acabar
+    pthread_mutex_destroy(&mutex);
+
+
+    log_file("Recursos Eliminados com sucesso!\n")
+    //Apenas eliminar este semáforo depois para evitar erros do log
+    sem_destroy(&log_sem);
+
+}
 
