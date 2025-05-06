@@ -29,6 +29,8 @@
 // Variáveis globais
 
 pthread_mutex_t mutex;
+bool finish  = false;
+
 int shmid;
 TransactionPool *shrd;
 pthread_t *miner_threads = NULL; 
@@ -48,9 +50,18 @@ void *validator();
 void *statistics();
 void log_file(const char *message);
 void cleanup();
+void sighandler();
 
 
 int main() {
+
+    //Abrir ficheiro para log, para evitar abrir várias vezes
+    FILE *file = fopen("DEIChain_log.txt", "a");
+    if (file == NULL) {
+        perror("[LOG FILE] Erro ao abrir arquivo de log\n");
+        return;
+    }
+
 
 // Inicializar semáforo para o log
     if(sem_init(&log_sem,1,1)==-1){
@@ -263,13 +274,6 @@ void create_ipcs() {
 // Função para escrever no ficheiro .txt aquilo que acontece no código
 void log_file(const char *message) {
     
-    //passar isto para abrir apenas uma vez e fechar apenas uma vez
-    FILE *file = fopen("DEIChain_log.txt", "a");
-    if (file == NULL) {
-        perror("[LOG FILE] Erro ao abrir arquivo de log\n");
-        return;
-    }
-
     sem_wait(&log_sem);
    // Obter data e hora atual
    time_t now = time(NULL);
@@ -340,28 +344,32 @@ void *miner_action(void *arg) {
     while (1) { //adicionar variavel de sincronização para parar a thread caso receba sinal
         pthread_mutex_lock(&mutex);
 
+        if(finish){ //variavel para controle das threads, usada pra sincronização e cleanup
+            pthread_mutex_unlock(&mutex);
+            break;
+        }
+
         if (shrd->transaction_count < TRANSACTIONS_PER_BLOCK) {
             pthread_mutex_unlock(&mutex);
-            break; 
+            sleep(1)
+            continue; 
         }
 
         //Código de execução da thread
 
-        pthread_mutex_lock(&mutex);
-
+        //pthread_mutex_unlock(&mutex);
 
         //Depois alterar isto para dar match à nova transaction structure
         
-        //printf("Miner %d a processar transação %d: %s\n", miner_id, tx[0].id, tx[0].details);
-        sleep(1); 
+        //printf("[MINER] Thread %d a processar transação %d: %s\n", miner_id, tx[0].id, tx[0].details);
 
-        //printf("Miner %d minerou com sucessou a transação %d\n", miner_id, tx[0].id);
-    }*/
+        //printf("[MINER] Thread %d minerou com sucessou a transação %d\n", miner_id, tx[0].id);
+    }
 
     sprintf(msg_local,"Miner %d terminou\n",miner_id);
     log_file(msg_local);
+    pthread_exit(NULL);
 
-    return NULL;
 }
 
 void *validator() {
@@ -404,13 +412,14 @@ void *statistics() {
 
 void cleanup(){
 //Função que vai limpar todos os recursos utilizados
-    
 
 
+    pthread_mutex_lock(&mutex);
+    finish = true;
+    pthread_mutex_unlock(&mutex);
     free(miner_threads);
 
     sem_destroy(&shrd->sem);
-
 
     //Eliminar Transaction Pool Memory
     if(shrd != NULL){
@@ -423,7 +432,7 @@ void cleanup(){
         shmid = -1;
     }
 
-    //Destruir mutex (é preciso confirmar??), visto que deixamos a thread acabar
+    //Destruir mutex (é preciso confirmar??), visto que deixamos a thread acabar ?
     pthread_mutex_destroy(&mutex);
 
 
