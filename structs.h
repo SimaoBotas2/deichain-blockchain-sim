@@ -44,8 +44,34 @@ typedef struct TransactionPool{
     sem_t sem;
 }TransactionPool;
 
+// Estrutura para um bloco da blockchain
+typedef struct Block {
+    int block_id; // Talvez seja char
+    int previous_hash;  // Talvez seja char
+    int num_transactions;
+    unsigned long timestamp; 
+    Transaction transactions[]; // Tem de ter o valor do TRANSACTIONS_PER_BLOC
+    int nonce; // Nº encontrado pelo PoW(proof of work)
+    int miner_id;
+} Block;
 
+// Estrutura para a blockchain
+typedef struct Blockchain {
+    int max_blocks;     // BLOCKCHAIN_BLOCKS
+    int current_blocks; // Quantos blocos já foram minerados
+    Block *blocks;    
+    sem_t sem;          // Semáforo para sincronizar acesso à Blockchain
+} Blockchain;
 
+typedef struct MinerStats {
+    int miner_id;
+    int blocks_mined;
+    /*
+    int valid_blocks;
+    int unvalid_blocks;
+    */
+    int total_reward;
+} MinerStats;
 
 
 #endif
