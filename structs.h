@@ -15,10 +15,10 @@
 // Estrutura de configuração
 typedef struct Configuration {
     int NUM_MINER;
-    int POOL_SIZE;
     int TRANSACTIONS_PER_BLOCK;
     int BLOCKCHAIN_BLOCKS;
-    int TRANSACTION_POOL_SIZE;
+    int TX_POOL_SIZE;
+    sem_t sem;
 } Config;
 
 // Estrutura para transações

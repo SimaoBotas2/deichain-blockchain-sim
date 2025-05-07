@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
         //Procura uma entry vazia
         if (shrd->entries[i].empty ) {
             Transaction new_tx;
-            new_tx.id = getpid(); //Apenas pra ter um valor
+            new_tx.id = getpid() + transaction_id; //Apenas pra ter um valor
             new_tx.reward = reward;
             new_tx.value = (rand() % 100) + 1; // Valor random (diz no enunciado)
             snprintf(new_tx.details, sizeof(new_tx.details), "Transaction %d - Reward: %d", new_tx.id, reward);
@@ -97,8 +97,11 @@ int main(int argc, char *argv[]) {
         else {
             printf("Transaction buffer cheio. À espera...\n");
         }
+
+        transaction_id++;
         sem_post(&(shrd->sem));
 
+        
         sleep_ms(sleeptime);
     }
 }
