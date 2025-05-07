@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ipc.h>
+#include <sys/wait.h>
 #include <sys/shm.h>
 #include <sys/msg.h>
 #include <pthread.h>
@@ -31,12 +32,17 @@
 pthread_mutex_t mutex;
 bool finish  = false;
 
+FILE * file;
+
 int shmid;
 TransactionPool *shrd;
 pthread_t *miner_threads = NULL; 
 sem_t log_sem;
 char msg[BUFFER_SIZE];
+
+
 Config config;
+
 
 
 //Funcoes 
@@ -44,7 +50,7 @@ Config config;
 void controller();
 void read_config(const char *filename, Config *config);
 void create_ipcs();
-void *miner(Config *config);
+void *miner();
 void *miner_action();
 void *validator();
 void *statistics();
@@ -56,10 +62,10 @@ void sighandler();
 int main() {
 
     //Abrir ficheiro para log, para evitar abrir várias vezes
-    FILE *file = fopen("DEIChain_log.txt", "a");
+    file = fopen("DEIChain_log.txt", "a");
     if (file == NULL) {
         perror("[LOG FILE] Erro ao abrir arquivo de log\n");
-        return;
+        return -1;
     }
 
 
@@ -92,17 +98,17 @@ void controller() {
     log_file("Configurações carregadas:\n");
     sprintf(msg,"NUM_MINERS: %d\n", config.NUM_MINER);
     log_file(msg);
-    sprintf(msg,"POOL_SIZE: %d\n", config.POOL_SIZE);
+    sprintf(msg,"TX_POOL_SIZE: %d\n", config.TX_POOL_SIZE);
     log_file(msg);
     sprintf(msg,"TRANSACTIONS_PER_BLOCK: %d\n", config.TRANSACTIONS_PER_BLOCK);
     log_file(msg);
     sprintf(msg,"BLOCKCHAIN_BLOCKS: %d\n", config.BLOCKCHAIN_BLOCKS);
     log_file(msg);
-    sprintf(msg,"TRANSACTION_POOL_SIZE: %d\n", config.TRANSACTION_POOL_SIZE);
-    log_file(msg);
+
     #endif
 
     create_ipcs();
+
 
     pid_t pid_miner, pid_validator, pid_statistics;
     
@@ -120,7 +126,7 @@ void controller() {
         sprintf(msg,"Processo Miner começou (PID: %d)\n", pid_miner);
         log_file(msg);
         #endif
-        miner(&config);
+        miner();
         exit(0);
     }
 
@@ -186,21 +192,22 @@ void read_config(const char *filename, Config *config) {
     char key[BUFFER_SIZE];
     int value;
     // Verifica se tem o nome do atributo e o seu devido valor
-    // Fatla verificar os valores para ver se fazem sentido
     while (fscanf(file, "%s - %d", key, &value) == 2) {
-        if (strcmp(key, "NUM_MINERS") == 0)
+        if (strcmp(key, "NUM_MINERS") == 0 && value >= 0)
             config->NUM_MINER = value;
-        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
-            config->TRANSACTION_POOL_SIZE = value;
-        else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0)
+        else if (strcmp(key, "TX_POOL_SIZE") == 0 && value >= 0)
+            config->TX_POOL_SIZE = value;
+        else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0 && value >= 0)
             config->TRANSACTIONS_PER_BLOCK = value;
-        else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
+        else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0 && value >= 0)
             config->BLOCKCHAIN_BLOCKS = value;
-        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
-            config->TRANSACTION_POOL_SIZE = value;
+        else 
+            sprintf(msg,"Erro ao atribuir um valor, verifique o valor de %s\n",key);
+            log_file(msg);
     }
     fclose(file);
 }
+
 
 // Função para criar IPCs
 void create_ipcs() {
@@ -209,7 +216,7 @@ void create_ipcs() {
     //Ainda por testar
    
     //Garantir que a memória alocada aguenta tudo
-    size_t total_size = sizeof(TransactionPool) + (config.TRANSACTION_POOL_SIZE* sizeof(TransactionEntry));
+    size_t total_size = sizeof(TransactionPool) + (config.TX_POOL_SIZE* sizeof(TransactionEntry));
 
     // Criar a memória compartilhada da transaction pool
     shmid = shmget(SHM_KEY, total_size, IPC_CREAT | 0666);
@@ -226,7 +233,7 @@ void create_ipcs() {
     
     shrd->entries = (TransactionEntry *)(shrd + 1); //alocar o vetor a seguir à main struct
     shrd->transaction_pending_set = 0;
-    shrd->pool_size = config.TRANSACTION_POOL_SIZE;
+    shrd->pool_size = config.TX_POOL_SIZE;
  
     //Inicializar todas as transaction entries vazias
     for(int i =0;i<shrd->pool_size;i++){
@@ -236,7 +243,6 @@ void create_ipcs() {
     //Transaction Pool fim
 
 
-    //Falta mutex para as threads do miner
     //Falta inicializar a memória do blockchain ledger
 
     // Inicializar semáforo da transaction pool
@@ -247,14 +253,21 @@ void create_ipcs() {
         #endif
     }
 
+    //Inicializar semáforo para acesso a config
+    if(sem_init(&config.sem,1,1) ==-1){
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar semáforo de acesso a Config\n");
+        log_file(msg);
+        #endif
+    }
+
+
      // Criar Named Pipe para comunicação Miner -> Validator
      if (mkfifo(VALIDATOR_PIPE, 0666) == -1) {
-        if (errno != EEXIST) { 
             #ifdef DEBUG
             sprintf(msg,"Erro ao criar named pipe do validator\n");
             log_file(msg);
             #endif
-        }
     }
 
     //Criar Mutex para threads do miner
@@ -303,7 +316,10 @@ void log_file(const char *message) {
 void *miner(){
 
     int i;
-    int NUM_MINER = config->NUM_MINER;
+    sem_wait(&config.sem);
+    int NUM_MINER = config.NUM_MINER;
+    sem_post(&config.sem);
+
     miner_threads = malloc(NUM_MINER * sizeof(pthread_t)); //possivel solução para alocar previamente e ser global
     int miner_ids[NUM_MINER];
 
@@ -337,11 +353,28 @@ void *miner_action(void *arg) {
 
     char msg_local[BUFFER_SIZE];
 
+ 
+
+    //Criar o bloco para guardar as transações
+
+    /*
+    Código do bloco 
+    
+    */
+
     sprintf(msg_local,"[MINER] Thread %d inicializada\n",miner_id);
 
     log_file(msg_local);
 
+
+    pthread_mutex_lock(&mutex);
+    int number_transactions = config.TRANSACTIONS_PER_BLOCK;
+    int pool_size = config.TX_POOL_SIZE;
+    pthread_mutex_unlock(&mutex);
+
+
     while (1) { //adicionar variavel de sincronização para parar a thread caso receba sinal
+    
         pthread_mutex_lock(&mutex);
 
         if(finish){ //variavel para controle das threads, usada pra sincronização e cleanup
@@ -349,15 +382,45 @@ void *miner_action(void *arg) {
             break;
         }
 
-        if (shrd->transaction_count < TRANSACTIONS_PER_BLOCK) {
+        //Se na transaction pool nao houver transações suficientes, esperar para o proximo loop
+        if (shrd->transaction_pending_set < number_transactions) {
             pthread_mutex_unlock(&mutex);
-            sleep(1)
+            sleep(1);
             continue; 
         }
 
         //Código de execução da thread
 
-        //pthread_mutex_unlock(&mutex);
+        int entry_id;
+
+        for(int i =0;i<number_transactions;i++){
+            entry_id = rand() % pool_size;
+            while(shrd->entries[entry_id].empty){
+                entry_id = rand() % pool_size;
+            }
+
+            sprintf(msg_local,"[MINER] Thread %d a processar a transação %d",miner_id, shrd->entries[entry_id].tx.id);
+            log_file(msg_local);
+
+            //POW da transação
+
+
+            //sucesso
+            printf("[MINER] Thread %d minerou com sucessou a transação %d\n", miner_id, shrd->entries[entry_id].tx.id);
+            log_file(msg_local);
+
+
+            //Guardar a transação no bloco
+
+        }
+
+        //Enviar o bloco através de um named pipe para o validator
+
+
+
+
+
+        pthread_mutex_unlock(&mutex);
 
         //Depois alterar isto para dar match à nova transaction structure
         
@@ -413,7 +476,6 @@ void *statistics() {
 void cleanup(){
 //Função que vai limpar todos os recursos utilizados
 
-
     pthread_mutex_lock(&mutex);
     finish = true;
     pthread_mutex_unlock(&mutex);
@@ -436,9 +498,11 @@ void cleanup(){
     pthread_mutex_destroy(&mutex);
 
 
-    log_file("Recursos Eliminados com sucesso!\n")
+    log_file("Recursos Eliminados com sucesso!\n");
     //Apenas eliminar este semáforo depois para evitar erros do log
     sem_destroy(&log_sem);
+
+    fclose(file);
 
 }
 
