@@ -179,10 +179,16 @@ void controller() {
 
 // Função para ler o arquivo de configuração
 void read_config(const char *filename, Config *config) {
-    FILE file_config = fopen(filename, "r");
-    if (!file) {
+    // Inicializa com valores inválidos
+    config->NUM_MINER = -1;
+    config->TX_POOL_SIZE = -1;
+    config->TRANSACTIONS_PER_BLOCK = -1;
+    config->BLOCKCHAIN_BLOCKS = -1;
+
+    FILE *f = fopen(filename, "r");
+    if (!f) {
         #ifdef DEBUG
-        sprintf(msg,"Erro ao abrir arquivo de configuração\n");
+        sprintf(msg, "Erro ao abrir arquivo de configuração\n");
         log_file(msg);
         #endif
         exit(1);
@@ -190,23 +196,34 @@ void read_config(const char *filename, Config *config) {
 
     char key[BUFFER_SIZE];
     int value;
-    // Verifica se tem o nome do atributo e o seu devido valor
-    // Fatla verificar os valores para ver se fazem sentido
-    while (fscanf(file, "%s - %d", key, &value) == 2) {
-        if (strcmp(key, "NUM_MINERS") == 0)
-            config->NUM_MINER = value;
-        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
-            config->TRANSACTION_POOL_SIZE = value;
-        else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0)
-            config->TRANSACTIONS_PER_BLOCK = value;
-        else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
-            config->BLOCKCHAIN_BLOCKS = value;
-        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
-            config->TRANSACTION_POOL_SIZE = value;
-    }
-    fclose(file_config);
-}
 
+    while (fscanf(f, "%s - %d", key, &value) == 2) {
+        if (strcmp(key, "NUM_MINERS") == 0 && value >= 0)
+            config->NUM_MINER = value;
+        else if (strcmp(key, "TX_POOL_SIZE") == 0 && value >= 0)
+            config->TX_POOL_SIZE = value;
+        else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0 && value >= 0)
+            config->TRANSACTIONS_PER_BLOCK = value;
+        else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0 && value >= 0)
+            config->BLOCKCHAIN_BLOCKS = value;
+        else {
+            sprintf(msg, "Erro ao atribuir um valor, verifique o valor de %s\n", key);
+            log_file(msg);
+        }
+    }
+
+    fclose(f);
+
+    // Verifica se algum campo obrigatório não foi atribuído
+    if (config->NUM_MINER == -1 || config->TX_POOL_SIZE == -1 ||
+        config->TRANSACTIONS_PER_BLOCK == -1 || config->BLOCKCHAIN_BLOCKS == -1) {
+        #ifdef DEBUG
+        sprintf(msg, "Configuração incompleta. Verifique se todos os campos estão definidos corretamente.\n");
+        log_file(msg);
+        #endif
+        exit(1);
+    }
+}
 
 // Função para criar IPCs
 void create_ipcs() {
