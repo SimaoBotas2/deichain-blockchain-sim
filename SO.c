@@ -397,33 +397,16 @@ void *miner(){
 void *miner_action(void *arg) {
 
     int miner_id = *(int *)arg;
-
     char msg_local[BUFFER_SIZE];
-
- 
-
-    //Criar o bloco para guardar as transações
-
-    /*
-    Código do bloco 
-    
-    */
-
-    sprintf(msg_local,"[MINER] Thread %d inicializada\n",miner_id);
-
-    log_file(msg_local);
-
-
-    pthread_mutex_lock(&mutex);
     int number_transactions = config.TRANSACTIONS_PER_BLOCK;
     int pool_size = config.TX_POOL_SIZE;
-    pthread_mutex_unlock(&mutex);
-
+ 
+    sprintf(msg_local,"[MINER] Thread %d inicializada\n",miner_id);
+    log_file(msg_local);
 
     while (1) { //adicionar variavel de sincronização para parar a thread caso receba sinal
     
         pthread_mutex_lock(&mutex);
-
         if(finish){ //variavel para controle das threads, usada pra sincronização e cleanup
             pthread_mutex_unlock(&mutex);
             break;
@@ -436,39 +419,69 @@ void *miner_action(void *arg) {
             continue; 
         }
 
-        //Código de execução da thread
+        // lock semáforo para aceder a pool
+        sem_wait(&shrd->sem);
 
-        int entry_id;
+        Transaction transactions[number_transactions];
+        int quantity[number_transactions];
+        int collected = 0;
 
-        for(int i =0;i<number_transactions;i++){
-            entry_id = rand() % pool_size;
-            while(shrd->entries[entry_id].empty){
-                entry_id = rand() % pool_size;
+        for(int i =0;i < pool_size && collected < number_transactions;i++){
+            if (!shrd->entries[i].empty){
+                transactions[collected] = shrd->entries[i].tx;
+                quantity[collected] = i;
+                collected++;
             }
-
-            sprintf(msg_local,"[MINER] Thread %d a processar a transação %d",miner_id, shrd->entries[entry_id].tx.id);
-            log_file(msg_local);
-
-            //POW da transação
-
-
-            //sucesso
-            printf("[MINER] Thread %d minerou com sucessou a transação %d\n", miner_id, shrd->entries[entry_id].tx.id);
-            log_file(msg_local);
-
-
-            //Guardar a transação no bloco
-
         }
+        if (collected < number_transactions) {
+
+            sem_post(&shrd->sem);
+            pthread_mutex_unlock(&mutex);
+            continue;
+        }
+
+        time_t block_time = time(NULL);
+
+        Block block;
+        sprintf(msg_local,"[MINER] Block %d %d\n",getpid(),miner_id);
+        log_file(msg_local);
+        block.timestamp = block_time;
+
+        if (int i = 0; i < number_transactions; i++) {
+            block.transactions[i] = transactions[i];
+        }
+
+        //Hash
+        sem_wait(&ldgr->sem);
+        if (ldgr->current_blocks == 0) {
+            strcpy(block.previous_hash, a) // definir o a que é a constante do HASH
+        } 
+        else {
+            strcpy(block.previous_hash, ldgr->blocks[ldgr->current_blocks - 1].aaa) // "aaa" é preciso um hash... só não sei qual é
+        }
+        sem_post(&ldgr->sem);
+
+        //Falta aqui o PoW
 
         //Enviar o bloco através de um named pipe para o validator
 
+        int fd = open(VALIDATOR_PIPE, O_WRONLY);
+        if (fd == -1) {
+            log_file("[MINER] Erro ao abrir named pipe\n");
+            sem_post(&shrd->sem);
+            pthread_mutex_unlock(&mutex);
+            continue;
+        }
+        write(fd, &block, sizeof(Block));
+        close(fd);
 
+        sprintf(msg_local, "[MINER] Thread %d enviou bloco %s para validação\n", miner_id, block.id);
+        log_file(msg_local);
 
-
-
+        sem_post(&shrd->sem);
         pthread_mutex_unlock(&mutex);
 
+        sleep(1);
         //Depois alterar isto para dar match à nova transaction structure
         
         //printf("[MINER] Thread %d a processar transação %d: %s\n", miner_id, tx[0].id, tx[0].details);
@@ -520,8 +533,8 @@ void *statistics() {
     return NULL;
 }
 
+// Função que vai limpar todos os recursos utilizados
 void cleanup(){
-//Função que vai limpar todos os recursos utilizados
 
     pthread_mutex_lock(&mutex);
     finish = true;
@@ -530,7 +543,7 @@ void cleanup(){
 
     sem_destroy(&shrd->sem);
 
-    //Eliminar Transaction Pool Memory
+    // Eliminar Transaction Pool Memory
     if(shrd != NULL){
         shmdt(shrd);
         shrd = NULL;
@@ -541,6 +554,7 @@ void cleanup(){
         shmid = -1;
     }
 
+    // Eliminar Blockchain Ledger Memory
     if (ldgr != NULL) {
         shmdt(ldgr);
         ldgr = NULL;

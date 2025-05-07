@@ -50,7 +50,7 @@ typedef struct Block {
     int previous_hash;  // Talvez seja char
     int num_transactions;
     unsigned long timestamp; 
-    Transaction transactions[]; // Tem de ter o valor do TRANSACTIONS_PER_BLOCK
+    Transaction *transactions; 
     int nonce; // Nº encontrado pelo PoW(proof of work)
     int miner_id;
 } Block;
