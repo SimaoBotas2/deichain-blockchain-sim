@@ -56,7 +56,8 @@ void *validator();
 void *statistics();
 void log_file(const char *message);
 void cleanup();
-void sighandler();
+void sigint_handler(int signum);
+
 
 
 int main() {
@@ -79,8 +80,6 @@ int main() {
 
     log_file("Simulação iniciada\n");
     controller();
-    sem_destroy(&shrd->sem);
-    sem_destroy(&log_sem);
     log_file("Simulação finalizada\n");
     return 0;
 }
@@ -180,7 +179,7 @@ void controller() {
 
 // Função para ler o arquivo de configuração
 void read_config(const char *filename, Config *config) {
-    FILE *file = fopen(filename, "r");
+    FILE file_config = fopen(filename, "r");
     if (!file) {
         #ifdef DEBUG
         sprintf(msg,"Erro ao abrir arquivo de configuração\n");
@@ -192,20 +191,20 @@ void read_config(const char *filename, Config *config) {
     char key[BUFFER_SIZE];
     int value;
     // Verifica se tem o nome do atributo e o seu devido valor
+    // Fatla verificar os valores para ver se fazem sentido
     while (fscanf(file, "%s - %d", key, &value) == 2) {
-        if (strcmp(key, "NUM_MINERS") == 0 && value >= 0)
+        if (strcmp(key, "NUM_MINERS") == 0)
             config->NUM_MINER = value;
-        else if (strcmp(key, "TX_POOL_SIZE") == 0 && value >= 0)
-            config->TX_POOL_SIZE = value;
-        else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0 && value >= 0)
+        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
+            config->TRANSACTION_POOL_SIZE = value;
+        else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0)
             config->TRANSACTIONS_PER_BLOCK = value;
-        else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0 && value >= 0)
+        else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0)
             config->BLOCKCHAIN_BLOCKS = value;
-        else 
-            sprintf(msg,"Erro ao atribuir um valor, verifique o valor de %s\n",key);
-            log_file(msg);
+        else if (strcmp(key, "TRANSACTION_POOL_SIZE") == 0)
+            config->TRANSACTION_POOL_SIZE = value;
     }
-    fclose(file);
+    fclose(file_config);
 }
 
 
@@ -502,7 +501,17 @@ void cleanup(){
     //Apenas eliminar este semáforo depois para evitar erros do log
     sem_destroy(&log_sem);
 
+    //fechar ficheiro da config
     fclose(file);
 
 }
 
+
+void sigint_handler(int signum){
+    sprintf(msg,"SInal ^C detetado, a limpar recursos\n");
+    log_file(msg);
+	printf("\n\n^C pressionado. A limpar recursos\n");
+	cleanup();
+	printf("Recursos limpos, programa a finalizar\n");
+	exit(0);
+}
