@@ -541,6 +541,16 @@ void cleanup(){
         shmid = -1;
     }
 
+    if (ldgr != NULL) {
+        shmdt(ldgr);
+        ldgr = NULL;
+        }
+
+    if (ledger_shmid != -1) {
+        shmctl(ledger_shmid, IPC_RMID, NULL);
+        ledger_shmid = -1;
+    }
+
     //Destruir mutex (é preciso confirmar??), visto que deixamos a thread acabar ?
     pthread_mutex_destroy(&mutex);
 
