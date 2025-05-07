@@ -27,6 +27,8 @@
 #define BUFFER_SIZE 100 //apenas temporário, mudar pra malloc dps
 #define VALIDATOR_PIPE "VALIDATOR_PIPE"
 
+#define LEDGER_SHM_KEY 0x4321
+
 // Variáveis globais
 
 pthread_mutex_t mutex;
@@ -40,9 +42,11 @@ pthread_t *miner_threads = NULL;
 sem_t log_sem;
 char msg[BUFFER_SIZE];
 
+// varíaveis para a Blockcain Ledger
+int ledger_shmid;
+Blockchain *ldgr;
 
 Config config;
-
 
 
 //Funcoes 
@@ -209,6 +213,7 @@ void read_config(const char *filename, Config *config) {
         else {
             sprintf(msg, "Erro ao atribuir um valor, verifique o valor de %s\n", key);
             log_file(msg);
+        
         }
     }
 
@@ -260,6 +265,32 @@ void create_ipcs() {
 
 
     //Falta inicializar a memória do blockchain ledger
+    
+    size_t ledger_size = sizeof(Blockchain) + (config.BLOCKCHAIN_BLOCKS * sizeof(Block));
+    ledger_shmid = shmget(LEDGER_SHM_KEY, ledger_size, IPC_CREAT | 0666);
+    if (ledger_shmid < 0){
+        perror("shmget error\n");  
+        exit(1);
+    }
+    
+    ledger = (Blockchain *)shmat(ledger_shmid, NULL, 0);
+    if (shrd == (Blockchain*)(-1)) {
+        perror("shmat error\n");
+        exit(1);
+    }
+
+    ledger->max_blocks = config.BLOCKCHAIN_BLOCKS;
+    ledger->current_blocks = 0;
+    ledger->blocks = (Block *)(blockchain + 1);
+
+    if (sem_init(&blockchain->sem, 1, 1) == -1) {
+        #ifdef DEBUG
+        sprintf(msg, "Erro ao criar semáforo da blockchain\n");
+        log_file(msg);
+        #endif
+    }
+
+    // Blockchain ledger fim
 
     // Inicializar semáforo da transaction pool
     if(sem_init(&shrd->sem, 1, 1)==-1){
