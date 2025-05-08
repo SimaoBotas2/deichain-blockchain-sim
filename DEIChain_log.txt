@@ -1592,3 +1592,55 @@
 [08-05-2025 22:51:53] [MINER] Thread 3 terminou
 [08-05-2025 22:51:53] [MINER] Thread 4 terminou
 [08-05-2025 22:51:53] [MINER] Processo Miner terminado
+[08-05-2025 23:09:49] Simulação iniciada
+[08-05-2025 23:09:49] [CONTROLLER] Processo Controller começou (PID: 2854)
+[08-05-2025 23:09:49] Configurações carregadas:
+[08-05-2025 23:09:49] NUM_MINERS: 5
+[08-05-2025 23:09:49] TX_POOL_SIZE: 10000
+[08-05-2025 23:09:49] TRANSACTIONS_PER_BLOCK: 10
+[08-05-2025 23:09:49] BLOCKCHAIN_BLOCKS: 50000
+[08-05-2025 23:09:49] [CONTROLLER] Processo Validator começou (PID: 2856)
+[08-05-2025 23:09:49] [VALIDATOR] Processo Validator inicializado
+[08-05-2025 23:09:49] [VALIDATOR] Processo Validator terminado
+[08-05-2025 23:09:49] Simulação iniciada
+[08-05-2025 23:09:49] [CONTROLLER] Processo Controller começou (PID: 2854)
+[08-05-2025 23:09:49] Configurações carregadas:
+[08-05-2025 23:09:49] NUM_MINERS: 5
+[08-05-2025 23:09:49] TX_POOL_SIZE: 10000
+[08-05-2025 23:09:49] TRANSACTIONS_PER_BLOCK: 10
+[08-05-2025 23:09:49] BLOCKCHAIN_BLOCKS: 50000
+[08-05-2025 23:09:49] [CONTROLLER] Processo Statistics começou (PID: 2857)
+[08-05-2025 23:09:49] [STATISTICS] Processo Statistics inicializado
+[08-05-2025 23:09:49] [STATISTICS] Processo Statistics terminado
+[08-05-2025 23:09:49] Simulação iniciada
+[08-05-2025 23:09:49] [CONTROLLER] Processo Controller começou (PID: 2854)
+[08-05-2025 23:09:49] Configurações carregadas:
+[08-05-2025 23:09:49] NUM_MINERS: 5
+[08-05-2025 23:09:49] TX_POOL_SIZE: 10000
+[08-05-2025 23:09:49] TRANSACTIONS_PER_BLOCK: 10
+[08-05-2025 23:09:49] BLOCKCHAIN_BLOCKS: 50000
+[08-05-2025 23:09:49] [CONTROLLER] Processo Miner começou (PID: 2855)
+[08-05-2025 23:09:49] [MINER] Processo Miner inicializado
+[08-05-2025 23:09:49] [MINER] Thread miner 0 inicializada
+[08-05-2025 23:09:49] [MINER] Thread miner 4 inicializada
+[08-05-2025 23:09:49] [MINER] Thread miner 3 inicializada
+[08-05-2025 23:09:49] [MINER] Thread miner 2 inicializada
+[08-05-2025 23:09:49] [MINER] Thread miner 1 inicializada
+[08-05-2025 23:09:50] [MINER] Thread 0 terminou
+[08-05-2025 23:09:50] [MINER] Thread 2 terminou
+[08-05-2025 23:09:50] [MINER] Thread 3 terminou
+[08-05-2025 23:09:50] [MINER] Thread 4 terminou
+[08-05-2025 23:09:50] [MINER] Thread 1 terminou
+[08-05-2025 23:09:50] [MINER] Processo Miner terminado
+[08-05-2025 23:09:49] Simulação iniciada
+[08-05-2025 23:09:49] [CONTROLLER] Processo Controller começou (PID: 2854)
+[08-05-2025 23:09:49] Configurações carregadas:
+[08-05-2025 23:09:49] NUM_MINERS: 5
+[08-05-2025 23:09:49] TX_POOL_SIZE: 10000
+[08-05-2025 23:09:49] TRANSACTIONS_PER_BLOCK: 10
+[08-05-2025 23:09:49] BLOCKCHAIN_BLOCKS: 50000
+[08-05-2025 23:09:50] [SIGNAL] ^C detetado, a limpar recursos
+[08-05-2025 23:09:50] [SIGNAL] A terminar Miner
+[08-05-2025 23:09:50] [CLEANUP] Recursos limpos, a terminar programa
+[08-05-2025 23:09:50] [CONTROLLER] Processo Controller terminado após cleanup
+[08-05-2025 23:09:50] Simulação finalizada

@@ -20,6 +20,12 @@
 #define TXB_ID_LEN 64
 #define HASH_SIZE 65  // SHA256_DIGEST_LENGTH * 2 + 1
 
+extern int transactions_per_block;
+
+
+// Inline function to compute the size of a TransactionBlock
+
+
 // Estrutura de configuração
 typedef struct Configuration {
     int NUM_MINER;
@@ -80,6 +86,16 @@ typedef struct MinerStats {
     */
     int total_reward;
 } MinerStats;
+
+
+static inline size_t get_transaction_block_size() {
+    if (transactions_per_block == 0) {
+      perror("Must set the 'transactions_per_block' variable before using!\n");
+      exit(-1);
+    }
+    return sizeof(Block) +
+           transactions_per_block * sizeof(Transaction);
+  }
 
 
 #endif

@@ -51,6 +51,7 @@ int ledger_shmid;
 Blockchain *ldgr;
 
 Config config;
+int transactions_per_block;
 
 //Váriaveis pra pids dos processos
 pid_t pid_miner=-1;
@@ -140,7 +141,7 @@ void controller() {
     else if (pid_miner == 0) {
         // Processo filho (Miner)
         #ifdef DEBUG
-        sprintf(msg,"[CONTROLLER]Processo Miner começou (PID: %d)\n", getpid());
+        sprintf(msg,"[CONTROLLER] Processo Miner começou (PID: %d)\n", getpid());
         log_file(msg);
         #endif
 
@@ -161,7 +162,7 @@ void controller() {
     else if (pid_validator == 0) {
         // Processo filho (Validator)
         #ifdef DEBUG
-        sprintf(msg,"[CONTROLLER]Processo Validator começou (PID: %d)\n", getpid());
+        sprintf(msg,"[CONTROLLER] Processo Validator começou (PID: %d)\n", getpid());
         log_file(msg);
         #endif
         //ignorar o sinal, apenas o controller o vai ver
@@ -181,7 +182,7 @@ void controller() {
     else if (pid_statistics == 0) {
         // Processo filho (Statistics)
         #ifdef DEBUG
-        sprintf(msg,"[CONTROLLER]Processo Statistics começou (PID: %d)\n", getpid());      
+        sprintf(msg,"[CONTROLLER] Processo Statistics começou (PID: %d)\n", getpid());      
         log_file(msg);
         #endif
         //ignorar o sinal, apenas o controller o vai ver
@@ -195,7 +196,7 @@ void controller() {
     waitpid(pid_statistics, NULL, 0);
     
    
-    sprintf(msg,"[CONTROLLER]Processo Controller terminado após cleanup\n");      
+    sprintf(msg,"[CONTROLLER] Processo Controller terminado após cleanup\n");      
     log_file(msg);
 
 }
@@ -234,6 +235,8 @@ void read_config(const char *filename) {
             log_file(msg);
         }
     }
+
+    transactions_per_block = config.TRANSACTIONS_PER_BLOCK;
 
     fclose(f);
 
@@ -520,7 +523,7 @@ void *miner_action(void *arg) {
 
         // Executar o Proof-of-Work
 
-       /* PoWResult result = proof_of_work(&block);
+       PoWResult result = proof_of_work(&block);
         if (result.error) {
             sprintf(msg_local, "[MINER] Thread %d: PoW falhou após %d operações\n", miner_id, result.operations);
             log_file(msg_local);
@@ -567,7 +570,7 @@ void *miner_action(void *arg) {
         close(fd);
         free(block.transactions);
         sleep(1);
-        */
+        
     }
         
 
@@ -649,23 +652,20 @@ void cleanup() {
         #endif
     }
 
-    // Fechar arquivo de log apenas no final
-
 
     sprintf(msg,"[CLEANUP] Recursos limpos, a terminar programa\n");
     log_file(msg);
 
-
 }
 
 void sigint_handler(int signum){
-    sprintf(msg,"[SIGNAL]^C detetado, a limpar recursos\n");
+    sprintf(msg,"[SIGNAL] ^C detetado, a limpar recursos\n");
     log_file(msg);
 
     printf("%d",pid_miner);
 
     if (pid_miner > 0){
-    sprintf(msg,"[SIGNAL]A terminar Miner\n");
+    sprintf(msg,"[SIGNAL] A terminar Miner\n");
     log_file(msg);
     kill(pid_miner, SIGTERM);
     }
