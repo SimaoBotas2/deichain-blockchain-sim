@@ -37,17 +37,17 @@ unsigned char *serialize_block(const Block *block, size_t *sz_buf) {
 
   unsigned char *p = buffer;
 
-  memcpy(p, block->txb_id, TXB_ID_LEN);
+  memcpy(p, block->id, TXB_ID_LEN);
   p += TXB_ID_LEN;
 
-  memcpy(p, block->previous_block_hash, HASH_SIZE);
+  memcpy(p, block->previous_hash, HASH_SIZE);
   p += HASH_SIZE;
 
   memcpy(p, &block->timestamp, sizeof(time_t));
   p += sizeof(time_t);
 
   for (size_t i = 0; i < transactions_per_block; ++i) {
-    memcpy(p, &block->transactions[i], sizeof(Traansaction));
+    memcpy(p, &block->transactions[i], sizeof(Transaction));
     p += sizeof(Transaction);
   }
 

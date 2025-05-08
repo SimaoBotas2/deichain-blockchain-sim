@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <semaphore.h>  
 
 #ifndef STRUCTS_H
 #define STRUCTS_H

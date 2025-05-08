@@ -283,10 +283,10 @@ void create_ipcs() {
     }
 
     ldgr->max_blocks = config.BLOCKCHAIN_BLOCKS;
-    ldgr->current_blocks = 0;
-    ldgr->blocks = (Block *)(blockchain + 1);
+  
+    ldgr->blocks = (Block*)((char*)ldgr + sizeof(Blockchain));
 
-    if (sem_init(&blockchain->sem, 1, 1) == -1) {
+    if (sem_init(&ldgr->sem, 1, 1) == -1) {
         #ifdef DEBUG
         sprintf(msg, "Erro ao criar semáforo da blockchain\n");
         log_file(msg);
