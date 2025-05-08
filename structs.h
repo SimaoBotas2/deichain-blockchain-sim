@@ -6,11 +6,17 @@
  
 */
 
-#include <semaphore.h>
-#include <stdbool.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <time.h>
 
 #ifndef STRUCTS_H
 #define STRUCTS_H
+
+#define TX_ID_LEN 64
+#define TXB_ID_LEN 64
+#define HASH_SIZE 65  // SHA256_DIGEST_LENGTH * 2 + 1
 
 // Estrutura de configuração
 typedef struct Configuration {
@@ -23,10 +29,10 @@ typedef struct Configuration {
 
 // Estrutura para transações
 typedef struct Transaction {
-    int id;
+    char id[TX_ID_LEN];
     int reward;
     int value;
-    char details[50];
+    time_t timestamp; 
 } Transaction;
 
 //Estrutura para guardar dados sobre as transações
@@ -36,7 +42,6 @@ typedef struct TransactionEntry{
     Transaction tx;
 }TransactionEntry;
 
-
 typedef struct TransactionPool{
     int transaction_pending_set; // Número atual de transações na pool
     int pool_size;  //Tamanho da transaction pool, definido pelo ficheiro de configuração
@@ -44,8 +49,35 @@ typedef struct TransactionPool{
     sem_t sem;
 }TransactionPool;
 
+// Estrutura para um bloco da blockchain
+typedef struct Block {
+    char id[TXB_ID_LEN]; 
+    char previous_hash[HASH_SIZE]; 
+    char hash[HASH_SIZE];
+    time_t timestamp; 
+    Transaction *transactions; 
+    unsigned int nonce; // Nº encontrado pelo PoW(proof of work)
+    int transactions_count;
+    int miner_id;
+} Block;
 
+// Estrutura para a blockchain
+typedef struct Blockchain {
+    int max_blocks;     // BLOCKCHAIN_BLOCKS
+    int current_blocks; // Quantos blocos já foram minerados
+    Block *blocks;    
+    sem_t sem;          // Semáforo para sincronizar acesso à Blockchain
+} Blockchain;
 
+typedef struct MinerStats {
+    int miner_id;
+    int blocks_mined;
+    /*
+    int valid_blocks;
+    int unvalid_blocks;
+    */
+    int total_reward;
+} MinerStats;
 
 
 #endif
