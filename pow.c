@@ -8,9 +8,9 @@
 #include <string.h>
 #include <time.h>
 
-#include "deichain.h"
+#include "structs.h"
 
-int get_max_transaction_reward(const TransactionBlock *block,
+int get_max_transaction_reward(const Block *block,
                                const int txs_per_block) {
   if (block == NULL) return 0;
 
@@ -25,7 +25,7 @@ int get_max_transaction_reward(const TransactionBlock *block,
   return max_reward;
 }
 
-unsigned char *serialize_block(const TransactionBlock *block, size_t *sz_buf) {
+unsigned char *serialize_block(const Block *block, size_t *sz_buf) {
   // We must subtract the size of the pointer, the static block does not have
   // the pointer
   *sz_buf = get_transaction_block_size() - sizeof(Transaction *);
@@ -37,17 +37,17 @@ unsigned char *serialize_block(const TransactionBlock *block, size_t *sz_buf) {
 
   unsigned char *p = buffer;
 
-  memcpy(p, block->txb_id, TXB_ID_LEN);
+  memcpy(p, block->id, TXB_ID_LEN);
   p += TXB_ID_LEN;
 
-  memcpy(p, block->previous_block_hash, HASH_SIZE);
+  memcpy(p, block->previous_hash, HASH_SIZE);
   p += HASH_SIZE;
 
   memcpy(p, &block->timestamp, sizeof(time_t));
   p += sizeof(time_t);
 
   for (size_t i = 0; i < transactions_per_block; ++i) {
-    memcpy(p, &block->transactions[i], sizeof(Traansaction));
+    memcpy(p, &block->transactions[i], sizeof(Transaction));
     p += sizeof(Transaction);
   }
 
@@ -58,7 +58,7 @@ unsigned char *serialize_block(const TransactionBlock *block, size_t *sz_buf) {
 }
 
 /* Function to compute SHA-256 hash */
-void compute_sha256(const TransactionBlock *block, char *output) {
+void compute_sha256(const Block *block, char *output) {
   unsigned char hash[SHA256_DIGEST_LENGTH];
   // create a static buffer to copy data
   size_t buffer_sz;
@@ -109,7 +109,7 @@ int check_difficulty(const char *hash, const int reward) {
 }
 
 /* Function to verify a nonce */
-int verify_nonce(const TransactionBlock *block) {
+int verify_nonce(const Block *block) {
   char hash[SHA256_DIGEST_LENGTH * 2 + 1];
   int reward = get_max_transaction_reward(block, transactions_per_block);
   compute_sha256(block, hash);
@@ -117,7 +117,7 @@ int verify_nonce(const TransactionBlock *block) {
 }
 
 /* Proof-of-Work function */
-PoWResult proof_of_work(TransactionBlock *block) {
+PoWResult proof_of_work(Block *block) {
   PoWResult result;
 
   result.elapsed_time = 0.0;

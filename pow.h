@@ -2,7 +2,7 @@
 #ifndef POW_H
 #define POW_H
 
-#include "deichain.h"
+#include "structs.h"
 
 #define POW_MAX_OPS 10000000
 
@@ -23,9 +23,9 @@ typedef struct {
   int error;
 } PoWResult;
 
-void compute_sha256(const TransactionBlock *input, char *output);
-PoWResult proof_of_work(TransactionBlock *block);
-int verify_nonce(const TransactionBlock *block);
+void compute_sha256(const Block *input, char *output);
+PoWResult proof_of_work(Block *block);
+int verify_nonce(const Block *block);
 int check_difficulty(const char *hash, const int reward);
 DifficultyLevel getDifficultFromReward(const int reward);
 
