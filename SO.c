@@ -21,14 +21,15 @@
 #include <string.h>
 #include <semaphore.h>
 #include <openssl/sha.h>
+#include <errno.h>
 #include "structs.h"
 #include "pow.h"
 
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
-#define BUFFER_SIZE 100 //apenas temporário, mudar pra malloc dps
-#define VALIDATOR_PIPE "VALIDATOR_PIPE"
+#define BUFFER_SIZE 1000 //apenas temporário, mudar pra malloc dps
+#define VALIDATOR_PIPE "/tmp/VALIDATOR_PIPE"
 
 #define LEDGER_SHM_KEY 0x4321
 
@@ -45,17 +46,22 @@ pthread_t *miner_threads = NULL;
 sem_t log_sem;
 char msg[BUFFER_SIZE];
 
-// varíaveis para a Blockcain Ledger
+// varíaveis para a BlockChain Ledger
 int ledger_shmid;
 Blockchain *ldgr;
 
 Config config;
 
+//Váriaveis pra pids dos processos
+pid_t pid_miner=-1;
+pid_t pid_validator=-1;
+pid_t pid_statistics=-1;
+
 
 //Funcoes 
 
 void controller();
-void read_config(const char *filename, Config *config);
+void read_config(const char *filename);
 void create_ipcs();
 void *miner();
 void *miner_action();
@@ -64,18 +70,17 @@ void *statistics();
 void log_file(const char *message);
 void cleanup();
 void sigint_handler(int signum);
+void miner_exit_handler(int sig);
 
 
 
 int main() {
-
     //Abrir ficheiro para log, para evitar abrir várias vezes
     file = fopen("DEIChain_log.txt", "a");
     if (file == NULL) {
         perror("[LOG FILE] Erro ao abrir arquivo de log\n");
         return -1;
     }
-
 
 // Inicializar semáforo para o log
     if(sem_init(&log_sem,1,1)==-1){
@@ -88,17 +93,25 @@ int main() {
     log_file("Simulação iniciada\n");
     controller();
     log_file("Simulação finalizada\n");
+
+
+    //Finalizar aqui para tudo ficar documentado no log
+    sem_destroy(&log_sem);
+    fclose(file);
+
     return 0;
 }
 
 // Processo Controller
 void controller() {
+    
+    signal(SIGINT,sigint_handler);
 
     sprintf(msg, "[CONTROLLER] Processo Controller começou (PID: %d)\n", getpid());
     log_file(msg);
 
     // Iniciar estrutura
-    read_config("config.cfg", &config);
+    read_config("config.cfg");
 
     #ifdef DEBUG
     log_file("Configurações carregadas:\n");
@@ -114,11 +127,9 @@ void controller() {
     #endif
 
     create_ipcs();
-
-
-    pid_t pid_miner, pid_validator, pid_statistics;
     
     pid_miner = fork();
+
     if (pid_miner < 0) {
         #ifdef DEBUG
         sprintf(msg,"Erro ao criar o processo miner\n");
@@ -129,9 +140,12 @@ void controller() {
     else if (pid_miner == 0) {
         // Processo filho (Miner)
         #ifdef DEBUG
-        sprintf(msg,"Processo Miner começou (PID: %d)\n", pid_miner);
+        sprintf(msg,"[CONTROLLER]Processo Miner começou (PID: %d)\n", getpid());
         log_file(msg);
         #endif
+
+        //ignorar o sinal, apenas o controller o vai ver
+        signal(SIGINT,SIG_IGN);
         miner();
         exit(0);
     }
@@ -147,10 +161,12 @@ void controller() {
     else if (pid_validator == 0) {
         // Processo filho (Validator)
         #ifdef DEBUG
-        sprintf(msg,"Processo Validator começou (PID: %d)\n", pid_validator);
+        sprintf(msg,"[CONTROLLER]Processo Validator começou (PID: %d)\n", getpid());
         log_file(msg);
         #endif
-        validator(&config);
+        //ignorar o sinal, apenas o controller o vai ver
+        signal(SIGINT,SIG_IGN);
+        validator();
         exit(0);
     }
 
@@ -165,10 +181,12 @@ void controller() {
     else if (pid_statistics == 0) {
         // Processo filho (Statistics)
         #ifdef DEBUG
-        sprintf(msg,"Processo Statistics começou (PID: %d)\n", pid_statistics);      
+        sprintf(msg,"[CONTROLLER]Processo Statistics começou (PID: %d)\n", getpid());      
         log_file(msg);
         #endif
-        statistics(&config);
+        //ignorar o sinal, apenas o controller o vai ver
+        signal(SIGINT,SIG_IGN);
+        statistics();
         exit(0);
     }
 
@@ -176,21 +194,19 @@ void controller() {
     waitpid(pid_validator, NULL, 0);
     waitpid(pid_statistics, NULL, 0);
     
-    /*// Processo pai continua sem esperar
-    #ifdef DEBUG
-    sprintf(msg,"Processo Controller (PID: %d) inicio corretamente\n", getpid());
+   
+    sprintf(msg,"[CONTROLLER]Processo Controller terminado após cleanup\n");      
     log_file(msg);
-    #endif*/
 
 }
 
 // Função para ler o arquivo de configuração
-void read_config(const char *filename, Config *config) {
+void read_config(const char *filename) {
     // Inicializa com valores inválidos
-    config->NUM_MINER = -1;
-    config->TX_POOL_SIZE = -1;
-    config->TRANSACTIONS_PER_BLOCK = -1;
-    config->BLOCKCHAIN_BLOCKS = -1;
+    config.NUM_MINER = -1;
+    config.TX_POOL_SIZE = -1;
+    config.TRANSACTIONS_PER_BLOCK = -1;
+    config.BLOCKCHAIN_BLOCKS = -1;
 
     FILE *f = fopen(filename, "r");
     if (!f) {
@@ -206,38 +222,37 @@ void read_config(const char *filename, Config *config) {
 
     while (fscanf(f, "%s - %d", key, &value) == 2) {
         if (strcmp(key, "NUM_MINERS") == 0 && value >= 0)
-            config->NUM_MINER = value;
+            config.NUM_MINER = value;
         else if (strcmp(key, "TX_POOL_SIZE") == 0 && value >= 0)
-            config->TX_POOL_SIZE = value;
+            config.TX_POOL_SIZE = value;
         else if (strcmp(key, "TRANSACTIONS_PER_BLOCK") == 0 && value >= 0)
-            config->TRANSACTIONS_PER_BLOCK = value;
+            config.TRANSACTIONS_PER_BLOCK = value;
         else if (strcmp(key, "BLOCKCHAIN_BLOCKS") == 0 && value >= 0)
-            config->BLOCKCHAIN_BLOCKS = value;
+            config.BLOCKCHAIN_BLOCKS = value;
         else {
             sprintf(msg, "Erro ao atribuir um valor, verifique o valor de %s\n", key);
             log_file(msg);
-        
         }
     }
 
     fclose(f);
 
     // Verifica se algum campo obrigatório não foi atribuído
-    if (config->NUM_MINER == -1 || config->TX_POOL_SIZE == -1 ||
-        config->TRANSACTIONS_PER_BLOCK == -1 || config->BLOCKCHAIN_BLOCKS == -1) {
+    if (config.NUM_MINER == -1 || config.TX_POOL_SIZE == -1 ||
+        config.TRANSACTIONS_PER_BLOCK == -1 || config.BLOCKCHAIN_BLOCKS == -1) {
         #ifdef DEBUG
         sprintf(msg, "Configuração incompleta. Verifique se todos os campos estão definidos corretamente.\n");
         log_file(msg);
         #endif
         exit(1);
     }
+
 }
 
 // Função para criar IPCs
 void create_ipcs() {
 
     //Transaction POOL início
-    //Ainda por testar
    
     //Garantir que a memória alocada aguenta tudo
     size_t total_size = sizeof(TransactionPool) + (config.TX_POOL_SIZE* sizeof(TransactionEntry));
@@ -264,10 +279,18 @@ void create_ipcs() {
         shrd->entries[i].empty =true;
     }
 
-    //Transaction Pool fim
+       // Inicializar semáforo da transaction pool
+       if(sem_init(&shrd->sem, 1, 1)==-1){
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar semáforo da transaction pool\n");
+        log_file(msg);
+        #endif
+    }
+
+    //Transaction Pool Fim
 
 
-    //Falta inicializar a memória do blockchain ledger
+    //BlockChain Ledger Inicio
     
     size_t ledger_size = sizeof(Blockchain) + (config.BLOCKCHAIN_BLOCKS * sizeof(Block));
     ledger_shmid = shmget(LEDGER_SHM_KEY, ledger_size, IPC_CREAT | 0666);
@@ -277,7 +300,7 @@ void create_ipcs() {
     }
     
     ldgr = (Blockchain *)shmat(ledger_shmid, NULL, 0);
-    if (shrd == (Blockchain*)(-1)) {
+    if (ldgr == (Blockchain*)(-1)) {
         perror("shmat error\n");
         exit(1);
     }
@@ -295,15 +318,9 @@ void create_ipcs() {
         #endif
     }
 
-    // Blockchain ledger fim
+    // BlockChain Ledger Fim
 
-    // Inicializar semáforo da transaction pool
-    if(sem_init(&shrd->sem, 1, 1)==-1){
-        #ifdef DEBUG
-        sprintf(msg,"Erro ao criar semáforo da transaction pool\n");
-        log_file(msg);
-        #endif
-    }
+ 
 
     //Inicializar semáforo para acesso a config
     if(sem_init(&config.sem,1,1) ==-1){
@@ -316,11 +333,15 @@ void create_ipcs() {
 
      // Criar Named Pipe para comunicação Miner -> Validator
      if (mkfifo(VALIDATOR_PIPE, 0666) == -1) {
+        if (errno != EEXIST) {
             #ifdef DEBUG
-            sprintf(msg,"Erro ao criar named pipe do validator\n");
+            sprintf(msg,"Erro ao criar named pipe do validator: %s\n", strerror(errno));
             log_file(msg);
             #endif
+            exit(1); // opcional, se for erro fatal
+        }
     }
+    
 
     //Criar Mutex para threads do miner
     int r = pthread_mutex_init(&mutex,NULL);
@@ -354,8 +375,6 @@ void log_file(const char *message) {
 
     // Escreve no ficheiro 
    fprintf(file, "[%02d-%02d-%04d %02d:%02d:%02d] %s", day, month, year, hours, minutes, seconds, message);
-   
-   fclose(file);
 
    // Imprimir na tela 
    printf("[%02d-%02d-%04d %02d:%02d:%02d] %s",day, month, year, hours, minutes, seconds, message);
@@ -366,6 +385,13 @@ void log_file(const char *message) {
 
 // Processo Miner
 void *miner(){
+
+    sprintf(msg,"[MINER] Processo Miner inicializado\n");
+    log_file(msg);
+
+
+    //Sinal recebido do controler para terminar
+    signal(SIGTERM, miner_exit_handler);
 
     int i;
     sem_wait(&config.sem);
@@ -396,7 +422,19 @@ void *miner(){
         }
     }
 
+    sprintf(msg,"[MINER] Processo Miner terminado\n");
+    log_file(msg);
+
+
     return NULL;
+}
+
+
+void miner_exit_handler(int sig) {
+    //Avisar threads pra terminar
+    pthread_mutex_lock(&mutex);
+    finish = true;
+    pthread_mutex_unlock(&mutex);
 }
 
 void *miner_action(void *arg) {
@@ -481,13 +519,15 @@ void *miner_action(void *arg) {
         sem_post(&ldgr->sem);
 
         // Executar o Proof-of-Work
-        PoWResult result = proof_of_work(&block);
+
+       /* PoWResult result = proof_of_work(&block);
         if (result.error) {
             sprintf(msg_local, "[MINER] Thread %d: PoW falhou após %d operações\n", miner_id, result.operations);
             log_file(msg_local);
             free(block.transactions);
             continue;
         }
+        
 
         // Preencher o hash do bloco
         strcpy(block.hash, result.hash);
@@ -527,9 +567,11 @@ void *miner_action(void *arg) {
         close(fd);
         free(block.transactions);
         sleep(1);
+        */
     }
+        
 
-    sprintf(msg_local, "Miner %d terminou\n", miner_id);
+    sprintf(msg_local,"[MINER] Thread %d terminou\n", miner_id);
     log_file(msg_local);
     pthread_exit(NULL);
 }
@@ -573,56 +615,62 @@ void *statistics() {
 }
 
 // Função que vai limpar todos os recursos utilizados
-void cleanup(){
+void cleanup() {
 
-    pthread_mutex_lock(&mutex);
-    finish = true;
-    pthread_mutex_unlock(&mutex);
     free(miner_threads);
 
-    sem_destroy(&shrd->sem);
+    // Semáforos
+    if (ldgr) sem_destroy(&ldgr->sem);
+    if (shrd) sem_destroy(&shrd->sem);
 
-    // Eliminar Transaction Pool Memory
-    if(shrd != NULL){
+    // Memória compartilhada
+    if (shrd) {
         shmdt(shrd);
         shrd = NULL;
     }
-
-    if(shmid == -1){
-        shmctl(shmid,IPC_RMID,NULL);
-        shmid = -1;
-    }
-
-    // Eliminar Blockchain Ledger Memory
-    if (ldgr != NULL) {
+    if (ldgr) {
         shmdt(ldgr);
         ldgr = NULL;
-        }
-
+    }
+    if (shmid != -1) {
+        shmctl(shmid, IPC_RMID, NULL);
+        shmid = -1;
+    }
     if (ledger_shmid != -1) {
         shmctl(ledger_shmid, IPC_RMID, NULL);
         ledger_shmid = -1;
     }
 
-    //Destruir mutex (é preciso confirmar??), visto que deixamos a thread acabar ?
-    pthread_mutex_destroy(&mutex);
+    //Validator Pipe
+    if (unlink(VALIDATOR_PIPE) == -1) {
+        #ifdef DEBUG
+        sprintf(msg, "[CLEANUP] Erro ao remover pipe\n");
+        log_file(msg);
+        #endif
+    }
+
+    // Fechar arquivo de log apenas no final
 
 
-    log_file("Recursos Eliminados com sucesso!\n");
-    //Apenas eliminar este semáforo depois para evitar erros do log
-    sem_destroy(&log_sem);
+    sprintf(msg,"[CLEANUP] Recursos limpos, a terminar programa\n");
+    log_file(msg);
 
-    //fechar ficheiro da config
-    fclose(file);
 
 }
 
-
 void sigint_handler(int signum){
-    sprintf(msg,"SInal ^C detetado, a limpar recursos\n");
+    sprintf(msg,"[SIGNAL]^C detetado, a limpar recursos\n");
     log_file(msg);
-	printf("\n\n^C pressionado. A limpar recursos\n");
+
+    printf("%d",pid_miner);
+
+    if (pid_miner > 0){
+    sprintf(msg,"[SIGNAL]A terminar Miner\n");
+    log_file(msg);
+    kill(pid_miner, SIGTERM);
+    }
+    if (pid_validator > 0) kill(pid_validator, SIGTERM);
+    if (pid_statistics > 0) kill(pid_statistics, SIGTERM);
+
 	cleanup();
-	printf("Recursos limpos, programa a finalizar\n");
-	exit(0);
 }

@@ -33,8 +33,6 @@ void sleep_ms(int sleeptime){
     nanosleep(&ts,NULL);
 }
 
-
-
 int main(int argc, char *argv[]) {
     if (argc != 3) {
         printf("Uso correto: %s <reward> <sleep time>\n", argv[0]);
