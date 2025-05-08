@@ -6,11 +6,17 @@
  
 */
 
-#include <semaphore.h>
-#include <stdbool.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <time.h>
 
 #ifndef STRUCTS_H
 #define STRUCTS_H
+
+#define TX_ID_LEN 64
+#define TXB_ID_LEN 64
+#define HASH_SIZE 65  // SHA256_DIGEST_LENGTH * 2 + 1
 
 // Estrutura de configuração
 typedef struct Configuration {
@@ -23,10 +29,10 @@ typedef struct Configuration {
 
 // Estrutura para transações
 typedef struct Transaction {
-    int id;
+    char id[TX_ID_LEN];
     int reward;
     int value;
-    char details[50];
+    time_t timestamp; 
 } Transaction;
 
 //Estrutura para guardar dados sobre as transações
@@ -35,7 +41,6 @@ typedef struct TransactionEntry{
     int age; //contador para idade da entry (usada no validator)
     Transaction tx;
 }TransactionEntry;
-
 
 typedef struct TransactionPool{
     int transaction_pending_set; // Número atual de transações na pool
@@ -46,12 +51,13 @@ typedef struct TransactionPool{
 
 // Estrutura para um bloco da blockchain
 typedef struct Block {
-    int block_id; // Talvez seja char
-    int previous_hash;  // Talvez seja char
-    int num_transactions;
-    unsigned long timestamp; 
+    char id[TXB_ID_LEN]; 
+    char previous_hash[HASH_SIZE]; 
+    char hash[HASH_SIZE];
+    time_t timestamp; 
     Transaction *transactions; 
-    int nonce; // Nº encontrado pelo PoW(proof of work)
+    unsigned int nonce; // Nº encontrado pelo PoW(proof of work)
+    int transactions_count;
     int miner_id;
 } Block;
 
