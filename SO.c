@@ -283,6 +283,8 @@ void create_ipcs() {
     }
 
     ldgr->max_blocks = config.BLOCKCHAIN_BLOCKS;
+
+    ldgr->current_blocks = 0;
   
     ldgr->blocks = (Block*)((char*)ldgr + sizeof(Blockchain));
 
