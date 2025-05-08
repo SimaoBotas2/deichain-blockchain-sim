@@ -8,7 +8,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "deichain.h"
+#include "structs.h"
 
 int get_max_transaction_reward(const Block *block,
                                const int txs_per_block) {

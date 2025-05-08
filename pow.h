@@ -2,7 +2,7 @@
 #ifndef POW_H
 #define POW_H
 
-#include "deichain.h"
+#include "structs.h"
 
 #define POW_MAX_OPS 10000000
 
