@@ -2198,3 +2198,163 @@
 [09-05-2025 15:35:14] [CLEANUP] Recursos limpos, a terminar programa
 [09-05-2025 15:35:14] [CONTROLLER] Processo Controller terminado após cleanup
 [09-05-2025 15:35:14] Simulação finalizada
+[09-05-2025 15:47:39] Simulação iniciada
+[09-05-2025 15:47:39] [CONTROLLER] Processo Controller começou (PID: 52589)
+[09-05-2025 15:47:39] Configurações carregadas:
+[09-05-2025 15:47:39] NUM_MINERS: 5
+[09-05-2025 15:47:39] TX_POOL_SIZE: 10000
+[09-05-2025 15:47:39] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 15:47:39] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 15:47:39] [CONTROLLER] Processo Statistics começou (PID: 52592)
+[09-05-2025 15:47:39] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 15:47:39] [STATISTICS] Processo Statistics terminado
+[09-05-2025 15:54:14] Simulação iniciada
+[09-05-2025 15:54:14] [CONTROLLER] Processo Controller começou (PID: 52682)
+[09-05-2025 15:54:14] Configurações carregadas:
+[09-05-2025 15:54:14] NUM_MINERS: 5
+[09-05-2025 15:54:14] TX_POOL_SIZE: 10000
+[09-05-2025 15:54:14] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 15:54:14] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 15:54:14] [CONTROLLER] Processo Statistics começou (PID: 52690)
+[09-05-2025 15:54:14] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 15:54:14] [STATISTICS] Processo Statistics terminado
+[09-05-2025 15:56:09] Simulação iniciada
+[09-05-2025 15:56:09] [CONTROLLER] Processo Controller começou (PID: 52738)
+[09-05-2025 15:56:09] Configurações carregadas:
+[09-05-2025 15:56:09] NUM_MINERS: 5
+[09-05-2025 15:56:09] TX_POOL_SIZE: 10000
+[09-05-2025 15:56:09] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 15:56:09] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 15:56:09] [CONTROLLER] Processo Statistics começou (PID: 52741)
+[09-05-2025 15:56:09] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 15:56:09] [STATISTICS] Processo Statistics terminado
+[09-05-2025 15:57:36] Simulação iniciada
+[09-05-2025 15:57:36] [CONTROLLER] Processo Controller começou (PID: 52795)
+[09-05-2025 15:57:36] Configurações carregadas:
+[09-05-2025 15:57:36] NUM_MINERS: 5
+[09-05-2025 15:57:36] TX_POOL_SIZE: 10000
+[09-05-2025 15:57:36] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 15:57:36] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 15:57:36] [CONTROLLER] Processo Statistics começou (PID: 52798)
+[09-05-2025 15:57:36] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 15:57:36] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:00:21] Simulação iniciada
+[09-05-2025 16:00:21] [CONTROLLER] Processo Controller começou (PID: 52866)
+[09-05-2025 16:00:21] Configurações carregadas:
+[09-05-2025 16:00:21] NUM_MINERS: 5
+[09-05-2025 16:00:21] TX_POOL_SIZE: 10000
+[09-05-2025 16:00:21] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:00:21] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:00:21] [CONTROLLER] Processo Statistics começou (PID: 52869)
+[09-05-2025 16:00:21] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:00:21] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:02:51] Simulação iniciada
+[09-05-2025 16:02:51] [CONTROLLER] Processo Controller começou (PID: 53073)
+[09-05-2025 16:02:51] Configurações carregadas:
+[09-05-2025 16:02:51] NUM_MINERS: 5
+[09-05-2025 16:02:51] TX_POOL_SIZE: 10000
+[09-05-2025 16:02:51] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:02:51] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:02:51] [CONTROLLER] Processo Statistics começou (PID: 53076)
+[09-05-2025 16:02:51] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:02:51] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:04:40] Simulação iniciada
+[09-05-2025 16:04:40] [CONTROLLER] Processo Controller começou (PID: 53128)
+[09-05-2025 16:04:40] Configurações carregadas:
+[09-05-2025 16:04:40] NUM_MINERS: 5
+[09-05-2025 16:04:40] TX_POOL_SIZE: 10000
+[09-05-2025 16:04:40] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:04:40] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:04:40] [CONTROLLER] Processo Statistics começou (PID: 53131)
+[09-05-2025 16:04:40] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:04:40] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:08:24] Simulação iniciada
+[09-05-2025 16:08:24] [CONTROLLER] Processo Controller começou (PID: 53175)
+[09-05-2025 16:08:24] Configurações carregadas:
+[09-05-2025 16:08:24] NUM_MINERS: 5
+[09-05-2025 16:08:24] TX_POOL_SIZE: 10000
+[09-05-2025 16:08:24] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:08:24] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:08:24] [CONTROLLER] Processo Statistics começou (PID: 53178)
+[09-05-2025 16:08:24] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:08:24] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:10:26] Simulação iniciada
+[09-05-2025 16:10:26] [CONTROLLER] Processo Controller começou (PID: 53247)
+[09-05-2025 16:10:26] Configurações carregadas:
+[09-05-2025 16:10:26] NUM_MINERS: 5
+[09-05-2025 16:10:26] TX_POOL_SIZE: 10000
+[09-05-2025 16:10:26] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:10:26] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:10:26] [CONTROLLER] Processo Statistics começou (PID: 53250)
+[09-05-2025 16:10:26] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:10:26] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:11:19] Simulação iniciada
+[09-05-2025 16:11:19] [CONTROLLER] Processo Controller começou (PID: 53301)
+[09-05-2025 16:11:19] Configurações carregadas:
+[09-05-2025 16:11:19] NUM_MINERS: 5
+[09-05-2025 16:11:19] TX_POOL_SIZE: 10000
+[09-05-2025 16:11:19] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:11:19] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:11:19] [CONTROLLER] Processo Statistics começou (PID: 53304)
+[09-05-2025 16:11:19] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:11:19] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:12:50] Simulação iniciada
+[09-05-2025 16:12:50] [CONTROLLER] Processo Controller começou (PID: 53356)
+[09-05-2025 16:12:50] Configurações carregadas:
+[09-05-2025 16:12:50] NUM_MINERS: 5
+[09-05-2025 16:12:50] TX_POOL_SIZE: 10000
+[09-05-2025 16:12:50] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:12:50] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:12:50] [CONTROLLER] Processo Statistics começou (PID: 53359)
+[09-05-2025 16:12:50] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:12:50] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:14:04] Simulação iniciada
+[09-05-2025 16:14:04] [CONTROLLER] Processo Controller começou (PID: 53420)
+[09-05-2025 16:14:04] Configurações carregadas:
+[09-05-2025 16:14:04] NUM_MINERS: 5
+[09-05-2025 16:14:04] TX_POOL_SIZE: 10000
+[09-05-2025 16:14:04] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:14:04] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:14:04] [CONTROLLER] Processo Statistics começou (PID: 53423)
+[09-05-2025 16:14:04] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:14:04] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:15:01] Simulação iniciada
+[09-05-2025 16:15:01] [CONTROLLER] Processo Controller começou (PID: 53466)
+[09-05-2025 16:15:01] Configurações carregadas:
+[09-05-2025 16:15:01] NUM_MINERS: 5
+[09-05-2025 16:15:01] TX_POOL_SIZE: 10000
+[09-05-2025 16:15:01] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:15:01] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:15:01] [CONTROLLER] Processo Statistics começou (PID: 53469)
+[09-05-2025 16:15:01] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:15:01] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:37:49] Simulação iniciada
+[09-05-2025 16:37:49] [CONTROLLER] Processo Controller começou (PID: 53532)
+[09-05-2025 16:37:49] Configurações carregadas:
+[09-05-2025 16:37:49] NUM_MINERS: 5
+[09-05-2025 16:37:49] TX_POOL_SIZE: 10000
+[09-05-2025 16:37:49] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:37:49] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:37:49] [CONTROLLER] Processo Statistics começou (PID: 53535)
+[09-05-2025 16:37:49] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:37:49] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:39:24] Simulação iniciada
+[09-05-2025 16:39:24] [CONTROLLER] Processo Controller começou (PID: 53606)
+[09-05-2025 16:39:24] Configurações carregadas:
+[09-05-2025 16:39:24] NUM_MINERS: 5
+[09-05-2025 16:39:24] TX_POOL_SIZE: 10000
+[09-05-2025 16:39:24] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:39:24] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:39:24] [CONTROLLER] Processo Statistics começou (PID: 53610)
+[09-05-2025 16:39:24] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:39:24] [STATISTICS] Processo Statistics terminado
+[09-05-2025 16:41:00] Simulação iniciada
+[09-05-2025 16:41:00] [CONTROLLER] Processo Controller começou (PID: 53661)
+[09-05-2025 16:41:00] Configurações carregadas:
+[09-05-2025 16:41:00] NUM_MINERS: 5
+[09-05-2025 16:41:00] TX_POOL_SIZE: 10000
+[09-05-2025 16:41:00] TRANSACTIONS_PER_BLOCK: 10
+[09-05-2025 16:41:00] BLOCKCHAIN_BLOCKS: 50000
+[09-05-2025 16:41:00] [CONTROLLER] Processo Statistics começou (PID: 53664)
+[09-05-2025 16:41:00] [STATISTICS] Processo Statistics inicializado
+[09-05-2025 16:41:00] [STATISTICS] Processo Statistics terminado

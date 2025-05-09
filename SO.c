@@ -479,10 +479,15 @@ void *miner_action(void *arg) {
         }
 
         // Marca como usadas
+
+        
+        /* Alteração para teste do validator
         for (int i = 0; i < collected; i++) {
             shrd->entries[idxs[i]].empty = true;
         }
         shrd->transaction_pending_set -= collected;
+
+        */
         sem_post(&shrd->sem);
 
         // Monta o bloco
@@ -564,6 +569,7 @@ void *validator() {
 
     int fd;
     Block block;
+    bool valid = false;
 
     fd = open(VALIDATOR_PIPE, O_RDONLY);
     if (fd == -1) {
@@ -575,14 +581,21 @@ void *validator() {
         if (bytes == sizeof(Block)) {
             log_file("[VALIDATOR] Bloco recebido\n");
 
-            if (validate_block(&block)) {
+            valid = validate_block(&block);
+            if(valid){
                 //append_ledger(&block);
                 log_file("[VALIDATOR] Bloco validado e adicionado ao ledger\n");
-            } else {
+            }
+            else {
                 log_file("[VALIDATOR] Bloco inválido descartado\n");
             }
+            }   
+        else {
+            log_file("[VALIDATOR] Erro ao ler o bloco do pipe");
+            }
+            
         } 
-    }
+    
     
 
     close(fd);
@@ -591,13 +604,13 @@ void *validator() {
     return NULL;
 }
 
-bool validate_block(Block * block){
-    //Função que vai validar se o bloco possuí transações já mineradas ou não
+bool validate_block(Block *block) {
 
-
-    //por agora retornar true para testar
-    return true;
+    bool is_valid = true;
+    return is_valid;
 }
+
+
 
 
 
