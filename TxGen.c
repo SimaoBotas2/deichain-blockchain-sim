@@ -56,28 +56,35 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    int shmid = shmget(SHM_KEY, sizeof(TransactionPool), 0666);
+    int shmid = shmget(SHM_KEY,0, 0666);
     if (shmid < 0) {
         perror("Erro shmget (TxGen)");
         exit(1);
     }
     
     //Anexar a memória compartilhada
-    TransactionPool *shrd = (TransactionPool * )shmat(shmid,NULL,0);
+    TransactionPool *shrd = shmat(shmid,NULL,0);
     if (shrd == (void *)(-1)) {
         perror("shmat error");
         exit(1);
     }
 
+    sem_wait(&(shrd->sem));
+    int pool_size = shrd->pool_size;
+    sem_post(&(shrd->sem));
+
+
+
     //Geração de transações
-    int transaction_id = 1;  
+    int transaction_id = 1;
 
     while (1) {
-        sem_wait(&(shrd->sem));
+     
 
         for(int i =0;i<shrd->pool_size;i++){
 
         //Procura uma entry vazia
+        sem_wait(&(shrd->sem));
         if (shrd->entries[i].empty ) {
             Transaction new_tx;
             snprintf(new_tx.id, sizeof(new_tx.id), "TX%d-%d", getpid(), transaction_id);
@@ -102,10 +109,10 @@ int main(int argc, char *argv[]) {
         
         sleep_ms(sleeptime);
     }
-}
+    }
 
     shmdt(shrd);
     return 0;
-	}
+}
 
 

@@ -53,8 +53,8 @@ typedef struct TransactionEntry{
 typedef struct TransactionPool{
     int transaction_pending_set; // Número atual de transações na pool
     int pool_size;  //Tamanho da transaction pool, definido pelo ficheiro de configuração
-    TransactionEntry * entries;
     sem_t sem;
+    TransactionEntry entries[];
 }TransactionPool;
 
 // Estrutura para um bloco da blockchain

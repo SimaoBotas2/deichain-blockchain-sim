@@ -273,7 +273,6 @@ void create_ipcs() {
         exit(1);
     }
     
-    shrd->entries = (TransactionEntry *)(shrd + 1); //alocar o vetor a seguir à main struct
     shrd->transaction_pending_set = 0;
     shrd->pool_size = config.TX_POOL_SIZE;
  
@@ -322,8 +321,6 @@ void create_ipcs() {
     }
 
     // BlockChain Ledger Fim
-
- 
 
     //Inicializar semáforo para acesso a config
     if(sem_init(&config.sem,1,1) ==-1){
@@ -427,6 +424,8 @@ void *miner(){
 
     sprintf(msg,"[MINER] Processo Miner terminado\n");
     log_file(msg);
+
+    free(miner_threads);
 
 
     return NULL;
@@ -620,7 +619,6 @@ void *statistics() {
 // Função que vai limpar todos os recursos utilizados
 void cleanup() {
 
-    free(miner_threads);
 
     // Semáforos
     if (ldgr) sem_destroy(&ldgr->sem);
@@ -661,8 +659,6 @@ void cleanup() {
 void sigint_handler(int signum){
     sprintf(msg,"[SIGNAL] ^C detetado, a limpar recursos\n");
     log_file(msg);
-
-    printf("%d",pid_miner);
 
     if (pid_miner > 0){
     sprintf(msg,"[SIGNAL] A terminar Miner\n");
