@@ -21,9 +21,15 @@
 #include <semaphore.h>
 #include "structs.h"
 #include <stdbool.h>
+#include <time.h>
 
 #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
+
+bool finish = false;
+void signal_handler(int signum){
+    finish = true;
+}
 
 
 void sleep_ms(int sleeptime){
@@ -41,7 +47,6 @@ int main(int argc, char *argv[]) {
 
     //Verificação de Inputs
 
-
     int reward = atoi(argv[1]);
 
     if(reward <1 || reward >3){
@@ -55,6 +60,9 @@ int main(int argc, char *argv[]) {
         printf("Sleeptime deve ser entre 200 e 3000 (ms)\n");
         return -1;
     }
+
+    signal(SIGINT,signal_handler);
+    signal(SIGTERM,signal_handler);
 
     int shmid = shmget(SHM_KEY,0, 0666);
     if (shmid < 0) {
@@ -73,16 +81,16 @@ int main(int argc, char *argv[]) {
     int pool_size = shrd->pool_size;
     sem_post(&(shrd->sem));
 
-
-
     //Geração de transações
     int transaction_id = 1;
 
-    while (1) {
+    while (!finish) {
      
-
         for(int i =0;i<shrd->pool_size;i++){
-
+        if(finish){
+            //para finalização do sinal
+            break;
+        }
         //Procura uma entry vazia
         sem_wait(&(shrd->sem));
         if (shrd->entries[i].empty ) {
@@ -111,6 +119,8 @@ int main(int argc, char *argv[]) {
     }
     }
 
+
+    printf("[TXGEN] Sinal Detetado, a limpar recursos e terminar\n");
     shmdt(shrd);
     return 0;
 }

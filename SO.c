@@ -72,6 +72,7 @@ void log_file(const char *message);
 void cleanup();
 void sigint_handler(int signum);
 void miner_exit_handler(int sig);
+bool validate_block(Block * block);
 
 
 
@@ -431,7 +432,6 @@ void *miner(){
     return NULL;
 }
 
-
 void miner_exit_handler(int sig) {
     //Avisar threads pra terminar
     pthread_mutex_lock(&mutex);
@@ -443,6 +443,7 @@ void *miner_action(void *arg) {
     int miner_id = *(int *)arg;
     char msg_local[BUFFER_SIZE];
 
+    // Obter parâmetros de configuração
     sem_wait(&config.sem);
     int number_transactions = config.TRANSACTIONS_PER_BLOCK;
     int pool_size = config.TX_POOL_SIZE;
@@ -453,129 +454,106 @@ void *miner_action(void *arg) {
 
     while (1) {
         pthread_mutex_lock(&mutex);
-        if (finish) { // Variável para controle das threads, usada para sincronização e cleanup
+        if (finish) {
             pthread_mutex_unlock(&mutex);
             break;
         }
         pthread_mutex_unlock(&mutex);
 
+        // Espera ter transações suficientes
         sem_wait(&shrd->sem);
-        // Se na transaction pool não houver transações suficientes, esperar para o próximo loop
         if (shrd->transaction_pending_set < number_transactions) {
             sem_post(&shrd->sem);
             sleep(1);
             continue;
         }
 
-        // Coletar transações da pool
-        Transaction transactions[number_transactions];
-        int indexes[number_transactions];
-        int collected = 0;
-
+        // Coleta as transações
+        Transaction txs[number_transactions];
+        int idxs[number_transactions], collected = 0;
         for (int i = 0; i < pool_size && collected < number_transactions; i++) {
             if (!shrd->entries[i].empty) {
-                transactions[collected] = shrd->entries[i].tx;
-                indexes[collected] = i;
-                collected++;
+                txs[collected] = shrd->entries[i].tx;
+                idxs[collected++] = i;
             }
         }
 
-        if (collected < number_transactions) {
-            sem_post(&shrd->sem);
-            sleep(1);
-            continue;
-        }
-
-        // Marcar as transações como usadas
+        // Marca como usadas
         for (int i = 0; i < collected; i++) {
-            shrd->entries[indexes[i]].empty = true;
+            shrd->entries[idxs[i]].empty = true;
         }
         shrd->transaction_pending_set -= collected;
         sem_post(&shrd->sem);
 
-        // Criar o bloco
+        // Monta o bloco
         Block block;
-        block.transactions = malloc(sizeof(Transaction) * number_transactions);
-        if (!block.transactions) {
-            log_file("[MINER] Erro de alocação dinâmica de transactions\n");
-            continue;
-        }
-        memcpy(block.transactions, transactions, sizeof(Transaction) * number_transactions);
         block.transactions_count = number_transactions;
         block.timestamp = time(NULL);
         block.nonce = 0;
-        block.miner_id = miner_id;
-
-        // Gerar o ID do bloco
+        block.miner_id  = miner_id;
         snprintf(block.id, TXB_ID_LEN, "Block-%d-%ld", miner_id, block.timestamp);
 
-        // Obter o hash do bloco anterior
+        // Aloca e copia transações
+        block.transactions = malloc(number_transactions * sizeof(Transaction));
+        if (!block.transactions) {
+            log_file("[MINER] Erro malloc transactions\n");
+            continue;
+        }
+        memcpy(block.transactions, txs, number_transactions * sizeof(Transaction));
+
+        // Pega hash anterior
         sem_wait(&ldgr->sem);
         if (ldgr->current_blocks == 0) {
-            strncpy(block.previous_hash, INITIAL_HASH, HASH_SIZE - 1);
-            block.previous_hash[HASH_SIZE - 1] = '\0';
+            strncpy(block.previous_hash, INITIAL_HASH, HASH_SIZE);
         } else {
-            strncpy(block.previous_hash, ldgr->blocks[ldgr->current_blocks - 1].hash, HASH_SIZE - 1);
-            block.previous_hash[HASH_SIZE - 1] = '\0';
+            strncpy(block.previous_hash,
+                    ldgr->blocks[ldgr->current_blocks - 1].hash,
+                    HASH_SIZE);
         }
         sem_post(&ldgr->sem);
 
-        // Executar o Proof-of-Work
-
-       PoWResult result = proof_of_work(&block);
+        // Proof of Work
+        PoWResult result = proof_of_work(&block);
         if (result.error) {
-            sprintf(msg_local, "[MINER] Thread %d: PoW falhou após %d operações\n", miner_id, result.operations);
+            snprintf(msg_local, BUFFER_SIZE,
+                     "[MINER] Thread %d: PoW falhou após %d ops\n",
+                     miner_id, result.operations);
             log_file(msg_local);
             free(block.transactions);
             continue;
         }
-        
+        // Preenche hash final
+        strncpy(block.hash, result.hash, HASH_SIZE);
 
-        // Preencher o hash do bloco
-        strcpy(block.hash, result.hash);
-
-        sprintf(msg_local, "[MINER] Thread %d: Bloco %s minerado com sucesso! Nonce: %d, Hash: %s\n",
-                miner_id, block.id, block.nonce, block.hash);
+        snprintf(msg_local, BUFFER_SIZE,
+                 "[MINER] Thread %d: Bloco %s minerado! Nonce=%d, Hash=%s\n",
+                 miner_id, block.id, block.nonce, block.hash);
         log_file(msg_local);
 
-        // Adicionar o bloco à blockchain
-        sem_wait(&ldgr->sem);
-        if (ldgr->current_blocks < ldgr->max_blocks) {
-            ldgr->blocks[ldgr->current_blocks] = block;
-            ldgr->current_blocks++;
-        } else {
-            log_file("[MINER] Blockchain cheia, não é possível adicionar mais blocos\n");
-            free(block.transactions);
-            sem_post(&ldgr->sem);
-            break;
-        }
-        sem_post(&ldgr->sem);
-
-        // Enviar o bloco para o Validator
-        int fd = open(VALIDATOR_PIPE, O_WRONLY);
+        // Envia ao Validator
+        int fd = open(VALIDATOR_PIPE, O_WRONLY | O_NONBLOCK);
         if (fd == -1) {
-            log_file("[MINER] Erro ao abrir named pipe para envio\n");
+            log_file("[MINER] Erro ao abrir pipe Validator\n");
             free(block.transactions);
+            sleep(1);
             continue;
         }
-
-        if (write(fd, &block, sizeof(Block)) == -1) {
-            log_file("[MINER] Erro ao escrever no named pipe\n");
-        } else {
-            sprintf(msg_local, "[MINER] Thread %d enviou bloco %s para validação\n", miner_id, block.id);
+        if (write(fd, &block, sizeof(Block)) != sizeof(Block)) {
+            log_file("[MINER] Erro ao escrever no pipe Validator\n");
+        } 
+        else {
+            sprintf(msg_local,"[MINER] Thread %d enviou bloco %s ao Validator\n",miner_id, block.id);
             log_file(msg_local);
         }
-
         close(fd);
+
         free(block.transactions);
         sleep(1);
-        
     }
-        
 
-    sprintf(msg_local,"[MINER] Thread %d terminou\n", miner_id);
+    sprintf(msg_local, "[MINER] Thread %d terminou\n", miner_id);
     log_file(msg_local);
-    pthread_exit(NULL);
+    return NULL;
 }
 
 void *validator() {
@@ -583,19 +561,46 @@ void *validator() {
     sprintf(msg,"[VALIDATOR] Processo Validator inicializado\n");
     log_file(msg);
 
-    /*while (1) {
-        #ifdef DEBUG
-        //log_file("A funcionar...\n");
-        sleep(1);
-        #endif
+
+    int fd;
+    Block block;
+
+    fd = open(VALIDATOR_PIPE, O_RDONLY);
+    if (fd == -1) {
+        sprintf(msg,"[VALIDATOR] Erro ao Abrir Pipe\n");
+        log_file(msg);
+    }
+    while (1) {
+        ssize_t bytes = read(fd, &block, sizeof(Block));
+        if (bytes == sizeof(Block)) {
+            log_file("[VALIDATOR] Bloco recebido\n");
+
+            if (validate_block(&block)) {
+                //append_ledger(&block);
+                log_file("[VALIDATOR] Bloco validado e adicionado ao ledger\n");
+            } else {
+                log_file("[VALIDATOR] Bloco inválido descartado\n");
+            }
+        } 
+    }
     
-        Code...
-    }*/
-    
+
+    close(fd);
     log_file("[VALIDATOR] Processo Validator terminado\n");
 
     return NULL;
 }
+
+bool validate_block(Block * block){
+    //Função que vai validar se o bloco possuí transações já mineradas ou não
+
+
+    //por agora retornar true para testar
+    return true;
+}
+
+
+
 
 void *statistics() {
 
