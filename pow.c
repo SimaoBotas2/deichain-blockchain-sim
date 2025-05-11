@@ -110,7 +110,6 @@ int check_difficulty(const char *hash, const int reward) {
 
 /* Function to verify a nonce */
 int verify_nonce(const Block *block) {
-  printf("aaaaaaaaaaaa");
   char hash[SHA256_DIGEST_LENGTH * 2 + 1];
   int reward = get_max_transaction_reward(block, transactions_per_block);
   compute_sha256(block, hash);

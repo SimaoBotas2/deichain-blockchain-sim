@@ -63,10 +63,10 @@ typedef struct Block {
     char previous_hash[HASH_SIZE]; 
     char hash[HASH_SIZE];
     time_t timestamp; 
-    Transaction *transactions; 
     unsigned int nonce; // Nº encontrado pelo PoW(proof of work)
     int transactions_count;
     int miner_id;
+    Transaction transactions[]; 
 } Block;
 
 // Estrutura para a blockchain

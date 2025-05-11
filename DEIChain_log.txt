@@ -2814,3 +2814,258 @@
 [11-05-2025 14:44:37] [CLEANUP] Recursos limpos, a terminar programa
 [11-05-2025 14:44:38] [CONTROLLER] Processo Controller terminado após cleanup
 [11-05-2025 14:44:38] Simulação finalizada
+[11-05-2025 15:29:37] Simulação iniciada
+[11-05-2025 15:29:37] [CONTROLLER] Processo Controller começou (PID: 2553)
+[11-05-2025 15:29:37] Configurações carregadas:
+[11-05-2025 15:29:37] NUM_MINERS: 1
+[11-05-2025 15:29:37] TX_POOL_SIZE: 10000
+[11-05-2025 15:29:37] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:29:37] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:29:37] [CONTROLLER] Processo Statistics começou (PID: 2556)
+[11-05-2025 15:29:37] [STATISTICS] Processo Statistics inicializado
+[11-05-2025 15:29:37] [STATISTICS] Processo Statistics terminado
+[11-05-2025 15:29:37] Simulação iniciada
+[11-05-2025 15:29:37] [CONTROLLER] Processo Controller começou (PID: 2553)
+[11-05-2025 15:29:37] Configurações carregadas:
+[11-05-2025 15:29:37] NUM_MINERS: 1
+[11-05-2025 15:29:37] TX_POOL_SIZE: 10000
+[11-05-2025 15:29:37] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:29:37] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:29:37] [CONTROLLER] Processo Validator começou (PID: 2555)
+[11-05-2025 15:29:37] [VALIDATOR] Processo Validator iniciado (PID 2555)
+[11-05-2025 15:31:21] [VALIDATOR] Erro ao abrir pipe: No such file or directory
+[11-05-2025 15:29:37] Simulação iniciada
+[11-05-2025 15:29:37] [CONTROLLER] Processo Controller começou (PID: 2553)
+[11-05-2025 15:29:37] Configurações carregadas:
+[11-05-2025 15:29:37] NUM_MINERS: 1
+[11-05-2025 15:29:37] TX_POOL_SIZE: 10000
+[11-05-2025 15:29:37] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:29:37] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:29:37] [CONTROLLER] Processo Miner começou (PID: 2554)
+[11-05-2025 15:29:37] [MINER] Processo Miner inicializado
+[11-05-2025 15:29:37] [MINER] Thread miner 0 inicializada
+[11-05-2025 15:31:21] [MINER] Thread 0 terminou
+[11-05-2025 15:31:21] [MINER] Processo Miner terminado
+[11-05-2025 15:29:37] Simulação iniciada
+[11-05-2025 15:29:37] [CONTROLLER] Processo Controller começou (PID: 2553)
+[11-05-2025 15:29:37] Configurações carregadas:
+[11-05-2025 15:29:37] NUM_MINERS: 1
+[11-05-2025 15:29:37] TX_POOL_SIZE: 10000
+[11-05-2025 15:29:37] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:29:37] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:31:21] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 15:31:21] [SIGNAL] A terminar Miner
+[11-05-2025 15:31:21] [SIGNAL] A terminar Validator
+[11-05-2025 15:31:21] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 15:31:21] [CONTROLLER] Processo Controller terminado após cleanup
+[11-05-2025 15:31:21] Simulação finalizada
+[11-05-2025 15:33:37] Simulação iniciada
+[11-05-2025 15:33:37] [CONTROLLER] Processo Controller começou (PID: 2571)
+[11-05-2025 15:33:37] Configurações carregadas:
+[11-05-2025 15:33:37] NUM_MINERS: 1
+[11-05-2025 15:33:37] TX_POOL_SIZE: 10000
+[11-05-2025 15:33:37] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:33:37] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:33:37] [CONTROLLER] Processo Statistics começou (PID: 2574)
+[11-05-2025 15:33:37] [STATISTICS] Processo Statistics inicializado
+[11-05-2025 15:33:37] [STATISTICS] Processo Statistics terminado
+[11-05-2025 15:33:37] Simulação iniciada
+[11-05-2025 15:33:37] [CONTROLLER] Processo Controller começou (PID: 2571)
+[11-05-2025 15:33:37] Configurações carregadas:
+[11-05-2025 15:33:37] NUM_MINERS: 1
+[11-05-2025 15:33:37] TX_POOL_SIZE: 10000
+[11-05-2025 15:33:37] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:33:37] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:33:37] [CONTROLLER] Processo Validator começou (PID: 2573)
+[11-05-2025 15:33:37] [VALIDATOR] Processo Validator iniciado (PID 2573)
+[11-05-2025 15:33:38] [VALIDATOR] Erro ao abrir pipe: No such file or directory
+[11-05-2025 15:33:37] Simulação iniciada
+[11-05-2025 15:33:37] [CONTROLLER] Processo Controller começou (PID: 2571)
+[11-05-2025 15:33:37] Configurações carregadas:
+[11-05-2025 15:33:37] NUM_MINERS: 1
+[11-05-2025 15:33:37] TX_POOL_SIZE: 10000
+[11-05-2025 15:33:37] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:33:37] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:33:37] [CONTROLLER] Processo Miner começou (PID: 2572)
+[11-05-2025 15:33:37] [MINER] Processo Miner inicializado
+[11-05-2025 15:33:37] [MINER] Thread miner 0 inicializada
+[11-05-2025 15:33:38] [MINER] Thread 0 terminou
+[11-05-2025 15:33:38] [MINER] Processo Miner terminado
+[11-05-2025 15:33:37] Simulação iniciada
+[11-05-2025 15:33:37] [CONTROLLER] Processo Controller começou (PID: 2571)
+[11-05-2025 15:33:37] Configurações carregadas:
+[11-05-2025 15:33:37] NUM_MINERS: 1
+[11-05-2025 15:33:37] TX_POOL_SIZE: 10000
+[11-05-2025 15:33:37] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:33:37] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:33:38] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 15:33:38] [SIGNAL] A terminar Miner
+[11-05-2025 15:33:38] [SIGNAL] A terminar Validator
+[11-05-2025 15:33:38] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 15:33:38] [CONTROLLER] Processo Controller terminado após cleanup
+[11-05-2025 15:33:38] Simulação finalizada
+[11-05-2025 15:34:01] Simulação iniciada
+[11-05-2025 15:34:01] [CONTROLLER] Processo Controller começou (PID: 2577)
+[11-05-2025 15:34:01] Configurações carregadas:
+[11-05-2025 15:34:01] NUM_MINERS: 1
+[11-05-2025 15:34:01] TX_POOL_SIZE: 10000
+[11-05-2025 15:34:01] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:34:01] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:34:01] [CONTROLLER] Processo Statistics começou (PID: 2580)
+[11-05-2025 15:34:01] [STATISTICS] Processo Statistics inicializado
+[11-05-2025 15:34:01] [STATISTICS] Processo Statistics terminado
+[11-05-2025 15:34:01] Simulação iniciada
+[11-05-2025 15:34:01] [CONTROLLER] Processo Controller começou (PID: 2577)
+[11-05-2025 15:34:01] Configurações carregadas:
+[11-05-2025 15:34:01] NUM_MINERS: 1
+[11-05-2025 15:34:01] TX_POOL_SIZE: 10000
+[11-05-2025 15:34:01] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:34:01] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:34:01] [CONTROLLER] Processo Validator começou (PID: 2579)
+[11-05-2025 15:34:01] [VALIDATOR] Processo Validator iniciado (PID 2579)
+[11-05-2025 15:34:03] [VALIDATOR] Erro ao abrir pipe: No such file or directory
+[11-05-2025 15:34:01] Simulação iniciada
+[11-05-2025 15:34:01] [CONTROLLER] Processo Controller começou (PID: 2577)
+[11-05-2025 15:34:01] Configurações carregadas:
+[11-05-2025 15:34:01] NUM_MINERS: 1
+[11-05-2025 15:34:01] TX_POOL_SIZE: 10000
+[11-05-2025 15:34:01] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:34:01] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:34:01] [CONTROLLER] Processo Miner começou (PID: 2578)
+[11-05-2025 15:34:01] [MINER] Processo Miner inicializado
+[11-05-2025 15:34:01] [MINER] Thread miner 0 inicializada
+[11-05-2025 15:34:03] [MINER] Thread 0 terminou
+[11-05-2025 15:34:03] [MINER] Processo Miner terminado
+[11-05-2025 15:34:01] Simulação iniciada
+[11-05-2025 15:34:01] [CONTROLLER] Processo Controller começou (PID: 2577)
+[11-05-2025 15:34:01] Configurações carregadas:
+[11-05-2025 15:34:01] NUM_MINERS: 1
+[11-05-2025 15:34:01] TX_POOL_SIZE: 10000
+[11-05-2025 15:34:01] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:34:01] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:34:03] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 15:34:03] [SIGNAL] A terminar Miner
+[11-05-2025 15:34:03] [SIGNAL] A terminar Validator
+[11-05-2025 15:34:03] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 15:34:03] [CONTROLLER] Processo Controller terminado após cleanup
+[11-05-2025 15:34:03] Simulação finalizada
+[11-05-2025 15:35:25] Simulação iniciada
+[11-05-2025 15:35:25] [CONTROLLER] Processo Controller começou (PID: 2609)
+[11-05-2025 15:35:25] Configurações carregadas:
+[11-05-2025 15:35:25] NUM_MINERS: 1
+[11-05-2025 15:35:25] TX_POOL_SIZE: 10000
+[11-05-2025 15:35:25] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:35:25] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:35:25] [CONTROLLER] Processo Statistics começou (PID: 2612)
+[11-05-2025 15:35:25] [STATISTICS] Processo Statistics inicializado
+[11-05-2025 15:35:25] [STATISTICS] Processo Statistics terminado
+[11-05-2025 15:35:25] Simulação iniciada
+[11-05-2025 15:35:25] [CONTROLLER] Processo Controller começou (PID: 2609)
+[11-05-2025 15:35:25] Configurações carregadas:
+[11-05-2025 15:35:25] NUM_MINERS: 1
+[11-05-2025 15:35:25] TX_POOL_SIZE: 10000
+[11-05-2025 15:35:25] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:35:25] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:35:25] [CONTROLLER] Processo Validator começou (PID: 2611)
+[11-05-2025 15:35:25] [VALIDATOR] iniciado
+[11-05-2025 15:35:31] [VALIDATOR] bloco nonce verificado
+[11-05-2025 15:35:31] [VALIDATOR] a entrar no validate
+[11-05-2025 15:35:31] [VALIDATOR] entrou no validate_transaction
+[11-05-2025 15:35:31] [VALIDATOR] TX timestamp no futuro
+[11-05-2025 15:35:31] [VALIDATOR] Transação 0 inválida: ID=TX2614-1
+[11-05-2025 15:35:31] [VALIDATOR] bloco rejeitado
+[11-05-2025 15:35:35] [VALIDATOR] bloco nonce verificado
+[11-05-2025 15:35:35] [VALIDATOR] a entrar no validate
+[11-05-2025 15:35:35] [VALIDATOR] entrou no validate_transaction
+[11-05-2025 15:35:35] [VALIDATOR] TX timestamp no futuro
+[11-05-2025 15:35:35] [VALIDATOR] Transação 0 inválida: ID=TX2614-1
+[11-05-2025 15:35:35] [VALIDATOR] bloco rejeitado
+[11-05-2025 15:35:40] [VALIDATOR] bloco nonce verificado
+[11-05-2025 15:35:40] [VALIDATOR] a entrar no validate
+[11-05-2025 15:35:40] [VALIDATOR] entrou no validate_transaction
+[11-05-2025 15:35:40] [VALIDATOR] TX timestamp no futuro
+[11-05-2025 15:35:40] [VALIDATOR] Transação 0 inválida: ID=TX2614-1
+[11-05-2025 15:35:40] [VALIDATOR] bloco rejeitado
+[11-05-2025 15:35:42] [VALIDATOR] terminado
+[11-05-2025 15:35:25] Simulação iniciada
+[11-05-2025 15:35:25] [CONTROLLER] Processo Controller começou (PID: 2609)
+[11-05-2025 15:35:25] Configurações carregadas:
+[11-05-2025 15:35:25] NUM_MINERS: 1
+[11-05-2025 15:35:25] TX_POOL_SIZE: 10000
+[11-05-2025 15:35:25] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:35:25] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:35:25] [CONTROLLER] Processo Miner começou (PID: 2610)
+[11-05-2025 15:35:25] [MINER] Processo Miner inicializado
+[11-05-2025 15:35:25] [MINER] Thread 0 inicializada
+[11-05-2025 15:35:31] [MINER] Bloco Block-0-1746974129 enviado ao Validator
+[11-05-2025 15:35:34] [MINER] Bloco Block-0-1746974132 enviado ao Validator
+[11-05-2025 15:35:40] [MINER] Bloco Block-0-1746974136 enviado ao Validator
+[11-05-2025 15:35:44] [MINER] Erro ao escrever no pipe
+[11-05-2025 15:35:45] [MINER] Thread 0 terminou
+[11-05-2025 15:35:45] [MINER] Processo Miner terminado
+[11-05-2025 15:35:25] Simulação iniciada
+[11-05-2025 15:35:25] [CONTROLLER] Processo Controller começou (PID: 2609)
+[11-05-2025 15:35:25] Configurações carregadas:
+[11-05-2025 15:35:25] NUM_MINERS: 1
+[11-05-2025 15:35:25] TX_POOL_SIZE: 10000
+[11-05-2025 15:35:25] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:35:25] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:35:42] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 15:35:42] [SIGNAL] A terminar Miner
+[11-05-2025 15:35:42] [SIGNAL] A terminar Validator
+[11-05-2025 15:35:42] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 15:35:45] [CONTROLLER] Processo Controller terminado após cleanup
+[11-05-2025 15:35:45] Simulação finalizada
+[11-05-2025 15:37:31] Simulação iniciada
+[11-05-2025 15:37:31] [CONTROLLER] Processo Controller começou (PID: 2634)
+[11-05-2025 15:37:31] Configurações carregadas:
+[11-05-2025 15:37:31] NUM_MINERS: 1
+[11-05-2025 15:37:31] TX_POOL_SIZE: 10000
+[11-05-2025 15:37:31] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:37:31] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:37:31] [CONTROLLER] Processo Statistics começou (PID: 2637)
+[11-05-2025 15:37:31] [STATISTICS] Processo Statistics inicializado
+[11-05-2025 15:37:31] [STATISTICS] Processo Statistics terminado
+[11-05-2025 15:37:31] Simulação iniciada
+[11-05-2025 15:37:31] [CONTROLLER] Processo Controller começou (PID: 2634)
+[11-05-2025 15:37:31] Configurações carregadas:
+[11-05-2025 15:37:31] NUM_MINERS: 1
+[11-05-2025 15:37:31] TX_POOL_SIZE: 10000
+[11-05-2025 15:37:31] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:37:31] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:37:31] [CONTROLLER] Processo Validator começou (PID: 2636)
+[11-05-2025 15:37:31] [VALIDATOR] iniciado
+[11-05-2025 15:37:39] [VALIDATOR] bloco aceito
+[11-05-2025 15:37:42] [VALIDATOR] bloco aceito
+[11-05-2025 15:37:44] [VALIDATOR] bloco aceito
+[11-05-2025 15:37:48] [VALIDATOR] bloco aceito
+[11-05-2025 15:37:48] [VALIDATOR] terminado
+[11-05-2025 15:37:31] Simulação iniciada
+[11-05-2025 15:37:31] [CONTROLLER] Processo Controller começou (PID: 2634)
+[11-05-2025 15:37:31] Configurações carregadas:
+[11-05-2025 15:37:31] NUM_MINERS: 1
+[11-05-2025 15:37:31] TX_POOL_SIZE: 10000
+[11-05-2025 15:37:31] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:37:31] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:37:31] [CONTROLLER] Processo Miner começou (PID: 2635)
+[11-05-2025 15:37:31] [MINER] Processo Miner inicializado
+[11-05-2025 15:37:31] [MINER] Thread 0 inicializada
+[11-05-2025 15:37:39] [MINER] Bloco Block-0-1746974255 enviado ao Validator
+[11-05-2025 15:37:41] [MINER] Bloco Block-0-1746974261 enviado ao Validator
+[11-05-2025 15:37:43] [MINER] Bloco Block-0-1746974263 enviado ao Validator
+[11-05-2025 15:37:47] [MINER] Bloco Block-0-1746974265 enviado ao Validator
+[11-05-2025 15:37:48] [MINER] Thread 0 terminou
+[11-05-2025 15:37:48] [MINER] Processo Miner terminado
+[11-05-2025 15:37:31] Simulação iniciada
+[11-05-2025 15:37:31] [CONTROLLER] Processo Controller começou (PID: 2634)
+[11-05-2025 15:37:31] Configurações carregadas:
+[11-05-2025 15:37:31] NUM_MINERS: 1
+[11-05-2025 15:37:31] TX_POOL_SIZE: 10000
+[11-05-2025 15:37:31] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 15:37:31] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 15:37:48] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 15:37:48] [SIGNAL] A terminar Miner
+[11-05-2025 15:37:48] [SIGNAL] A terminar Validator
+[11-05-2025 15:37:48] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 15:37:48] [CONTROLLER] Processo Controller terminado após cleanup
+[11-05-2025 15:37:48] Simulação finalizada
