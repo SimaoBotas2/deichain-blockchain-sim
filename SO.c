@@ -27,7 +27,7 @@
 #include "pow.h"
 
 
-#define DEBUG // Remove esta linha para remover as mensagens de debug
+// #define DEBUG // Remove esta linha para remover as mensagens de debug
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
 #define BUFFER_SIZE 1000 //apenas temporário, mudar pra malloc dps
 #define VALIDATOR_PIPE "/tmp/VALIDATOR_PIPE"
@@ -40,8 +40,9 @@
 pthread_mutex_t mutex;
 bool finish_miner  = false;
 
+bool finish_validator = false;
 
-bool finish_validator;
+bool finish_statistics = false;
 
 
 FILE * file;
@@ -85,6 +86,7 @@ void append_ledger(const Block *block);
 void remove_transactions(const Block *block);
 void return_transactions(const Block *block);
 void validator_exit_handler(int signum);
+void statistics_exit_handler(int signum);
 
 
 
@@ -103,11 +105,8 @@ int main() {
         log_file(msg);
         #endif
     }
-
-    log_file("Simulação iniciada\n");
+    
     controller();
-    log_file("Simulação finalizada\n");
-
 
     //Finalizar aqui para tudo ficar documentado no log
     sem_destroy(&log_sem);
@@ -121,14 +120,12 @@ void controller() {
     
     signal(SIGINT,sigint_handler);
 
-    sprintf(msg, "[CONTROLLER] Processo Controller começou (PID: %d)\n", getpid());
-    log_file(msg);
+    log_file("[CONTROLLER] Simulação começou\n");
 
     // Iniciar estrutura
     read_config("config.cfg");
 
     #ifdef DEBUG
-    log_file("Configurações carregadas:\n");
     sprintf(msg,"NUM_MINERS: %d\n", config.NUM_MINER);
     log_file(msg);
     sprintf(msg,"TX_POOL_SIZE: %d\n", config.TX_POOL_SIZE);
@@ -153,10 +150,8 @@ void controller() {
     } 
     else if (pid_miner == 0) {
         // Processo filho (Miner)
-        #ifdef DEBUG
         sprintf(msg,"[CONTROLLER] Processo Miner começou (PID: %d)\n", getpid());
         log_file(msg);
-        #endif
 
         //ignorar o sinal, apenas o controller o vai ver
         signal(SIGINT,SIG_IGN);
@@ -174,10 +169,9 @@ void controller() {
     }
     else if (pid_validator == 0) {
         // Processo filho (Validator)
-        #ifdef DEBUG
         sprintf(msg,"[CONTROLLER] Processo Validator começou (PID: %d)\n", getpid());
         log_file(msg);
-        #endif
+
         //ignorar o sinal, apenas o controller o vai ver
         signal(SIGINT,SIG_IGN);
         validator();
@@ -194,10 +188,8 @@ void controller() {
     }
     else if (pid_statistics == 0) {
         // Processo filho (Statistics)
-        #ifdef DEBUG
         sprintf(msg,"[CONTROLLER] Processo Statistics começou (PID: %d)\n", getpid());      
         log_file(msg);
-        #endif
         //ignorar o sinal, apenas o controller o vai ver
         signal(SIGINT,SIG_IGN);
         statistics();
@@ -209,9 +201,8 @@ void controller() {
     waitpid(pid_statistics, NULL, 0);
     
    
-    sprintf(msg,"[CONTROLLER] Processo Controller terminado após cleanup\n");      
-    log_file(msg);
-
+    log_file("[CONTROLLER] Simulação terminou\n");      
+ 
 }
 
 // Função para ler o arquivo de configuração
@@ -557,7 +548,6 @@ void validator_exit_handler(int signum){
     finish_validator = true;
 }
 
-
 void *validator() {
     signal(SIGTERM, validator_exit_handler);
     log_file("[VALIDATOR] iniciado\n");
@@ -617,7 +607,6 @@ void *validator() {
     log_file("[VALIDATOR] terminado\n");
     return NULL;
 }
-
 
 bool validate_block(Block *block) {
 
@@ -700,7 +689,6 @@ void remove_transactions(const Block *block) {
 
 bool validate_transaction(const Transaction *tx) {
 
-
     /*
     time_t now = time(NULL);
     if (tx->timestamp > now) {
@@ -736,23 +724,58 @@ bool is_tx_confirmed(const char *tx_id) {
     return found;
 }
 
+
+
+void statistics_exit_handler(int signum){
+    finish_statistics = true;
+}
+
 void *statistics() {
 
-    sprintf(msg,"[STATISTICS] Processo Statistics inicializado\n");
-    log_file(msg);
+    signal(SIGTERM, statistics_exit_handler);
 
-    /*for(i = 0; i < 5; i++) {
-        #ifdef DEBUG
-        log_file("A funcionar...\n");
-        sleep(1);
-        #endif
+    log_file("=================== Start Ledger ===================\n");
     
-        Code...
-    }*/
-    
-    log_file("[STATISTICS] Processo Statistics terminado\n");
+    while (1)
+    {
+        if(finish_statistics){
+            break;
+        }
 
-    return NULL;
+        sem_wait(&ldgr->sem);
+        if (ldgr->current_blocks == 0) {
+            sem_post(&ldgr->sem);
+            sleep(1);
+            continue;
+        }
+
+        for (int i = 0; i < ldgr->current_blocks; i++) {
+            Block *block = &ldgr->blocks[i];
+            sprintf(msg, "||----  Block %d --\n", i);
+            log_file(msg);
+            sprintf(msg, "Block ID: BLOCK-%s",block->id);
+            log_file(msg);
+            sprintf(msg, "Previous Hash: %s", block->hash);
+            log_file(msg);
+            sprintf(msg, "Block Timestamp: %ld", block->timestamp);
+            log_file(msg);
+            sprintf(msg, "Nonce: %d", block->nonce);
+            log_file(msg);
+            log_file("Transactions:\n");
+            for (int i = 0; i < block->transactions_count; i++) {
+                sprintf(msg, "[%d] ID: %s | Reward: %d | Value: %d | Timestamp: %ld ", i,block->transactions[i].id, block->transactions[i].reward, block->transactions[i].value, block->transactions[i].timestamp);
+                log_file(msg);
+            }
+            sprintf(msg, "||------------------------------\n");
+        }
+        sem_post(&ldgr->sem);
+
+        //sleep(10);         
+    }
+    
+    log_file("=================== End   Ledger ===================\n");
+    
+    pthread_exit(NULL);
 }
 
 // Função que vai limpar todos os recursos utilizados
@@ -809,7 +832,11 @@ void sigint_handler(int signum){
     log_file(msg);
     kill(pid_validator, SIGTERM);
     };
-    if (pid_statistics > 0) kill(pid_statistics, SIGTERM);
+    if (pid_statistics > 0){
+    sprintf(msg,"[SIGNAL] A terminar Statistics\n");
+    log_file(msg);
+    kill(pid_statistics, SIGTERM);
+    }
 
 	cleanup();
 }

@@ -3069,3 +3069,198 @@
 [11-05-2025 15:37:48] [CLEANUP] Recursos limpos, a terminar programa
 [11-05-2025 15:37:48] [CONTROLLER] Processo Controller terminado após cleanup
 [11-05-2025 15:37:48] Simulação finalizada
+[11-05-2025 16:07:25] [CONTROLLER] Simulação começou
+[11-05-2025 16:07:25] NUM_MINERS: 1
+[11-05-2025 16:07:25] TX_POOL_SIZE: 10000
+[11-05-2025 16:07:25] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:07:25] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:07:25] [CONTROLLER] Processo Validator começou (PID: 2847)
+[11-05-2025 16:07:25] [VALIDATOR] iniciado
+[11-05-2025 16:07:28] [VALIDATOR] Erro ao abrir pipe
+[11-05-2025 16:07:25] [CONTROLLER] Simulação começou
+[11-05-2025 16:07:25] NUM_MINERS: 1
+[11-05-2025 16:07:25] TX_POOL_SIZE: 10000
+[11-05-2025 16:07:25] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:07:25] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:07:25] [CONTROLLER] Processo Statistics começou (PID: 2848)
+[11-05-2025 16:07:25] =================== Start Ledger ===================/n[11-05-2025 16:07:28] =================== End   Ledger ===================/n[11-05-2025 16:07:25] [CONTROLLER] Simulação começou
+[11-05-2025 16:07:25] NUM_MINERS: 1
+[11-05-2025 16:07:25] TX_POOL_SIZE: 10000
+[11-05-2025 16:07:25] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:07:25] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:07:25] [CONTROLLER] Processo Miner começou (PID: 2846)
+[11-05-2025 16:07:25] [MINER] Processo Miner inicializado
+[11-05-2025 16:07:25] [MINER] Thread 0 inicializada
+[11-05-2025 16:07:29] [MINER] Thread 0 terminou
+[11-05-2025 16:07:29] [MINER] Processo Miner terminado
+[11-05-2025 16:07:25] [CONTROLLER] Simulação começou
+[11-05-2025 16:07:25] NUM_MINERS: 1
+[11-05-2025 16:07:25] TX_POOL_SIZE: 10000
+[11-05-2025 16:07:25] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:07:25] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:07:28] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 16:07:28] [SIGNAL] A terminar Miner
+[11-05-2025 16:07:28] [SIGNAL] A terminar Validator
+[11-05-2025 16:07:28] [SIGNAL] A terminar Statistics
+[11-05-2025 16:07:28] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 16:07:29] [CONTROLLER] Simulação terminou
+[11-05-2025 16:09:32] [CONTROLLER] Simulação começou
+[11-05-2025 16:09:32] NUM_MINERS: 1
+[11-05-2025 16:09:32] TX_POOL_SIZE: 10000
+[11-05-2025 16:09:32] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:09:32] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:09:32] [CONTROLLER] Processo Statistics começou (PID: 2875)
+[11-05-2025 16:09:32] =================== Start Ledger ===================
+[11-05-2025 16:09:33] =================== End   Ledger ===================
+[11-05-2025 16:09:32] [CONTROLLER] Simulação começou
+[11-05-2025 16:09:32] NUM_MINERS: 1
+[11-05-2025 16:09:32] TX_POOL_SIZE: 10000
+[11-05-2025 16:09:32] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:09:32] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:09:32] [CONTROLLER] Processo Miner começou (PID: 2873)
+[11-05-2025 16:09:32] [MINER] Processo Miner inicializado
+[11-05-2025 16:09:32] [MINER] Thread 0 inicializada
+[11-05-2025 16:09:34] [MINER] Thread 0 terminou
+[11-05-2025 16:09:34] [MINER] Processo Miner terminado
+[11-05-2025 16:09:32] [CONTROLLER] Simulação começou
+[11-05-2025 16:09:32] NUM_MINERS: 1
+[11-05-2025 16:09:32] TX_POOL_SIZE: 10000
+[11-05-2025 16:09:32] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:09:32] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:09:32] [CONTROLLER] Processo Validator começou (PID: 2874)
+[11-05-2025 16:09:32] [VALIDATOR] iniciado
+[11-05-2025 16:09:38] [VALIDATOR] Erro ao abrir pipe
+[11-05-2025 16:09:32] [CONTROLLER] Simulação começou
+[11-05-2025 16:09:32] NUM_MINERS: 1
+[11-05-2025 16:09:32] TX_POOL_SIZE: 10000
+[11-05-2025 16:09:32] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:09:32] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:09:33] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 16:09:33] [SIGNAL] A terminar Miner
+[11-05-2025 16:09:33] [SIGNAL] A terminar Validator
+[11-05-2025 16:09:33] [SIGNAL] A terminar Statistics
+[11-05-2025 16:09:33] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 16:09:38] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 16:09:38] [SIGNAL] A terminar Miner
+[11-05-2025 16:09:38] [SIGNAL] A terminar Validator
+[11-05-2025 16:09:38] [SIGNAL] A terminar Statistics
+[11-05-2025 16:09:38] [CLEANUP] Erro ao remover pipe
+[11-05-2025 16:09:38] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 16:09:38] [CONTROLLER] Simulação terminou
+[11-05-2025 16:09:46] [CONTROLLER] Simulação começou
+[11-05-2025 16:09:46] NUM_MINERS: 1
+[11-05-2025 16:09:46] TX_POOL_SIZE: 10000
+[11-05-2025 16:09:46] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:09:46] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:09:46] [CONTROLLER] Processo Validator começou (PID: 2879)
+[11-05-2025 16:09:46] [VALIDATOR] iniciado
+[11-05-2025 16:09:47] [VALIDATOR] Erro ao abrir pipe
+[11-05-2025 16:09:46] [CONTROLLER] Simulação começou
+[11-05-2025 16:09:46] NUM_MINERS: 1
+[11-05-2025 16:09:46] TX_POOL_SIZE: 10000
+[11-05-2025 16:09:46] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:09:46] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:09:46] [CONTROLLER] Processo Statistics começou (PID: 2880)
+[11-05-2025 16:09:46] =================== Start Ledger ===================
+[11-05-2025 16:09:47] =================== End   Ledger ===================
+[11-05-2025 16:09:46] [CONTROLLER] Simulação começou
+[11-05-2025 16:09:46] NUM_MINERS: 1
+[11-05-2025 16:09:46] TX_POOL_SIZE: 10000
+[11-05-2025 16:09:46] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:09:46] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:09:46] [CONTROLLER] Processo Miner começou (PID: 2878)
+[11-05-2025 16:09:46] [MINER] Processo Miner inicializado
+[11-05-2025 16:09:46] [MINER] Thread 0 inicializada
+[11-05-2025 16:09:48] [MINER] Thread 0 terminou
+[11-05-2025 16:09:48] [MINER] Processo Miner terminado
+[11-05-2025 16:09:46] [CONTROLLER] Simulação começou
+[11-05-2025 16:09:46] NUM_MINERS: 1
+[11-05-2025 16:09:46] TX_POOL_SIZE: 10000
+[11-05-2025 16:09:46] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:09:46] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:09:47] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 16:09:47] [SIGNAL] A terminar Miner
+[11-05-2025 16:09:47] [SIGNAL] A terminar Validator
+[11-05-2025 16:09:47] [SIGNAL] A terminar Statistics
+[11-05-2025 16:09:47] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 16:09:48] [CONTROLLER] Simulação terminou
+[11-05-2025 16:10:07] [CONTROLLER] Simulação começou
+[11-05-2025 16:10:07] NUM_MINERS: 1
+[11-05-2025 16:10:07] TX_POOL_SIZE: 10000
+[11-05-2025 16:10:07] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:10:07] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:10:07] [CONTROLLER] Processo Statistics começou (PID: 2885)
+[11-05-2025 16:10:07] =================== Start Ledger ===================
+[11-05-2025 16:10:10] =================== End   Ledger ===================
+[11-05-2025 16:10:07] [CONTROLLER] Simulação começou
+[11-05-2025 16:10:07] NUM_MINERS: 1
+[11-05-2025 16:10:07] TX_POOL_SIZE: 10000
+[11-05-2025 16:10:07] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:10:07] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:10:07] [CONTROLLER] Processo Miner começou (PID: 2883)
+[11-05-2025 16:10:07] [MINER] Processo Miner inicializado
+[11-05-2025 16:10:07] [MINER] Thread 0 inicializada
+[11-05-2025 16:10:10] [MINER] Thread 0 terminou
+[11-05-2025 16:10:10] [MINER] Processo Miner terminado
+[11-05-2025 16:10:07] [CONTROLLER] Simulação começou
+[11-05-2025 16:10:07] NUM_MINERS: 1
+[11-05-2025 16:10:07] TX_POOL_SIZE: 10000
+[11-05-2025 16:10:07] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:10:07] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:10:07] [CONTROLLER] Processo Validator começou (PID: 2884)
+[11-05-2025 16:10:07] [VALIDATOR] iniciado
+[11-05-2025 16:10:18] [VALIDATOR] Erro ao abrir pipe
+[11-05-2025 16:10:07] [CONTROLLER] Simulação começou
+[11-05-2025 16:10:07] NUM_MINERS: 1
+[11-05-2025 16:10:07] TX_POOL_SIZE: 10000
+[11-05-2025 16:10:07] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:10:07] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:10:10] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 16:10:10] [SIGNAL] A terminar Miner
+[11-05-2025 16:10:10] [SIGNAL] A terminar Validator
+[11-05-2025 16:10:10] [SIGNAL] A terminar Statistics
+[11-05-2025 16:10:10] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 16:10:18] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 16:10:18] [SIGNAL] A terminar Miner
+[11-05-2025 16:10:18] [SIGNAL] A terminar Validator
+[11-05-2025 16:10:18] [SIGNAL] A terminar Statistics
+[11-05-2025 16:10:18] [CLEANUP] Erro ao remover pipe
+[11-05-2025 16:10:18] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 16:10:18] [CONTROLLER] Simulação terminou
+[11-05-2025 16:11:49] [CONTROLLER] Simulação começou
+[11-05-2025 16:11:49] NUM_MINERS: 1
+[11-05-2025 16:11:49] TX_POOL_SIZE: 10000
+[11-05-2025 16:11:49] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:11:49] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:11:49] [CONTROLLER] Processo Validator começou (PID: 2898)
+[11-05-2025 16:11:49] [VALIDATOR] iniciado
+[11-05-2025 16:11:50] [VALIDATOR] Erro ao abrir pipe
+[11-05-2025 16:11:49] [CONTROLLER] Simulação começou
+[11-05-2025 16:11:49] NUM_MINERS: 1
+[11-05-2025 16:11:49] TX_POOL_SIZE: 10000
+[11-05-2025 16:11:49] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:11:49] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:11:49] [CONTROLLER] Processo Statistics começou (PID: 2899)
+[11-05-2025 16:11:49] =================== Start Ledger ===================
+[11-05-2025 16:11:50] =================== End   Ledger ===================
+[11-05-2025 16:11:49] [CONTROLLER] Simulação começou
+[11-05-2025 16:11:49] NUM_MINERS: 1
+[11-05-2025 16:11:49] TX_POOL_SIZE: 10000
+[11-05-2025 16:11:49] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:11:49] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:11:49] [CONTROLLER] Processo Miner começou (PID: 2897)
+[11-05-2025 16:11:49] [MINER] Processo Miner inicializado
+[11-05-2025 16:11:49] [MINER] Thread 0 inicializada
+[11-05-2025 16:11:51] [MINER] Thread 0 terminou
+[11-05-2025 16:11:51] [MINER] Processo Miner terminado
+[11-05-2025 16:11:49] [CONTROLLER] Simulação começou
+[11-05-2025 16:11:49] NUM_MINERS: 1
+[11-05-2025 16:11:49] TX_POOL_SIZE: 10000
+[11-05-2025 16:11:49] TRANSACTIONS_PER_BLOCK: 10
+[11-05-2025 16:11:49] BLOCKCHAIN_BLOCKS: 50000
+[11-05-2025 16:11:50] [SIGNAL] ^C detetado, a limpar recursos
+[11-05-2025 16:11:50] [SIGNAL] A terminar Miner
+[11-05-2025 16:11:50] [SIGNAL] A terminar Validator
+[11-05-2025 16:11:50] [SIGNAL] A terminar Statistics
+[11-05-2025 16:11:50] [CLEANUP] Recursos limpos, a terminar programa
+[11-05-2025 16:11:51] [CONTROLLER] Simulação terminou
