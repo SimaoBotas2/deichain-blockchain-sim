@@ -402,7 +402,7 @@ void *miner(){
     int NUM_MINER = config.NUM_MINER;
     sem_post(&config.sem);
 
-    miner_threads = malloc(NUM_MINER * sizeof(pthread_t)); //possivel solução para alocar previamente e ser global
+    miner_threads = malloc(NUM_MINER * sizeof(pthread_t)); 
     int miner_ids[NUM_MINER];
 
     for(i = 0;i<NUM_MINER;i++){
@@ -458,7 +458,10 @@ void *miner_action(void *arg) {
     while (1) {
         // condição de saída
         pthread_mutex_lock(&mutex);
-        if (finish_miner) { pthread_mutex_unlock(&mutex); break; }
+        if (finish_miner) { 
+        pthread_mutex_unlock(&mutex);
+        break; 
+        }
         pthread_mutex_unlock(&mutex);
 
         // espera transacções
@@ -481,7 +484,7 @@ void *miner_action(void *arg) {
 
         // prepara buffer de envio
         size_t header_sz = offsetof(Block, transactions);
-        size_t txs_sz    = num_txs * sizeof(Transaction);
+        size_t txs_sz = num_txs * sizeof(Transaction);
         size_t total_sz  = header_sz + txs_sz;
 
         Block *blk = malloc(total_sz);
@@ -493,9 +496,9 @@ void *miner_action(void *arg) {
 
         // preenche cabeçalho do bloco
         blk->transactions_count = num_txs;
-        blk->timestamp          = time(NULL);
-        blk->nonce              = 0;
-        blk->miner_id           = miner_id;
+        blk->timestamp = time(NULL);
+        blk->nonce = 0;
+        blk->miner_id = miner_id;
         snprintf(blk->id, TXB_ID_LEN, "Block-%d-%ld", miner_id, blk->timestamp);
 
         // copia as transacções
@@ -526,7 +529,9 @@ void *miner_action(void *arg) {
         // envia tudo num único write()
         int fd = open(VALIDATOR_PIPE, O_WRONLY);
         if (fd == -1 || write(fd, blk, total_sz) != (ssize_t)total_sz) {
+            #ifdef DEBUG 
             log_file("[MINER] Erro ao escrever no pipe\n");
+            #endif
         } else {
             snprintf(buf, sizeof buf,
                      "[MINER] Bloco %s enviado ao Validator\n", blk->id);
@@ -550,11 +555,13 @@ void validator_exit_handler(int signum){
 
 void *validator() {
     signal(SIGTERM, validator_exit_handler);
-    log_file("[VALIDATOR] iniciado\n");
+    log_file("[VALIDATOR] Processo Iniciado\n");
 
     int fd = open(VALIDATOR_PIPE, O_RDONLY);
     if (fd < 0) {
+        #ifdef DEBUG
         log_file("[VALIDATOR] Erro ao abrir pipe\n");
+        #endif
         return NULL;
     }
 
@@ -569,7 +576,7 @@ void *validator() {
             continue;
         }
         if ((size_t)r != header_sz) {
-            log_file("[VALIDATOR] header incompleto\n");
+            log_file("[VALIDATOR] Header incompleto\n");
             continue;
         }
 
@@ -578,16 +585,23 @@ void *validator() {
         size_t total_sz = header_sz + txs_sz;
         Block *blk = malloc(total_sz);
         if (!blk) {
-            log_file("[VALIDATOR] malloc falhou\n");
+            #ifdef DEBUG
+            log_file("[VALIDATOR] Malloc para o Bloco Falhou\n");
+            #endif
             continue;
         }
         memcpy(blk, &header, header_sz);
 
-        // 3) lê as transacções
+        sprintf(msg,"[VALIDATOR] Bloco recebido do Miner : %d\n",blk->miner_id);
+        log_file(msg);
+
+        // 3) lê as transações
         r = read(fd, blk->transactions, txs_sz);
         if ((size_t)r != txs_sz) {
-            log_file("[VALIDATOR] txs incompletas\n");
+            #ifdef DEBUG
+            log_file("[VALIDATOR] Transações incompletas\n");
             free(blk);
+            #endif
             continue;
         }
 
@@ -595,16 +609,17 @@ void *validator() {
         if (validate_block(blk)) {
             append_ledger(blk);
             remove_transactions(blk);
-            log_file("[VALIDATOR] bloco aceito\n");
+            sprintf(msg,"[VALIDATOR] Bloco do Miner %d Aceite e Enviado para o Ledger\n",blk->miner_id);
+            log_file(msg);
         } else {
             return_transactions(blk);
-            log_file("[VALIDATOR] bloco rejeitado\n");
+            log_file("[VALIDATOR] Bloco Rejeitado\n");
         }
         free(blk);
     }
 
     close(fd);
-    log_file("[VALIDATOR] terminado\n");
+    log_file("[VALIDATOR] Processo Terminado\n");
     return NULL;
 }
 
@@ -615,13 +630,12 @@ bool validate_block(Block *block) {
         return false;
     }
 
-
     sem_wait(&ldgr->sem);
     if (ldgr->current_blocks > 0) {
         Block *last = &ldgr->blocks[ldgr->current_blocks - 1];
         if (strncmp(block->previous_hash, last->hash, HASH_SIZE) != 0) {
             sem_post(&ldgr->sem);
-            log_file("[VALIDATOR] previous_hash mismatch\n");
+            log_file("[VALIDATOR] Hash não combina com anterior \n");
             return false;
         }
     }
@@ -640,6 +654,7 @@ bool validate_block(Block *block) {
 }
 
 void append_ledger(const Block *block) {
+    //Função para adicioanar os blocos validados ao ledger
     sem_wait(&ldgr->sem);
     if (ldgr->current_blocks < ldgr->max_blocks) {
         ldgr->blocks[ldgr->current_blocks] = *block;
@@ -651,7 +666,7 @@ void append_ledger(const Block *block) {
 }
 
 void return_transactions(const Block *block) {
-    //Retorna transações que já tinham sido usadas noutro bloco
+    //Retorna transações que já tinham sido usadas noutro bloco para a transaction pool
     sem_wait(&shrd->sem);
     for (int i = 0; i < block->transactions_count; ++i) {
         const Transaction *tx = &block->transactions[i];
@@ -662,7 +677,7 @@ void return_transactions(const Block *block) {
             if (shrd->entries[j].empty) {
                 shrd->entries[j].tx = *tx;
                 shrd->entries[j].empty = false;
-                shrd->entries[j].age = 0;
+                shrd->entries[j].age ++; //aumenta a agr quando a tx volta à pool
                 shrd->transaction_pending_set++;
                 break;
             }
@@ -672,6 +687,7 @@ void return_transactions(const Block *block) {
 }
 
 void remove_transactions(const Block *block) {
+    //Remove as transações que já foram validadas num bloco da Transaction Pools
     sem_wait(&shrd->sem);
     for (int i = 0; i < block->transactions_count; ++i) {
         const char *txid = block->transactions[i].id;
@@ -688,26 +704,31 @@ void remove_transactions(const Block *block) {
 }
 
 bool validate_transaction(const Transaction *tx) {
-
-    /*
-    time_t now = time(NULL);
-    if (tx->timestamp > now) {
-        log_file("[VALIDATOR] TX timestamp no futuro\n");
+    // Verifica se a transação já existe na blockchain (foi confirmada)
+    if (is_tx_confirmed(tx->id)) {
+        char buffer[128];
+        sprintf(buffer,"[VALIDATOR] TX duplicada no ledger: %s\n", tx->id);
+        log_file(buffer);
         return false;
     }
-        */
+
+    // Verifica se reward ou value são negativos
     if (tx->reward < 0 || tx->value < 0) {
         log_file("[VALIDATOR] TX valores negativos\n");
         return false;
     }
+
+    // Verifica se o ID está vazio
     if (tx->id[0] == '\0') {
         log_file("[VALIDATOR] TX sem ID\n");
         return false;
     }
+
     return true;
 }
 
 bool is_tx_confirmed(const char *tx_id) {
+    //Procura no ledger se a transição existe
     bool found = false;
     sem_wait(&ldgr->sem);
     for (int b = 0; b < ldgr->current_blocks; ++b) {
@@ -724,8 +745,6 @@ bool is_tx_confirmed(const char *tx_id) {
     return found;
 }
 
-
-
 void statistics_exit_handler(int signum){
     finish_statistics = true;
 }
@@ -736,6 +755,9 @@ void *statistics() {
 
     log_file("=================== Start Ledger ===================\n");
     
+
+    //Apenas para nao haver spam
+    finish_statistics = true;
     while (1)
     {
         if(finish_statistics){
@@ -770,17 +792,16 @@ void *statistics() {
         }
         sem_post(&ldgr->sem);
 
-        //sleep(10);         
+        sleep(20);         
     }
     
     log_file("=================== End   Ledger ===================\n");
     
-    pthread_exit(NULL);
+    return NULL;
 }
 
-// Função que vai limpar todos os recursos utilizados
 void cleanup() {
-
+    // Função que vai limpar todos os recursos utilizados
 
     // Semáforos
     if (ldgr) sem_destroy(&ldgr->sem);
