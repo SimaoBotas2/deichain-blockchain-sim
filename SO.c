@@ -474,10 +474,32 @@ void *miner_action(void *arg) {
 
         // coleta transacções
         Transaction txs[num_txs];
+        int ages[num_txs];
         int collected = 0;
-        for (int i = 0; i < pool_sz && collected < num_txs; i++) {
+        for (int i = 0; i < pool_sz; i++) {
             if (!shrd->entries[i].empty) {
-                txs[collected++] = shrd->entries[i].tx;
+
+                Transaction cur = shrd->entries[i].tx;
+                int cur_age = shrd->entries[i].age;
+
+                if(collected<num_txs){ //a encher o vetor
+                    txs[collected] = cur;
+                    ages[collected] = cur_age;
+                    collected++;
+                }
+                else{ //vetor já cheio
+                    int min=0;
+                    for(int j=1;j<num_txs;j++){ //corre o vetor e vê qual o indice com reward minima
+                        if(txs[j].reward < txs[min].reward || txs[j].reward == txs[min].reward && ages[j]<ages[min]){
+                            min = j;
+                        }
+                    }
+                    if(cur.reward > txs[min].reward || (cur.reward == txs[min].reward && cur_age >ages[min])){
+                    txs[min] = cur;
+                    ages[min] = cur_age;
+                }
+                }
+
             }
         }
         sem_post(&shrd->sem);
@@ -677,8 +699,12 @@ void return_transactions(const Block *block) {
             if (shrd->entries[j].empty) {
                 shrd->entries[j].tx = *tx;
                 shrd->entries[j].empty = false;
-                shrd->entries[j].age ++; //aumenta a agr quando a tx volta à pool
+                shrd->entries[j].age ++; //aumenta a age quando a tx volta à pool
+                if(shrd->entries[j].age % 50 == 0){
+                    shrd->entries[j].tx.reward++; //aumenta a reward dado a idade elevada da tx
+                }
                 shrd->transaction_pending_set++;
+               // printf("Devolvida a pool :  id: %s, reward : %d , age :%d\n",tx->id,tx->reward,shrd->entries[j].age);
                 break;
             }
         }
