@@ -607,6 +607,7 @@ void *validator() {
             sleep(1);
             continue;
         }
+        
 
         log_file("[VALIDATOR] Bloco recebido\n");
         if (validate_block(&block)) {
