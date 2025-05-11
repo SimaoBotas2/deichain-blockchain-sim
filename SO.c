@@ -22,6 +22,7 @@
 #include <semaphore.h>
 #include <openssl/sha.h>
 #include <errno.h>
+#include <stddef.h> 
 #include "structs.h"
 #include "pow.h"
 
@@ -35,8 +36,13 @@
 
 // Variáveis globais
 
+//Controlo das threads
 pthread_mutex_t mutex;
-bool finish  = false;
+bool finish_miner  = false;
+
+
+bool finish_validator;
+
 
 FILE * file;
 
@@ -72,7 +78,13 @@ void log_file(const char *message);
 void cleanup();
 void sigint_handler(int signum);
 void miner_exit_handler(int sig);
-bool validate_block(Block * block);
+bool validate_transaction(const Transaction *tx);
+bool is_tx_confirmed(const char *tx_id);
+bool validate_block(Block *block);
+void append_ledger(const Block *block);
+void remove_transactions(const Block *block);
+void return_transactions(const Block *block);
+void validator_exit_handler(int signum);
 
 
 
@@ -210,7 +222,7 @@ void read_config(const char *filename) {
     config.TRANSACTIONS_PER_BLOCK = -1;
     config.BLOCKCHAIN_BLOCKS = -1;
 
-    FILE *f = fopen(filename, "r");
+    FILE *f = (filename, "r");
     if (!f) {
         #ifdef DEBUG
         sprintf(msg, "Erro ao abrir arquivo de configuração\n");
@@ -391,7 +403,7 @@ void *miner(){
     log_file(msg);
 
 
-    //Sinal recebido do controler para terminar
+    //Sinal recebido do controller para terminar
     signal(SIGTERM, miner_exit_handler);
 
     int i;
@@ -435,7 +447,7 @@ void *miner(){
 void miner_exit_handler(int sig) {
     //Avisar threads pra terminar
     pthread_mutex_lock(&mutex);
-    finish = true;
+    finish_miner = true;
     pthread_mutex_unlock(&mutex);
 }
 
@@ -454,7 +466,7 @@ void *miner_action(void *arg) {
 
     while (1) {
         pthread_mutex_lock(&mutex);
-        if (finish) {
+        if (finish_miner) {
             pthread_mutex_unlock(&mutex);
             break;
         }
@@ -496,12 +508,12 @@ void *miner_action(void *arg) {
         block.timestamp = time(NULL);
         block.nonce = 0;
         block.miner_id  = miner_id;
-        snprintf(block.id, TXB_ID_LEN, "Block-%d-%ld", miner_id, block.timestamp);
+        sprintf(block.id, "Block-%d-%ld", miner_id, block.timestamp);
 
         // Aloca e copia transações
         block.transactions = malloc(number_transactions * sizeof(Transaction));
         if (!block.transactions) {
-            log_file("[MINER] Erro malloc transactions\n");
+            log_file("[MINER] Erro ao alocar memória para as transações de um bloco\n");
             continue;
         }
         memcpy(block.transactions, txs, number_transactions * sizeof(Transaction));
@@ -543,6 +555,7 @@ void *miner_action(void *arg) {
             sleep(1);
             continue;
         }
+
         if (write(fd, &block, sizeof(Block)) != sizeof(Block)) {
             log_file("[MINER] Erro ao escrever no pipe Validator\n");
         } 
@@ -561,59 +574,173 @@ void *miner_action(void *arg) {
     return NULL;
 }
 
+
+void validator_exit_handler(int signum){
+    finish_validator = true;
+}
+
+
 void *validator() {
 
-    sprintf(msg,"[VALIDATOR] Processo Validator inicializado\n");
+    signal(SIGTERM, validator_exit_handler);
+
+    sprintf(msg, "[VALIDATOR] Processo Validator iniciado (PID %d)\n", getpid());
     log_file(msg);
 
-
-    int fd;
-    Block block;
-    bool valid = false;
-
-    fd = open(VALIDATOR_PIPE, O_RDONLY);
+    int fd = open(VALIDATOR_PIPE, O_RDONLY);
     if (fd == -1) {
-        sprintf(msg,"[VALIDATOR] Erro ao Abrir Pipe\n");
+        sprintf(msg, "[VALIDATOR] Erro ao abrir pipe: %s\n", strerror(errno));
         log_file(msg);
+        return NULL;
     }
-    while (1) {
-        ssize_t bytes = read(fd, &block, sizeof(Block));
-        if (bytes == sizeof(Block)) {
-            log_file("[VALIDATOR] Bloco recebido\n");
 
-            valid = validate_block(&block);
-            if(valid){
-                //append_ledger(&block);
-                log_file("[VALIDATOR] Bloco validado e adicionado ao ledger\n");
-            }
-            else {
-                log_file("[VALIDATOR] Bloco inválido descartado\n");
-            }
-            }   
-        else {
-            log_file("[VALIDATOR] Erro ao ler o bloco do pipe");
-            }
-            
-        } 
-    
-    
+    Block block;
+    while (!finish_validator) {
+        ssize_t bytes = read(fd, &block, sizeof(Block));
+        if (bytes == -1) {
+            if (errno == EINTR) break;  
+            sleep(1);
+            continue;
+        }
+        if (bytes != sizeof(Block)) {
+            log_file("[VALIDATOR] Tamanho de leitura incorreto\n");
+            sleep(1);
+            continue;
+        }
+
+        log_file("[VALIDATOR] Bloco recebido\n");
+        if (validate_block(&block)) {
+            append_ledger(&block);
+            remove_transactions(&block);
+            log_file("[VALIDATOR] Bloco validado e TX removidas da pool\n");
+        } else {
+            return_transactions(&block);
+            log_file("[VALIDATOR] Bloco inválido; TX não confirmadas devolvidas\n");
+        }
+    }
 
     close(fd);
     log_file("[VALIDATOR] Processo Validator terminado\n");
-
     return NULL;
 }
 
+
 bool validate_block(Block *block) {
 
-    bool is_valid = true;
-    return is_valid;
+    if (verify_nonce(block) == 0) {
+        log_file("[VALIDATOR] PoW inválido\n");
+        return false;
+    }
+
+    log_file("[VALIDATOR] bloco nonce verificado\n");
+
+    sem_wait(&ldgr->sem);
+    if (ldgr->current_blocks > 0) {
+        Block *last = &ldgr->blocks[ldgr->current_blocks - 1];
+        if (strncmp(block->previous_hash, last->hash, HASH_SIZE) != 0) {
+            sem_post(&ldgr->sem);
+            log_file("[VALIDATOR] previous_hash mismatch\n");
+            return false;
+        }
+    }
+    sem_post(&ldgr->sem);
+
+    log_file("[VALIDATOR] a entrar no validate\n");
+
+    for (int i = 0; i < block->transactions_count; ++i) {
+        if (!validate_transaction(&block->transactions[i])) {
+            char buf[128];
+            sprintf(buf, "[VALIDATOR] Transação %d inválida: ID=%s\n", i, block->transactions[i].id);
+            log_file(buf);
+            return false;
+        }
+    }
+
+    return true;
 }
 
+void append_ledger(const Block *block) {
+    sem_wait(&ldgr->sem);
+    if (ldgr->current_blocks < ldgr->max_blocks) {
+        ldgr->blocks[ldgr->current_blocks] = *block;
+        ldgr->current_blocks++;
+    } else {
+        log_file("[VALIDATOR] Ledger cheio, bloco ignorado\n");
+    }
+    sem_post(&ldgr->sem);
+}
 
+void return_transactions(const Block *block) {
+    sem_wait(&shrd->sem);
+    for (int i = 0; i < block->transactions_count; ++i) {
+        const Transaction *tx = &block->transactions[i];
+        if (is_tx_confirmed(tx->id)) {
+            continue;
+        }
+        for (int j = 0; j < shrd->pool_size; ++j) {
+            if (shrd->entries[j].empty) {
+                shrd->entries[j].tx = *tx;
+                shrd->entries[j].empty = false;
+                shrd->entries[j].age = 0;
+                shrd->transaction_pending_set++;
+                break;
+            }
+        }
+    }
+    sem_post(&shrd->sem);
+}
 
+void remove_transactions(const Block *block) {
+    sem_wait(&shrd->sem);
+    for (int i = 0; i < block->transactions_count; ++i) {
+        const char *txid = block->transactions[i].id;
+        for (int j = 0; j < shrd->pool_size; ++j) {
+            if (!shrd->entries[j].empty &&
+                strcmp(shrd->entries[j].tx.id, txid) == 0) {
+                shrd->entries[j].empty = true;
+                shrd->transaction_pending_set--;
+                break;
+            }
+        }
+    }
+    sem_post(&shrd->sem);
+}
 
+bool validate_transaction(const Transaction *tx) {
 
+    log_file("[VALIDATOR] entrou no validate_transaction\n");
+    time_t now = time(NULL);
+    if (tx->timestamp > now) {
+        log_file("[VALIDATOR] TX timestamp no futuro\n");
+        return false;
+    }
+    if (tx->reward < 0 || tx->value < 0) {
+        log_file("[VALIDATOR] TX valores negativos\n");
+        return false;
+    }
+    if (tx->id[0] == '\0') {
+        log_file("[VALIDATOR] TX sem ID\n");
+        return false;
+    }
+    return true;
+}
+
+bool is_tx_confirmed(const char *tx_id) {
+    bool found = false;
+    sem_wait(&ldgr->sem);
+    for (int b = 0; b < ldgr->current_blocks; ++b) {
+        Block *blk = &ldgr->blocks[b];
+        for (int t = 0; t < blk->transactions_count; ++t) {
+            if (strcmp(blk->transactions[t].id, tx_id) == 0) {
+                found = true;
+                break;
+            }
+        }
+        if (found) break;
+    }
+    sem_post(&ldgr->sem);
+    return found;
+}
 
 void *statistics() {
 
@@ -683,7 +810,11 @@ void sigint_handler(int signum){
     log_file(msg);
     kill(pid_miner, SIGTERM);
     }
-    if (pid_validator > 0) kill(pid_validator, SIGTERM);
+    if (pid_validator > 0){ 
+    sprintf(msg,"[SIGNAL] A terminar Validator\n");
+    log_file(msg);
+    kill(pid_validator, SIGTERM);
+    };
     if (pid_statistics > 0) kill(pid_statistics, SIGTERM);
 
 	cleanup();
