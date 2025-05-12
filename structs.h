@@ -19,6 +19,7 @@
 #define TX_ID_LEN 64
 #define TXB_ID_LEN 64
 #define HASH_SIZE 65  // SHA256_DIGEST_LENGTH * 2 + 1
+#define STATS_MTYPE 1
 
 extern int transactions_per_block;
 
@@ -45,6 +46,15 @@ typedef struct TransactionEntry{
     int age; //contador para idade da entry (usada no validator)
     Transaction tx;
 }TransactionEntry;
+
+typedef struct StatMessage {
+    long mtype;             // necessário para message queue
+    int miner_id;           // ID do miner
+    int valid;              // 1 se válido, 0 se inválido
+    int credits;            // soma das recompensas (apenas se válido)
+    time_t tx_start_time;   // timestamp da transação mais antiga
+    time_t block_time;      // timestamp do bloco
+} StatMessage;
 
 typedef struct TransactionPool{
     int transaction_pending_set; // Número atual de transações na pool

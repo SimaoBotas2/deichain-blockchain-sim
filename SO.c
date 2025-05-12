@@ -22,7 +22,8 @@
 #include <semaphore.h>
 #include <openssl/sha.h>
 #include <errno.h>
-#include <stddef.h> 
+#include <stddef.h>
+#include <termios.h>
 #include "structs.h"
 #include "pow.h"
 
@@ -31,6 +32,7 @@
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
 #define BUFFER_SIZE 1000 //apenas temporário, mudar pra malloc dps
 #define VALIDATOR_PIPE "/tmp/VALIDATOR_PIPE"
+#define MAX_MINERS 100
 
 #define LEDGER_SHM_KEY 0x4321
 
@@ -39,6 +41,7 @@
 //Controlo das threads
 pthread_mutex_t mutex;
 pthread_mutex_t pipe_mutex;
+pthread_mutex_t keyboard_mutex;
 
 bool finish_miner  = false;
 bool finish_validator = false;
@@ -66,6 +69,19 @@ pid_t pid_validator=-1;
 pid_t pid_statistics=-1;
 
 
+//Váriaveis para estatísticas
+int valid_blocks[MAX_MINERS] = {0};
+int invalid_blocks[MAX_MINERS] = {0};
+int credits_by_miner[MAX_MINERS] = {0};
+
+int total_blocks = 0;
+int total_valid = 0;
+double total_verification_time = 0;
+int verified_count = 0;
+
+int msqid;
+
+
 //Funcoes 
 
 void controller();
@@ -87,6 +103,8 @@ void remove_transactions(const Block *block);
 void return_transactions(const Block *block);
 void validator_exit_handler(int signum);
 void statistics_exit_handler(int signum);
+void statistics_usr1_handler(int sigum);
+void  * keyboard_listener(void * arg);
 
 
 
@@ -386,7 +404,6 @@ void log_file(const char *message) {
    sem_post(&log_sem);
 }
 
-
 // Processo Miner
 void *miner(){
     sprintf(msg,"[MINER] Processo Miner inicializado\n");
@@ -633,6 +650,43 @@ void *validator() {
             return_transactions(blk);
             log_file("[VALIDATOR] Bloco Rejeitado\n");
         }
+
+        key_t key = ftok("/tmp", 'S');
+        int msqid = msgget(key, 0666 | IPC_CREAT);
+        if (msqid == -1) {
+            log_file("[VALIDATOR] Erro ao aceder à message queue\n");
+        } 
+        else {
+            StatMessage smsg;
+            smsg.mtype = STATS_MTYPE;
+            smsg.miner_id = blk->miner_id;
+            smsg.valid = validate_block(blk) ? 1 : 0;
+
+            // calcular créditos (só se válido)
+            smsg.credits = 0;
+            for (int i = 0; i < blk->transactions_count; i++) {
+                if (smsg.valid) {
+                    smsg.credits += blk->transactions[i].reward;
+                }
+            }
+
+            // obter timestamp mais antigo
+            time_t min_time = blk->transactions[0].timestamp;
+            for (int i = 1; i < blk->transactions_count; i++) {
+                if (blk->transactions[i].timestamp < min_time) {
+                    min_time = blk->transactions[i].timestamp;
+                }
+            }
+
+            smsg.tx_start_time = min_time;
+            smsg.block_time = blk->timestamp;
+
+            // enviar mensagem
+            if (msgsnd(msqid, &smsg, sizeof(StatMessage) - sizeof(long), 0) == -1) {
+                log_file("[VALIDATOR] Erro ao enviar mensagem para Statistics\n");
+          }
+        }
+
         free(blk);
     }
 
@@ -793,53 +847,71 @@ void statistics_exit_handler(int signum){
 void *statistics() {
 
     signal(SIGTERM, statistics_exit_handler);
+    signal(SIGUSR1, statistics_usr1_handler);
 
-    log_file("=================== Start Ledger ===================\n");
-    
+    sprintf(msg,"[STATISTICS] Processo Statistics inicializado (PID: %d)\n", getpid());
+    log_file(msg);
 
-    //Apenas para nao haver spam
-    finish_statistics = true;
-    while (1)
-    {
-        if(finish_statistics){
-            break;
-        }
-
-        sem_wait(&ldgr->sem);
-        if (ldgr->current_blocks == 0) {
-            sem_post(&ldgr->sem);
-            sleep(1);
-            continue;
-        }
-
-        for (int i = 0; i < ldgr->current_blocks; i++) {
-            Block *block = &ldgr->blocks[i];
-            sprintf(msg, "||----  Block %d --\n", i);
-            log_file(msg);
-            sprintf(msg, "Block ID: BLOCK-%s",block->id);
-            log_file(msg);
-            sprintf(msg, "Previous Hash: %s", block->hash);
-            log_file(msg);
-            sprintf(msg, "Block Timestamp: %ld", block->timestamp);
-            log_file(msg);
-            sprintf(msg, "Nonce: %d", block->nonce);
-            log_file(msg);
-            log_file("Transactions:\n");
-            for (int i = 0; i < block->transactions_count; i++) {
-                sprintf(msg, "[%d] ID: %s | Reward: %d | Value: %d | Timestamp: %ld ", i,block->transactions[i].id, block->transactions[i].reward, block->transactions[i].value, block->transactions[i].timestamp);
-                log_file(msg);
-            }
-            sprintf(msg, "||------------------------------\n");
-        }
-        sem_post(&ldgr->sem);
-
-        sleep(20);         
+    // Criar fila de mensagens
+    key_t key = ftok("/tmp", 'S');
+    msqid = msgget(key, 0666 | IPC_CREAT);
+    if (msqid == -1) {
+        #ifdef DEBUG
+        log_file("[STATISTICS] Erro ao criar/aceder à message queue\n");
+        #endif
+        pthread_exit(NULL);
     }
-    
-    log_file("=================== End   Ledger ===================\n");
-    
-    return NULL;
+
+    StatMessage smsg;
+
+    while (!finish_statistics) {
+        ssize_t r = msgrcv(msqid, &smsg, sizeof(StatMessage) - sizeof(long), 0, IPC_NOWAIT);
+        if (r > 0) {
+            int id = smsg.miner_id;
+            total_blocks++;
+
+            if (smsg.valid) {
+                valid_blocks[id]++;
+                credits_by_miner[id] += smsg.credits;
+                total_valid++;
+
+                double duration = difftime(smsg.block_time, smsg.tx_start_time);
+                total_verification_time += duration;
+                verified_count++;
+            } else {
+                invalid_blocks[id]++;
+            }
+        } else {
+            usleep(200000); // Evitar busy waiting
+        }
+    }
+
+    log_file("[STATISTICS] Processo Statistics a terminar...\n");
+    statistics_usr1_handler(SIGUSR1); // Imprime estatísticas finais
 }
+
+void statistics_usr1_handler(int sigum) {
+    log_file("[STATISTICS] Sinal SIGUSR1 recebido. Estatísticas atuais:\n");
+
+    for (int i = 0; i < MAX_MINERS; i++) {
+        if (valid_blocks[i] || invalid_blocks[i]) {
+            sprintf(msg, "Miner %d - Válidos: %d | Inválidos: %d | Créditos: %d\n",
+                    i, valid_blocks[i], invalid_blocks[i], credits_by_miner[i]);
+            log_file(msg);
+        }
+    }
+
+    sprintf(msg, "Total de blocos recebidos: %d\n", total_blocks);
+    log_file(msg);
+    sprintf(msg, "Total de blocos válidos: %d\n", total_valid);
+    log_file(msg);
+    if (verified_count > 0) {
+        sprintf(msg, "Tempo médio de verificação: %.2f segundos\n", total_verification_time / verified_count);
+        log_file(msg);
+ }
+}
+
+
 
 void cleanup() {
     // Função que vai limpar todos os recursos utilizados
@@ -901,4 +973,36 @@ void sigint_handler(int signum){
     }
 
 	cleanup();
+}
+
+void *keyboard_listener(void *arg) {
+    struct termios oldt, newt;
+
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+    log_file("[CONTROLLER] Teclado ativo - pressione Ctrl+Q para ver a estatísticas\n");
+
+    while (1) {
+        int ch = getchar();
+        if (ch == 17) { // Ctrl+Q
+            if (pid_statistics > 0) {
+                kill(pid_statistics, SIGUSR1);
+                log_file("[CONTROLLER] Ctrl+Q pressionado - SIGUSR1 enviado ao Statistics\n");
+            }
+        }
+
+        pthread_mutex_lock(&keyboard_mutex);
+        if (finish_miner || finish_validator || finish_statistics) {
+            pthread_mutex_unlock(&mutex);
+            break;
+        }
+        pthread_mutex_unlock(&keyboard_mutex);
+    }
+
+    // Restaurar terminal
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return NULL;
 }
