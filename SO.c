@@ -602,8 +602,8 @@ void *validator() {
             continue;
         }
 
-        // 2) aloca o bloco completo
-        size_t txs_sz   = header.transactions_count * sizeof(Transaction);
+        // Aloca o bloco completo
+        size_t txs_sz = header.transactions_count * sizeof(Transaction);
         size_t total_sz = header_sz + txs_sz;
         Block *blk = malloc(total_sz);
         if (!blk) {
@@ -617,7 +617,7 @@ void *validator() {
         sprintf(msg,"[VALIDATOR] Bloco recebido do Miner : %d\n",blk->miner_id);
         log_file(msg);
 
-        // 3) lê as transações
+        // Lê as transações
         r = read(fd, blk->transactions, txs_sz);
         if ((size_t)r != txs_sz) {
             #ifdef DEBUG
@@ -627,13 +627,13 @@ void *validator() {
             continue;
         }
 
-        // 4) debug / validação
+        // Validação e append do bloco
         if (validate_block(blk)) {
-            append_ledger(blk);
             remove_transactions(blk);
             sprintf(msg,"[VALIDATOR] Bloco do Miner %d Aceite e Enviado para o Ledger\n",blk->miner_id);
             log_file(msg);
-        } else {
+        }
+        else {
             return_transactions(blk);
             log_file("[VALIDATOR] Bloco Rejeitado\n");
         }
@@ -646,45 +646,60 @@ void *validator() {
 }
 
 bool validate_block(Block *block) {
-
+    // Verifica PoW
     if (verify_nonce(block) == 0) {
         log_file("[VALIDATOR] PoW inválido\n");
         return false;
     }
 
-    sem_wait(&ldgr->sem);
-    if (ldgr->current_blocks > 0) {
-        Block *last = &ldgr->blocks[ldgr->current_blocks - 1];
-        if (strncmp(block->previous_hash, last->hash, HASH_SIZE) != 0) {
-            sem_post(&ldgr->sem);
-            log_file("[VALIDATOR] Hash não combina com anterior \n");
-            return false;
+    // Checa por transações repetidas dentro do bloco
+    for (int i = 0; i < block->transactions_count; ++i) {
+        for (int j = i + 1; j < block->transactions_count; ++j) {
+            if (strcmp(block->transactions[i].id,
+                       block->transactions[j].id) == 0) {
+                char buf[128];
+                sprintf(buf,"[VALIDATOR] Bloco inválido: transação repetida ID=%s\n",block->transactions[i].id);
+                log_file(buf);
+                return false;
+            }
         }
     }
-    sem_post(&ldgr->sem);
 
+    // Valida cada transação
     for (int i = 0; i < block->transactions_count; ++i) {
         if (!validate_transaction(&block->transactions[i])) {
             char buf[128];
-            sprintf(buf, "[VALIDATOR] Transação %d inválida: ID=%s\n", i, block->transactions[i].id);
+            sprintf(buf,
+                    "[VALIDATOR] Transação %d inválida: ID=%s\n",
+                    i, block->transactions[i].id);
             log_file(buf);
             return false;
         }
     }
 
-    return true;
-}
-
-void append_ledger(const Block *block) {
-    //Função para adicioanar os blocos validados ao ledger
+    // check de cadeia de hashes e append ao ledger
     sem_wait(&ldgr->sem);
+
+    // Verifica encadeamento de hashes
+    if (ldgr->current_blocks > 0) {
+        Block *last = &ldgr->blocks[ldgr->current_blocks - 1];
+        if (strncmp(block->previous_hash, last->hash, HASH_SIZE) != 0) {
+            sem_post(&ldgr->sem);
+            log_file("[VALIDATOR] Hash não combina com anterior\n");
+            return false;
+        }
+    }
+
+    // Append ao ledger
     if (ldgr->current_blocks < ldgr->max_blocks) {
         ldgr->blocks[ldgr->current_blocks] = *block;
         ldgr->current_blocks++;
     } else {
         log_file("[VALIDATOR] Ledger cheio, bloco ignorado\n");
     }
+
     sem_post(&ldgr->sem);
+    return true;
 }
 
 void return_transactions(const Block *block) {
@@ -701,10 +716,9 @@ void return_transactions(const Block *block) {
                 shrd->entries[j].empty = false;
                 shrd->entries[j].age ++; //aumenta a age quando a tx volta à pool
                 if(shrd->entries[j].age % 50 == 0){
-                    shrd->entries[j].tx.reward++; //aumenta a reward dado a idade elevada da tx
+                    shrd->entries[j].tx.reward++; //aumenta a reward dado a idade da tx
                 }
                 shrd->transaction_pending_set++;
-               // printf("Devolvida a pool :  id: %s, reward : %d , age :%d\n",tx->id,tx->reward,shrd->entries[j].age);
                 break;
             }
         }
@@ -731,6 +745,11 @@ void remove_transactions(const Block *block) {
 
 bool validate_transaction(const Transaction *tx) {
     // Verifica se a transação já existe na blockchain (foi confirmada)
+
+
+    printf("%s\n",tx->id);
+
+
     if (is_tx_confirmed(tx->id)) {
         char buffer[128];
         sprintf(buffer,"[VALIDATOR] TX duplicada no ledger: %s\n", tx->id);

@@ -22,10 +22,6 @@
 
 extern int transactions_per_block;
 
-
-// Inline function to compute the size of a TransactionBlock
-
-
 // Estrutura de configuração
 typedef struct Configuration {
     int NUM_MINER;
@@ -87,14 +83,13 @@ typedef struct MinerStats {
     int total_reward;
 } MinerStats;
 
-
+// Inline function to compute the size of a TransactionBlock
 static inline size_t get_transaction_block_size() {
     if (transactions_per_block == 0) {
       perror("Must set the 'transactions_per_block' variable before using!\n");
       exit(-1);
     }
-    return sizeof(Block) +
-           transactions_per_block * sizeof(Transaction);
+    return sizeof(Block) + transactions_per_block * sizeof(Transaction);
   }
 
 

@@ -106,12 +106,12 @@ int main(int argc, char *argv[]) {
             shrd->transaction_pending_set++;
 
             printf("Transação %s gerada , com valor: %d\n", new_tx.id, new_tx.value);
+            transaction_id++;
         } 
         else {
             printf("Transaction buffer cheio. À espera...\n");
         }
 
-        transaction_id++;
         sem_post(&(shrd->sem));
 
         
