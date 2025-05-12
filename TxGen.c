@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    //Verificação de Inputs
+    //Verificação de Inputs do Utilizador
 
     int reward = atoi(argv[1]);
 
