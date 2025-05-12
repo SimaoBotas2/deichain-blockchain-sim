@@ -38,10 +38,10 @@
 
 //Controlo das threads
 pthread_mutex_t mutex;
+pthread_mutex_t pipe_mutex;
+
 bool finish_miner  = false;
-
 bool finish_validator = false;
-
 bool finish_statistics = false;
 
 
@@ -389,10 +389,8 @@ void log_file(const char *message) {
 
 // Processo Miner
 void *miner(){
-
     sprintf(msg,"[MINER] Processo Miner inicializado\n");
     log_file(msg);
-
 
     //Sinal recebido do controller para terminar
     signal(SIGTERM, miner_exit_handler);
@@ -446,7 +444,6 @@ void *miner_action(void *arg) {
     int miner_id = *(int*)arg;
     char buf[BUFFER_SIZE];
 
-    // obtém config
     sem_wait(&config.sem);
     int num_txs = config.TRANSACTIONS_PER_BLOCK;
     int pool_sz = config.TX_POOL_SIZE;
@@ -456,15 +453,13 @@ void *miner_action(void *arg) {
     log_file(buf);
 
     while (1) {
-        // condição de saída
         pthread_mutex_lock(&mutex);
         if (finish_miner) { 
-        pthread_mutex_unlock(&mutex);
-        break; 
+            pthread_mutex_unlock(&mutex);
+            break; 
         }
         pthread_mutex_unlock(&mutex);
 
-        // espera transacções
         sem_wait(&shrd->sem);
         if (shrd->transaction_pending_set < num_txs) {
             sem_post(&shrd->sem);
@@ -472,61 +467,63 @@ void *miner_action(void *arg) {
             continue;
         }
 
-        // coleta transacções
         Transaction txs[num_txs];
         int ages[num_txs];
+        int collected_indices[num_txs];
         int collected = 0;
+
+        // Coleta as transações mais lucrativas
         for (int i = 0; i < pool_sz; i++) {
             if (!shrd->entries[i].empty) {
-
-                Transaction cur = shrd->entries[i].tx;
-                int cur_age = shrd->entries[i].age;
-
-                if(collected<num_txs){ //a encher o vetor
-                    txs[collected] = cur;
-                    ages[collected] = cur_age;
+                if (collected < num_txs) {
+                    txs[collected] = shrd->entries[i].tx;
+                    ages[collected] = shrd->entries[i].age;
+                    collected_indices[collected] = i;
                     collected++;
-                }
-                else{ //vetor já cheio
-                    int min=0;
-                    for(int j=1;j<num_txs;j++){ //corre o vetor e vê qual o indice com reward minima
-                        if(txs[j].reward < txs[min].reward || txs[j].reward == txs[min].reward && ages[j]<ages[min]){
-                            min = j;
+                } else {
+                    int min_idx = 0;
+                    for (int j = 1; j < num_txs; j++) {
+                        if (txs[j].reward < txs[min_idx].reward || (txs[j].reward == txs[min_idx].reward && ages[j] < ages[min_idx])) {
+                            min_idx = j;
                         }
                     }
-                    if(cur.reward > txs[min].reward || (cur.reward == txs[min].reward && cur_age >ages[min])){
-                    txs[min] = cur;
-                    ages[min] = cur_age;
+                    if (shrd->entries[i].tx.reward > txs[min_idx].reward ||
+                        (shrd->entries[i].tx.reward == txs[min_idx].reward && 
+                         shrd->entries[i].age > ages[min_idx])) {
+                        txs[min_idx] = shrd->entries[i].tx;
+                        ages[min_idx] = shrd->entries[i].age;
+                        collected_indices[min_idx] = i;
+                    }
                 }
-                }
-
             }
         }
+
+        // Remove as transações coletadas do pool
+        for (int j = 0; j < num_txs; j++) {
+            shrd->entries[collected_indices[j]].empty = true;
+        }
+        shrd->transaction_pending_set -= num_txs;
         sem_post(&shrd->sem);
 
-        // prepara buffer de envio
+        // Prepara o bloco
         size_t header_sz = offsetof(Block, transactions);
         size_t txs_sz = num_txs * sizeof(Transaction);
-        size_t total_sz  = header_sz + txs_sz;
+        size_t total_sz = header_sz + txs_sz;
 
         Block *blk = malloc(total_sz);
         if (!blk) {
             log_file("[MINER] malloc falhou\n");
-            sleep(1);
             continue;
         }
 
-        // preenche cabeçalho do bloco
         blk->transactions_count = num_txs;
         blk->timestamp = time(NULL);
         blk->nonce = 0;
         blk->miner_id = miner_id;
         snprintf(blk->id, TXB_ID_LEN, "Block-%d-%ld", miner_id, blk->timestamp);
-
-        // copia as transacções
         memcpy(blk->transactions, txs, txs_sz);
 
-        // obtém previous_hash
+        // Obtém o previous_hash do ledger
         sem_wait(&ldgr->sem);
         if (ldgr->current_blocks == 0) {
             strncpy(blk->previous_hash, INITIAL_HASH, HASH_SIZE);
@@ -537,35 +534,34 @@ void *miner_action(void *arg) {
         }
         sem_post(&ldgr->sem);
 
-        // PoW
+        // Executa PoW
         PoWResult res = proof_of_work(blk);
         if (res.error) {
-            snprintf(buf, sizeof buf,
-                     "[MINER] PoW falhou após %d ops\n", res.operations);
+            snprintf(buf, sizeof buf, "[MINER] PoW falhou após %d ops\n", res.operations);
             log_file(buf);
             free(blk);
             continue;
         }
         strncpy(blk->hash, res.hash, HASH_SIZE);
 
-        // envia tudo num único write()
+        // Envia o bloco para o validador
+        pthread_mutex_lock(&pipe_mutex); // Mutex específico para o pipe
         int fd = open(VALIDATOR_PIPE, O_WRONLY);
         if (fd == -1 || write(fd, blk, total_sz) != (ssize_t)total_sz) {
             #ifdef DEBUG 
             log_file("[MINER] Erro ao escrever no pipe\n");
             #endif
         } else {
-            snprintf(buf, sizeof buf,
-                     "[MINER] Bloco %s enviado ao Validator\n", blk->id);
+            snprintf(buf, sizeof buf, "[MINER] Bloco %s enviado ao Validator\n", blk->id);
             log_file(buf);
         }
         if (fd != -1) close(fd);
-        free(blk);
+        pthread_mutex_unlock(&pipe_mutex);
 
-        sleep(1);
+        free(blk);
     }
 
-    snprintf(buf, sizeof buf, "[MINER] Thread %d terminou\n", miner_id);
+    sprintf(buf, "[MINER] Thread %d terminou\n", miner_id);
     log_file(buf);
     return NULL;
 }
