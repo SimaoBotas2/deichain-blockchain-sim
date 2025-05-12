@@ -50,7 +50,7 @@ typedef struct TransactionEntry{
 typedef struct StatMessage {
     long mtype;             // necessário para message queue
     int miner_id;           // ID do miner
-    int valid;              // 1 se válido, 0 se inválido
+    bool valid;              // 1 se válido, 0 se inválido
     int credits;            // soma das recompensas (apenas se válido)
     time_t tx_start_time;   // timestamp da transação mais antiga
     time_t block_time;      // timestamp do bloco

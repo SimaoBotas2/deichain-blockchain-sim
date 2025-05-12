@@ -569,7 +569,7 @@ void *miner_action(void *arg) {
             log_file("[MINER] Erro ao escrever no pipe\n");
             #endif
         } else {
-            snprintf(buf, sizeof buf, "[MINER] Bloco %s enviado ao Validator\n", blk->id);
+            sprintf(buf, "[MINER] Bloco %s enviado ao Validator\n", blk->id);
             log_file(buf);
         }
         if (fd != -1) close(fd);
@@ -640,8 +640,10 @@ void *validator() {
             continue;
         }
 
+        bool is_valid = validate_block(blk);
+
         // Validação e append do bloco
-        if (validate_block(blk)) {
+        if (is_valid) {
             remove_transactions(blk);
             sprintf(msg,"[VALIDATOR] Bloco do Miner %d Aceite e Enviado para o Ledger\n",blk->miner_id);
             log_file(msg);
@@ -660,8 +662,7 @@ void *validator() {
             StatMessage smsg;
             smsg.mtype = STATS_MTYPE;
             smsg.miner_id = blk->miner_id;
-            smsg.valid = validate_block(blk) ? 1 : 0;
-
+            smsg.valid = is_valid;
             // calcular créditos (só se válido)
             smsg.credits = 0;
             for (int i = 0; i < blk->transactions_count; i++) {
@@ -744,7 +745,8 @@ bool validate_block(Block *block) {
     if (ldgr->current_blocks < ldgr->max_blocks) {
         ldgr->blocks[ldgr->current_blocks] = *block;
         ldgr->current_blocks++;
-    } else {
+    } 
+    else {
         log_file("[VALIDATOR] Ledger cheio, bloco ignorado\n");
     }
 
@@ -795,11 +797,6 @@ void remove_transactions(const Block *block) {
 
 bool validate_transaction(const Transaction *tx) {
     // Verifica se a transação já existe na blockchain (foi confirmada)
-
-
-    printf("%s\n",tx->id);
-
-
     if (is_tx_confirmed(tx->id)) {
         char buffer[128];
         sprintf(buffer,"[VALIDATOR] TX duplicada no ledger: %s\n", tx->id);
