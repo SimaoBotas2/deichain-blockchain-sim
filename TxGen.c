@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    //Verificação de Inputs
+    //Verificação de Inputs do Utilizador
 
     int reward = atoi(argv[1]);
 
@@ -93,11 +93,12 @@ int main(int argc, char *argv[]) {
         }
         //Procura uma entry vazia
         sem_wait(&(shrd->sem));
-        if (shrd->entries[i].empty ) {
+        if (shrd->entries[i].empty) {
             Transaction new_tx;
             snprintf(new_tx.id, sizeof(new_tx.id), "TX%d-%d", getpid(), transaction_id);
             new_tx.reward = reward;
             new_tx.value = (rand() % 100) + 1; // Valor random (diz no enunciado)
+            new_tx.timestamp = time(NULL); // Timestamp atual
 
             //Guardar na memoria partilhada
             shrd->entries[i].tx= new_tx;
@@ -106,12 +107,12 @@ int main(int argc, char *argv[]) {
             shrd->transaction_pending_set++;
 
             printf("Transação %s gerada , com valor: %d\n", new_tx.id, new_tx.value);
+            transaction_id++;
         } 
         else {
             printf("Transaction buffer cheio. À espera...\n");
         }
 
-        transaction_id++;
         sem_post(&(shrd->sem));
 
         
