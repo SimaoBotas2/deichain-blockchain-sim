@@ -515,7 +515,7 @@ void *miner_action(void *arg) {
             }
         }
 
-        // Remove as transações coletadas do pool
+        // Remove as transações coletadas do pool, isto tem de sair daqui e ir pro validator
         for (int j = 0; j < num_txs; j++) {
             shrd->entries[collected_indices[j]].empty = true;
         }
@@ -755,7 +755,7 @@ bool validate_block(Block *block) {
 }
 
 void return_transactions(const Block *block) {
-    //Retorna transações que já tinham sido usadas noutro bloco para a transaction pool
+    //Retorna transações que não tenham sido usadas noutro bloco para a transaction pool
     sem_wait(&shrd->sem);
     for (int i = 0; i < block->transactions_count; ++i) {
         const Transaction *tx = &block->transactions[i];
