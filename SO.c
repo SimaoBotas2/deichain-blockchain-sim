@@ -407,8 +407,10 @@ void create_ipcs() {
 
 
     //BlockChain Ledger Inicio
+
+    size_t block_size = sizeof(Block) + config.TRANSACTIONS_PER_BLOCK * sizeof(Transaction);
     
-    size_t ledger_size = sizeof(Blockchain) + (config.BLOCKCHAIN_BLOCKS * sizeof(Block));
+    size_t ledger_size = sizeof(Blockchain) + (config.BLOCKCHAIN_BLOCKS * block_size);
     ledger_shmid = shmget(LEDGER_SHM_KEY, ledger_size, IPC_CREAT | 0666);
     if (ledger_shmid < 0){
         perror("shmget error\n");  
@@ -422,7 +424,6 @@ void create_ipcs() {
     }
 
     ldgr->max_blocks = config.BLOCKCHAIN_BLOCKS;
-
     ldgr->current_blocks = 0;
   
     ldgr->blocks = (Block*)((char*)ldgr + sizeof(Blockchain));
@@ -901,8 +902,8 @@ void *ledger_logger() {
     
     while (1)
     {
-        if(finish_logger){
-            break;
+        if(!finish_logger){
+           continue;
         }
 
         sem_wait(&ldgr->sem);
@@ -912,6 +913,9 @@ void *ledger_logger() {
             continue;
         }
         log_file("=================== Start Ledger ===================\n");
+
+
+        printf("QUANTIDADE DE BLOCOS  %d \n ",ldgr->current_blocks);
 
         for (int i = 0; i < ldgr->current_blocks; i++) {
             Block *block = &ldgr->blocks[i];
@@ -926,6 +930,7 @@ void *ledger_logger() {
             sprintf(msg, "Nonce: %d", block->nonce);
             log_file(msg);
             log_file("Transactions:\n");
+
             for (int j = 0; j < block->transactions_count; j++) {
                 sprintf(msg, "[%d] ID: %s | Reward: %d | Value: %d | Timestamp: %ld ", j,block->transactions[j].id, block->transactions[j].reward, block->transactions[j].value, block->transactions[j].timestamp);
                 log_file(msg);
@@ -933,9 +938,10 @@ void *ledger_logger() {
             sprintf(msg, "||------------------------------\n");
             log_file(msg);
         }
-        sem_post(&ldgr->sem);        
-        sleep(1);
+        sem_post(&ldgr->sem);
+        break;        
     }
+    
     
     log_file("=================== End   Ledger ===================\n");
 }
