@@ -32,7 +32,6 @@
 #define SHM_KEY 0x1234 // Chave para segmento de memória compartilhado
 #define BUFFER_SIZE 1000 //apenas temporário, mudar pra malloc dps
 #define VALIDATOR_PIPE "/tmp/VALIDATOR_PIPE"
-#define MAX_MINERS 100
 
 #define LEDGER_SHM_KEY 0x4321
 
@@ -41,11 +40,12 @@
 //Controlo das threads
 pthread_mutex_t mutex;
 pthread_mutex_t pipe_mutex;
-pthread_mutex_t keyboard_mutex;
+pthread_mutex_t control_mutex;
 
 bool finish_miner  = false;
 bool finish_validator = false;
 bool finish_statistics = false;
+bool finish_thread = false;
 
 
 FILE * file;
@@ -70,9 +70,9 @@ pid_t pid_statistics=-1;
 
 
 //Váriaveis para estatísticas
-int valid_blocks[MAX_MINERS] = {0};
-int invalid_blocks[MAX_MINERS] = {0};
-int credits_by_miner[MAX_MINERS] = {0};
+int *valid_blocks;
+int *invalid_blocks;
+int *credits_by_miner;
 
 int total_blocks = 0;
 int total_valid = 0;
@@ -81,6 +81,10 @@ int verified_count = 0;
 
 int msqid;
 
+//teste varios validators
+pthread_t validator_manager_thread;
+pid_t validator_pids[3] = {-1, -1, -1};
+int active_validators = 0;
 
 //Funcoes 
 
@@ -104,8 +108,10 @@ void return_transactions(const Block *block);
 void validator_exit_handler(int signum);
 void statistics_exit_handler(int signum);
 void statistics_usr1_handler(int sigum);
-void  * keyboard_listener(void * arg);
-
+void print_transactions(const Block * block);
+void spawn_validator(int index);
+void kill_validator(int index);
+void* validator_manager();
 
 
 int main() {
@@ -116,7 +122,7 @@ int main() {
         return -1;
     }
 
-// Inicializar semáforo para o log
+    // Inicializar semáforo para o log
     if(sem_init(&log_sem,1,1)==-1){
         #ifdef DEBUG
         sprintf(msg,"Erro ao criar semáforo do log\n");
@@ -135,12 +141,11 @@ int main() {
 
 // Processo Controller
 void controller() {
-    
     signal(SIGINT,sigint_handler);
 
     log_file("[CONTROLLER] Simulação começou\n");
 
-    // Iniciar estrutura
+
     read_config("config.cfg");
 
     #ifdef DEBUG
@@ -152,75 +157,159 @@ void controller() {
     log_file(msg);
     sprintf(msg,"BLOCKCHAIN_BLOCKS: %d\n", config.BLOCKCHAIN_BLOCKS);
     log_file(msg);
-
     #endif
 
     create_ipcs();
-    
-    pid_miner = fork();
 
+
+    //thread para gestao de processos validator
+    if (pthread_create(&validator_manager_thread, NULL, validator_manager, NULL) != 0) {
+        log_file("[CONTROLLER] Erro ao criar thread de gestao de validators\n");
+    }
+
+    pid_miner = fork();
     if (pid_miner < 0) {
-        #ifdef DEBUG
-        sprintf(msg,"Erro ao criar o processo miner\n");
-        log_file(msg);
-        #endif
+        log_file("[CONTROLLER] Erro ao criar o processo miner\n");
         exit(1);
-    } 
-    else if (pid_miner == 0) {
-        // Processo filho (Miner)
+    } else if (pid_miner == 0) {
         sprintf(msg,"[CONTROLLER] Processo Miner começou (PID: %d)\n", getpid());
         log_file(msg);
-
-        //ignorar o sinal, apenas o controller o vai ver
         signal(SIGINT,SIG_IGN);
         miner();
         exit(0);
     }
 
+    // Lançar o primeiro Validator, o resto será controlado pela thread
+
+    /*
     pid_validator = fork();
     if (pid_validator < 0) {
-        #ifdef DEBUG
-        sprintf(msg,"Erro ao criar o processo validator\n");
-        log_file(msg);
-        #endif
+        log_file("[CONTROLLER] Erro ao criar o processo validator\n");
         exit(1);
     }
-    else if (pid_validator == 0) {
-        // Processo filho (Validator)
-        sprintf(msg,"[CONTROLLER] Processo Validator começou (PID: %d)\n", getpid());
+     else if (pid_validator == 0) {
+        sprintf(msg,"[CONTROLLER] Processo Validator 1 começou (PID: %d)\n", getpid());
         log_file(msg);
-
-        //ignorar o sinal, apenas o controller o vai ver
         signal(SIGINT,SIG_IGN);
         validator();
         exit(0);
     }
+        */
 
+    // Lançar processo Statistics
     pid_statistics = fork();
     if (pid_statistics < 0) {
-        #ifdef DEBUG
-        sprintf(msg,"Erro ao criar o processo statistics\n");
-        log_file(msg);
-        #endif
+        log_file("[CONTROLLER] Erro ao criar o processo statistics\n");
         exit(1);
-    }
-    else if (pid_statistics == 0) {
-        // Processo filho (Statistics)
-        sprintf(msg,"[CONTROLLER] Processo Statistics começou (PID: %d)\n", getpid());      
+    } else if (pid_statistics == 0) {
+        sprintf(msg,"[CONTROLLER] Processo Statistics começou (PID: %d)\n", getpid());
         log_file(msg);
-        //ignorar o sinal, apenas o controller o vai ver
         signal(SIGINT,SIG_IGN);
         statistics();
         exit(0);
     }
 
+    // Esperar pelos processos principais
     waitpid(pid_miner, NULL, 0);
-    waitpid(pid_validator, NULL, 0);
+   // waitpid(pid_validator, NULL, 0);
     waitpid(pid_statistics, NULL, 0);
-    
-   
-    log_file("[CONTROLLER] Simulação terminou\n");      
- 
+
+    //Apenas depois dos outros processos morrerem
+    finish_thread = true;
+
+    pthread_join(validator_manager_thread, NULL);
+
+    log_file("[CONTROLLER] Simulação terminou\n");
+}
+
+void spawn_validator(int index) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        signal(SIGINT, SIG_IGN);
+        validator();
+        exit(0);
+    } else if (pid > 0) {
+        validator_pids[index] = pid;
+        active_validators++;
+        sprintf(msg, "[CONTROLLER] Validator %d criado \n", index);
+        log_file(msg);
+    } else {
+        log_file("[CONTROLLER] Erro ao criar Validator\n");
+    }
+}
+void kill_validator(int index) {
+    if (validator_pids[index] != -1) {  // Mudamos a condição para verificar se não é -1
+        if (kill(validator_pids[index], SIGTERM) == -1) {
+            sprintf(msg, "[CONTROLLER] Erro ao enviar SIGTERM para Validator %d\n", index);
+            log_file(msg);
+        }
+        sprintf(msg, "[CONTROLLER] Validator %d terminado\n", index);
+        log_file(msg);
+        validator_pids[index] = -1;
+        active_validators--;
+    } else {
+        sprintf(msg, "[CONTROLLER] Validator %d já tinha morrido\n", index);
+        log_file(msg);
+    }
+}
+
+void* validator_manager() {
+    while (1) {
+        pthread_mutex_lock(&control_mutex);
+        if(finish_thread){
+            pthread_mutex_unlock(&control_mutex);
+            break;
+        }
+        pthread_mutex_unlock(&control_mutex);
+
+        sem_wait(&shrd->sem);
+        float usage = ((float)shrd->transaction_pending_set / shrd->pool_size) * 100;
+        sem_post(&shrd->sem);
+        
+        /*
+        sprintf(msg,"[CONTROLLER] Usage atual : %f %%\n",usage);
+        log_file(msg);
+        */
+
+        if(active_validators == 0){
+            spawn_validator(0);
+        }
+
+        if (usage >= 80 && active_validators < 3) {
+            for (int i = 0; i < 3; i++) {
+                if (validator_pids[i] == -1) {
+                    spawn_validator(i);
+                    break;
+                }
+            }
+        } else if (usage >= 60 && active_validators < 2) {
+            for (int i = 0; i < 3; i++) {
+                if (validator_pids[i] == -1) {
+                    spawn_validator(i);
+                    break;
+                }
+            }
+        } else if (usage < 40 && active_validators > 1) {
+            for (int i = 2; i >= 1; i--) {
+                if (validator_pids[i] != -1) {
+                    kill_validator(i);
+                    break;
+                }
+            }
+        }
+    }
+
+
+    log_file("[CONTROLLER] A matar processos validator\n");
+    for (int i = 0; i < 3; i++) {
+        if (validator_pids[i] != -1) {
+            kill_validator(i);
+        }
+    }
+
+    log_file("[CONTROLLER] Thread validator_manager a terminar.\n");
+
+    return NULL;
 }
 
 // Função para ler o arquivo de configuração
@@ -480,7 +569,6 @@ void *miner_action(void *arg) {
         sem_wait(&shrd->sem);
         if (shrd->transaction_pending_set < num_txs) {
             sem_post(&shrd->sem);
-            sleep(1);
             continue;
         }
 
@@ -515,11 +603,13 @@ void *miner_action(void *arg) {
             }
         }
 
-        // Remove as transações coletadas do pool, isto tem de sair daqui e ir pro validator
+        // Remove as transações coletadas do pool
+        
         for (int j = 0; j < num_txs; j++) {
             shrd->entries[collected_indices[j]].empty = true;
         }
         shrd->transaction_pending_set -= num_txs;
+        
         sem_post(&shrd->sem);
 
         // Prepara o bloco
@@ -571,6 +661,7 @@ void *miner_action(void *arg) {
         } else {
             sprintf(buf, "[MINER] Bloco %s enviado ao Validator\n", blk->id);
             log_file(buf);
+        print_transactions(blk);
         }
         if (fd != -1) close(fd);
         pthread_mutex_unlock(&pipe_mutex);
@@ -583,10 +674,12 @@ void *miner_action(void *arg) {
     return NULL;
 }
 
-
 void validator_exit_handler(int signum){
+    log_file("[VALIDATOR] Sinal de término recebido.\n");
     finish_validator = true;
+    close(0); // força read a falhar
 }
+
 
 void *validator() {
     signal(SIGTERM, validator_exit_handler);
@@ -755,7 +848,7 @@ bool validate_block(Block *block) {
 }
 
 void return_transactions(const Block *block) {
-    //Retorna transações que não tenham sido usadas noutro bloco para a transaction pool
+    //Retorna transações que já tinham sido usadas noutro bloco para a transaction pool
     sem_wait(&shrd->sem);
     for (int i = 0; i < block->transactions_count; ++i) {
         const Transaction *tx = &block->transactions[i];
@@ -764,6 +857,7 @@ void return_transactions(const Block *block) {
         }
         for (int j = 0; j < shrd->pool_size; ++j) {
             if (shrd->entries[j].empty) {
+                //printf("tx devolvida : %s",tx->id);
                 shrd->entries[j].tx = *tx;
                 shrd->entries[j].empty = false;
                 shrd->entries[j].age ++; //aumenta a age quando a tx volta à pool
@@ -783,6 +877,7 @@ void remove_transactions(const Block *block) {
     sem_wait(&shrd->sem);
     for (int i = 0; i < block->transactions_count; ++i) {
         const char *txid = block->transactions[i].id;
+
         for (int j = 0; j < shrd->pool_size; ++j) {
             if (!shrd->entries[j].empty &&
                 strcmp(shrd->entries[j].tx.id, txid) == 0) {
@@ -837,6 +932,14 @@ bool is_tx_confirmed(const char *tx_id) {
     return found;
 }
 
+void print_transactions(const Block * block){
+
+    for (int i=0;i<block->transactions_count;i++){
+        printf("%s\n",block->transactions[i].id);
+    }
+
+}
+
 void statistics_exit_handler(int signum){
     finish_statistics = true;
 }
@@ -845,6 +948,26 @@ void *statistics() {
 
     signal(SIGTERM, statistics_exit_handler);
     signal(SIGUSR1, statistics_usr1_handler);
+
+    sem_wait(&config.sem);
+    int NUM_MINER = config.NUM_MINER;
+    sem_post(&config.sem);
+
+
+    valid_blocks = malloc(NUM_MINER * sizeof(int));
+    invalid_blocks = malloc(NUM_MINER * sizeof(int));
+    credits_by_miner = malloc(NUM_MINER * sizeof(int));
+
+    if (!valid_blocks || !invalid_blocks || !credits_by_miner) {
+        log_file("[STATISTICS] Erro ao alocar memória para estatísticas\n");
+        pthread_exit(NULL);
+    }
+
+    for (int i = 0; i < NUM_MINER; i++) {
+        valid_blocks[i] = 0;
+        invalid_blocks[i] = 0;
+        credits_by_miner[i] = 0;
+    }
 
     sprintf(msg,"[STATISTICS] Processo Statistics inicializado (PID: %d)\n", getpid());
     log_file(msg);
@@ -856,6 +979,9 @@ void *statistics() {
         #ifdef DEBUG
         log_file("[STATISTICS] Erro ao criar/aceder à message queue\n");
         #endif
+        free(valid_blocks);
+        free(invalid_blocks);
+        free(credits_by_miner);
         pthread_exit(NULL);
     }
 
@@ -874,6 +1000,7 @@ void *statistics() {
 
                 double duration = difftime(smsg.block_time, smsg.tx_start_time);
                 total_verification_time += duration;
+                printf("%d ",total_verification_time);
                 verified_count++;
             } else {
                 invalid_blocks[id]++;
@@ -885,12 +1012,21 @@ void *statistics() {
 
     log_file("[STATISTICS] Processo Statistics a terminar...\n");
     statistics_usr1_handler(SIGUSR1); // Imprime estatísticas finais
+
+    free(valid_blocks);
+    free(invalid_blocks);
+    free(credits_by_miner);
 }
 
 void statistics_usr1_handler(int sigum) {
     log_file("[STATISTICS] Sinal SIGUSR1 recebido. Estatísticas atuais:\n");
 
-    for (int i = 0; i < MAX_MINERS; i++) {
+    sem_wait(&config.sem);
+    int NUM_MINER = config.NUM_MINER;
+    sem_post(&config.sem);
+
+
+    for (int i = 0; i < NUM_MINER; i++) {
         if (valid_blocks[i] || invalid_blocks[i]) {
             sprintf(msg, "Miner %d - Válidos: %d | Inválidos: %d | Créditos: %d\n",
                     i, valid_blocks[i], invalid_blocks[i], credits_by_miner[i]);
@@ -907,7 +1043,6 @@ void statistics_usr1_handler(int sigum) {
         log_file(msg);
  }
 }
-
 
 
 void cleanup() {
@@ -958,48 +1093,17 @@ void sigint_handler(int signum){
     log_file(msg);
     kill(pid_miner, SIGTERM);
     }
-    if (pid_validator > 0){ 
-    sprintf(msg,"[SIGNAL] A terminar Validator\n");
-    log_file(msg);
-    kill(pid_validator, SIGTERM);
-    };
     if (pid_statistics > 0){
     sprintf(msg,"[SIGNAL] A terminar Statistics\n");
     log_file(msg);
     kill(pid_statistics, SIGTERM);
     }
 
+    sprintf(msg,"[SIGNAL] A terminar Validator(s)");
+    log_file(msg);
+    pthread_mutex_lock(&control_mutex);
+    finish_thread = true;
+    pthread_mutex_unlock(&control_mutex);
+
 	cleanup();
-}
-
-void *keyboard_listener(void *arg) {
-    struct termios oldt, newt;
-
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-
-    log_file("[CONTROLLER] Teclado ativo - pressione Ctrl+Q para ver a estatísticas\n");
-
-    while (1) {
-        int ch = getchar();
-        if (ch == 17) { // Ctrl+Q
-            if (pid_statistics > 0) {
-                kill(pid_statistics, SIGUSR1);
-                log_file("[CONTROLLER] Ctrl+Q pressionado - SIGUSR1 enviado ao Statistics\n");
-            }
-        }
-
-        pthread_mutex_lock(&keyboard_mutex);
-        if (finish_miner || finish_validator || finish_statistics) {
-            pthread_mutex_unlock(&mutex);
-            break;
-        }
-        pthread_mutex_unlock(&keyboard_mutex);
-    }
-
-    // Restaurar terminal
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    return NULL;
 }
