@@ -1,0 +1,371 @@
+[13-05-2025 16:00:51] [CONTROLLER] Simulação começou
+[13-05-2025 16:00:51] NUM_MINERS: 1
+[13-05-2025 16:00:51] TX_POOL_SIZE: 50
+[13-05-2025 16:00:51] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:00:51] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:00:51] [VALIDATOR] Processo Iniciado
+[13-05-2025 16:01:11] [VALIDATOR] Bloco recebido do Miner : 0
+[13-05-2025 16:01:11] [VALIDATOR] Bloco do Miner 0 Aceite e Enviado para o Ledger
+[13-05-2025 16:01:13] [VALIDATOR] Bloco recebido do Miner : 0
+[13-05-2025 16:01:13] [VALIDATOR] Hash não combina com anterior
+[13-05-2025 16:01:13] [VALIDATOR] Bloco Rejeitado
+[13-05-2025 16:01:16] [VALIDATOR] Sinal de término recebido.
+[13-05-2025 16:01:16] [VALIDATOR] Processo Terminado
+[13-05-2025 16:00:51] [CONTROLLER] Simulação começou
+[13-05-2025 16:00:51] NUM_MINERS: 1
+[13-05-2025 16:00:51] TX_POOL_SIZE: 50
+[13-05-2025 16:00:51] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:00:51] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:00:51] [CONTROLLER] Processo Statistics começou (PID: 2510)
+[13-05-2025 16:00:51] [STATISTICS] Processo Statistics inicializado (PID: 2510)
+[13-05-2025 16:01:16] [STATISTICS] Processo Statistics a terminar...
+[13-05-2025 16:01:16] [STATISTICS] Sinal SIGUSR1 recebido. Estatísticas atuais:
+[13-05-2025 16:01:16] Miner 0 - Válidos: 1 | Inválidos: 1 | Créditos: 20
+[13-05-2025 16:01:16] Total de blocos recebidos: 2
+[13-05-2025 16:01:16] Total de blocos válidos: 1
+[13-05-2025 16:01:16] Tempo médio de verificação: -94202021505324.00 segundos
+[13-05-2025 16:00:51] [CONTROLLER] Simulação começou
+[13-05-2025 16:00:51] NUM_MINERS: 1
+[13-05-2025 16:00:51] TX_POOL_SIZE: 50
+[13-05-2025 16:00:51] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:00:51] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:00:51] [CONTROLLER] Processo Miner começou (PID: 2508)
+[13-05-2025 16:00:51] [MINER] Processo Miner inicializado
+[13-05-2025 16:00:51] [MINER] Thread 0 inicializada
+[13-05-2025 16:01:11] [MINER] Bloco Block-0-1747148468 enviado ao Validator
+[13-05-2025 16:01:12] [MINER] Bloco Block-0-1747148471 enviado ao Validator
+[13-05-2025 16:01:18] [MINER] Erro ao escrever no pipe
+[13-05-2025 16:01:18] [MINER] Thread 0 terminou
+[13-05-2025 16:01:18] [MINER] Processo Miner terminado
+[13-05-2025 16:00:51] [CONTROLLER] Simulação começou
+[13-05-2025 16:00:51] NUM_MINERS: 1
+[13-05-2025 16:00:51] TX_POOL_SIZE: 50
+[13-05-2025 16:00:51] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:00:51] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:00:51] [CONTROLLER] Processo Logger começou (PID: 2509)
+[13-05-2025 16:01:13] =================== Start Ledger ===================
+[13-05-2025 16:01:13] ||----  Block 0 --
+[13-05-2025 16:01:13] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:13] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:13] Block Timestamp: 1747148468[13-05-2025 16:01:13] Nonce: 1056502[13-05-2025 16:01:13] Transactions:
+[13-05-2025 16:01:13] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:13] ||------------------------------
+[13-05-2025 16:01:14] =================== Start Ledger ===================
+[13-05-2025 16:01:14] ||----  Block 0 --
+[13-05-2025 16:01:14] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:14] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:14] Block Timestamp: 1747148468[13-05-2025 16:01:14] Nonce: 1056502[13-05-2025 16:01:14] Transactions:
+[13-05-2025 16:01:14] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:14] ||------------------------------
+[13-05-2025 16:01:15] =================== Start Ledger ===================
+[13-05-2025 16:01:15] ||----  Block 0 --
+[13-05-2025 16:01:15] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:15] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:15] Block Timestamp: 1747148468[13-05-2025 16:01:15] Nonce: 1056502[13-05-2025 16:01:15] Transactions:
+[13-05-2025 16:01:15] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:15] ||------------------------------
+[13-05-2025 16:01:16] =================== Start Ledger ===================
+[13-05-2025 16:01:16] ||----  Block 0 --
+[13-05-2025 16:01:16] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:16] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:16] Block Timestamp: 1747148468[13-05-2025 16:01:16] Nonce: 1056502[13-05-2025 16:01:16] Transactions:
+[13-05-2025 16:01:16] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:16] ||------------------------------
+[13-05-2025 16:01:17] =================== Start Ledger ===================
+[13-05-2025 16:01:17] ||----  Block 0 --
+[13-05-2025 16:01:17] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:17] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:17] Block Timestamp: 1747148468[13-05-2025 16:01:17] Nonce: 1056502[13-05-2025 16:01:17] Transactions:
+[13-05-2025 16:01:17] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:17] ||------------------------------
+[13-05-2025 16:01:18] =================== Start Ledger ===================
+[13-05-2025 16:01:18] ||----  Block 0 --
+[13-05-2025 16:01:18] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:18] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:18] Block Timestamp: 1747148468[13-05-2025 16:01:18] Nonce: 1056502[13-05-2025 16:01:18] Transactions:
+[13-05-2025 16:01:18] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:18] ||------------------------------
+[13-05-2025 16:01:19] =================== Start Ledger ===================
+[13-05-2025 16:01:19] ||----  Block 0 --
+[13-05-2025 16:01:19] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:19] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:19] Block Timestamp: 1747148468[13-05-2025 16:01:19] Nonce: 1056502[13-05-2025 16:01:19] Transactions:
+[13-05-2025 16:01:19] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:19] ||------------------------------
+[13-05-2025 16:01:20] =================== Start Ledger ===================
+[13-05-2025 16:01:20] ||----  Block 0 --
+[13-05-2025 16:01:20] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:20] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:20] Block Timestamp: 1747148468[13-05-2025 16:01:20] Nonce: 1056502[13-05-2025 16:01:20] Transactions:
+[13-05-2025 16:01:20] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:20] ||------------------------------
+[13-05-2025 16:01:22] =================== Start Ledger ===================
+[13-05-2025 16:01:22] ||----  Block 0 --
+[13-05-2025 16:01:22] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:22] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:22] Block Timestamp: 1747148468[13-05-2025 16:01:22] Nonce: 1056502[13-05-2025 16:01:22] Transactions:
+[13-05-2025 16:01:22] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:22] ||------------------------------
+[13-05-2025 16:01:23] =================== Start Ledger ===================
+[13-05-2025 16:01:23] ||----  Block 0 --
+[13-05-2025 16:01:23] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:23] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:23] Block Timestamp: 1747148468[13-05-2025 16:01:23] Nonce: 1056502[13-05-2025 16:01:23] Transactions:
+[13-05-2025 16:01:23] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:23] ||------------------------------
+[13-05-2025 16:01:24] =================== Start Ledger ===================
+[13-05-2025 16:01:24] ||----  Block 0 --
+[13-05-2025 16:01:24] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:24] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:24] Block Timestamp: 1747148468[13-05-2025 16:01:24] Nonce: 1056502[13-05-2025 16:01:24] Transactions:
+[13-05-2025 16:01:24] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:24] ||------------------------------
+[13-05-2025 16:01:24] =================== Start Ledger ===================
+[13-05-2025 16:01:25] ||----  Block 0 --
+[13-05-2025 16:01:25] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:25] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:25] Block Timestamp: 1747148468[13-05-2025 16:01:25] Nonce: 1056502[13-05-2025 16:01:25] Transactions:
+[13-05-2025 16:01:25] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:25] ||------------------------------
+[13-05-2025 16:01:26] =================== Start Ledger ===================
+[13-05-2025 16:01:26] ||----  Block 0 --
+[13-05-2025 16:01:26] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:26] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:26] Block Timestamp: 1747148468[13-05-2025 16:01:26] Nonce: 1056502[13-05-2025 16:01:26] Transactions:
+[13-05-2025 16:01:26] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:26] ||------------------------------
+[13-05-2025 16:01:27] =================== Start Ledger ===================
+[13-05-2025 16:01:27] ||----  Block 0 --
+[13-05-2025 16:01:27] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:27] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:27] Block Timestamp: 1747148468[13-05-2025 16:01:27] Nonce: 1056502[13-05-2025 16:01:27] Transactions:
+[13-05-2025 16:01:27] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:27] ||------------------------------
+[13-05-2025 16:01:28] =================== Start Ledger ===================
+[13-05-2025 16:01:28] ||----  Block 0 --
+[13-05-2025 16:01:28] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:28] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:28] Block Timestamp: 1747148468[13-05-2025 16:01:28] Nonce: 1056502[13-05-2025 16:01:28] Transactions:
+[13-05-2025 16:01:28] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:28] ||------------------------------
+[13-05-2025 16:01:29] =================== Start Ledger ===================
+[13-05-2025 16:01:29] ||----  Block 0 --
+[13-05-2025 16:01:29] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:29] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:29] Block Timestamp: 1747148468[13-05-2025 16:01:29] Nonce: 1056502[13-05-2025 16:01:29] Transactions:
+[13-05-2025 16:01:29] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:29] ||------------------------------
+[13-05-2025 16:01:30] =================== Start Ledger ===================
+[13-05-2025 16:01:30] ||----  Block 0 --
+[13-05-2025 16:01:30] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:30] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:30] Block Timestamp: 1747148468[13-05-2025 16:01:30] Nonce: 1056502[13-05-2025 16:01:30] Transactions:
+[13-05-2025 16:01:30] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:30] ||------------------------------
+[13-05-2025 16:01:31] =================== Start Ledger ===================
+[13-05-2025 16:01:31] ||----  Block 0 --
+[13-05-2025 16:01:31] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:31] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:31] Block Timestamp: 1747148468[13-05-2025 16:01:31] Nonce: 1056502[13-05-2025 16:01:31] Transactions:
+[13-05-2025 16:01:31] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:31] ||------------------------------
+[13-05-2025 16:01:32] =================== Start Ledger ===================
+[13-05-2025 16:01:32] ||----  Block 0 --
+[13-05-2025 16:01:32] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:32] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:32] Block Timestamp: 1747148468[13-05-2025 16:01:32] Nonce: 1056502[13-05-2025 16:01:32] Transactions:
+[13-05-2025 16:01:32] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:32] ||------------------------------
+[13-05-2025 16:01:33] =================== Start Ledger ===================
+[13-05-2025 16:01:33] ||----  Block 0 --
+[13-05-2025 16:01:33] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:33] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:33] Block Timestamp: 1747148468[13-05-2025 16:01:33] Nonce: 1056502[13-05-2025 16:01:33] Transactions:
+[13-05-2025 16:01:33] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:33] ||------------------------------
+[13-05-2025 16:01:34] =================== Start Ledger ===================
+[13-05-2025 16:01:34] ||----  Block 0 --
+[13-05-2025 16:01:34] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:34] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:34] Block Timestamp: 1747148468[13-05-2025 16:01:34] Nonce: 1056502[13-05-2025 16:01:34] Transactions:
+[13-05-2025 16:01:34] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:01:34] ||------------------------------
+[13-05-2025 16:01:35] =================== Start Ledger ===================
+[13-05-2025 16:01:35] ||----  Block 0 --
+[13-05-2025 16:01:35] Block ID: BLOCK-Block-0-1747148468[13-05-2025 16:01:35] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:01:35] Block Timestamp: 1747148468[13-05-2025 16:01:35] Nonce: 1056502[13-05-2025 16:02:48] [CONTROLLER] Simulação começou
+[13-05-2025 16:02:48] NUM_MINERS: 1
+[13-05-2025 16:02:48] TX_POOL_SIZE: 50
+[13-05-2025 16:02:48] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:02:48] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:02:48] [CONTROLLER] Processo Statistics começou (PID: 2601)
+[13-05-2025 16:02:48] [STATISTICS] Processo Statistics inicializado (PID: 2601)
+[13-05-2025 16:02:56] [STATISTICS] Processo Statistics a terminar...
+[13-05-2025 16:02:56] [STATISTICS] Sinal SIGUSR1 recebido. Estatísticas atuais:
+[13-05-2025 16:02:56] Miner 0 - Válidos: 1 | Inválidos: 0 | Créditos: 20
+[13-05-2025 16:02:56] Total de blocos recebidos: 1
+[13-05-2025 16:02:56] Total de blocos válidos: 1
+[13-05-2025 16:02:56] Tempo médio de verificação: -93885120579780.00 segundos
+[13-05-2025 16:02:48] [CONTROLLER] Simulação começou
+[13-05-2025 16:02:48] NUM_MINERS: 1
+[13-05-2025 16:02:48] TX_POOL_SIZE: 50
+[13-05-2025 16:02:48] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:02:48] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:02:48] [VALIDATOR] Processo Iniciado
+[13-05-2025 16:02:53] [VALIDATOR] Bloco recebido do Miner : 0
+[13-05-2025 16:02:53] [VALIDATOR] Bloco do Miner 0 Aceite e Enviado para o Ledger
+[13-05-2025 16:02:56] [VALIDATOR] Sinal de término recebido.
+[13-05-2025 16:02:56] [VALIDATOR] Processo Terminado
+[13-05-2025 16:02:48] [CONTROLLER] Simulação começou
+[13-05-2025 16:02:48] NUM_MINERS: 1
+[13-05-2025 16:02:48] TX_POOL_SIZE: 50
+[13-05-2025 16:02:48] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:02:48] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:02:48] [CONTROLLER] Processo Miner começou (PID: 2598)
+[13-05-2025 16:02:48] [MINER] Processo Miner inicializado
+[13-05-2025 16:02:48] [MINER] Thread 0 inicializada
+[13-05-2025 16:02:53] [MINER] Bloco Block-0-1747148572 enviado ao Validator
+[13-05-2025 16:02:56] [MINER] Thread 0 terminou
+[13-05-2025 16:02:56] [MINER] Processo Miner terminado
+[13-05-2025 16:02:48] [CONTROLLER] Simulação começou
+[13-05-2025 16:02:48] NUM_MINERS: 1
+[13-05-2025 16:02:48] TX_POOL_SIZE: 50
+[13-05-2025 16:02:48] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:02:48] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:02:48] [CONTROLLER] Processo Logger começou (PID: 2599)
+[13-05-2025 16:02:54] =================== Start Ledger ===================
+[13-05-2025 16:02:54] ||----  Block 0 --
+[13-05-2025 16:02:54] Block ID: BLOCK-Block-0-1747148572[13-05-2025 16:02:54] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:02:54] Block Timestamp: 1747148572[13-05-2025 16:02:54] Nonce: 504266[13-05-2025 16:02:54] Transactions:
+[13-05-2025 16:02:54] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:54] ||------------------------------
+[13-05-2025 16:02:55] =================== Start Ledger ===================
+[13-05-2025 16:02:55] ||----  Block 0 --
+[13-05-2025 16:02:55] Block ID: BLOCK-Block-0-1747148572[13-05-2025 16:02:55] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:02:55] Block Timestamp: 1747148572[13-05-2025 16:02:55] Nonce: 504266[13-05-2025 16:02:55] Transactions:
+[13-05-2025 16:02:55] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:55] ||------------------------------
+[13-05-2025 16:02:56] =================== Start Ledger ===================
+[13-05-2025 16:02:56] ||----  Block 0 --
+[13-05-2025 16:02:56] Block ID: BLOCK-Block-0-1747148572[13-05-2025 16:02:56] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:02:56] Block Timestamp: 1747148572[13-05-2025 16:02:56] Nonce: 504266[13-05-2025 16:02:56] Transactions:
+[13-05-2025 16:02:56] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:56] ||------------------------------
+[13-05-2025 16:02:57] =================== Start Ledger ===================
+[13-05-2025 16:02:57] ||----  Block 0 --
+[13-05-2025 16:02:57] Block ID: BLOCK-Block-0-1747148572[13-05-2025 16:02:57] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:02:57] Block Timestamp: 1747148572[13-05-2025 16:02:57] Nonce: 504266[13-05-2025 16:02:57] Transactions:
+[13-05-2025 16:02:57] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:57] ||------------------------------
+[13-05-2025 16:02:58] =================== Start Ledger ===================
+[13-05-2025 16:02:58] ||----  Block 0 --
+[13-05-2025 16:02:58] Block ID: BLOCK-Block-0-1747148572[13-05-2025 16:02:58] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:02:58] Block Timestamp: 1747148572[13-05-2025 16:02:58] Nonce: 504266[13-05-2025 16:02:58] Transactions:
+[13-05-2025 16:02:58] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:58] ||------------------------------
+[13-05-2025 16:02:59] =================== Start Ledger ===================
+[13-05-2025 16:02:59] ||----  Block 0 --
+[13-05-2025 16:02:59] Block ID: BLOCK-Block-0-1747148572[13-05-2025 16:02:59] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:02:59] Block Timestamp: 1747148572[13-05-2025 16:02:59] Nonce: 504266[13-05-2025 16:02:59] Transactions:
+[13-05-2025 16:02:59] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:02:59] ||------------------------------
+[13-05-2025 16:03:00] =================== Start Ledger ===================
+[13-05-2025 16:03:00] ||----  Block 0 --
+[13-05-2025 16:03:00] Block ID: BLOCK-Block-0-1747148572[13-05-2025 16:03:00] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:03:00] Block Timestamp: 1747148572[13-05-2025 16:03:00] Nonce: 504266[13-05-2025 16:03:00] Transactions:
+[13-05-2025 16:03:00] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:03:00] [9] ID:  | Reward: 0 | Value:[13-05-2025 16:05:24] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:24] NUM_MINERS: 1
+[13-05-2025 16:05:24] TX_POOL_SIZE: 50
+[13-05-2025 16:05:24] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:24] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:24] [CONTROLLER] Processo Statistics começou (PID: 2648)
+[13-05-2025 16:05:24] [STATISTICS] Processo Statistics inicializado (PID: 2648)
+[13-05-2025 16:05:24] [STATISTICS] Processo Statistics a terminar...
+[13-05-2025 16:05:24] [STATISTICS] Sinal SIGUSR1 recebido. Estatísticas atuais:
+[13-05-2025 16:05:24] Total de blocos recebidos: 0
+[13-05-2025 16:05:24] Total de blocos válidos: 0
+[13-05-2025 16:05:24] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:24] NUM_MINERS: 1
+[13-05-2025 16:05:24] TX_POOL_SIZE: 50
+[13-05-2025 16:05:24] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:24] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:24] [CONTROLLER] Processo Miner começou (PID: 2646)
+[13-05-2025 16:05:24] [MINER] Processo Miner inicializado
+[13-05-2025 16:05:24] [MINER] Thread 0 inicializada
+[13-05-2025 16:05:24] [MINER] Thread 0 terminou
+[13-05-2025 16:05:24] [MINER] Processo Miner terminado
+[13-05-2025 16:05:24] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:24] NUM_MINERS: 1
+[13-05-2025 16:05:24] TX_POOL_SIZE: 50
+[13-05-2025 16:05:24] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:24] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:24] [CONTROLLER] Processo Logger começou (PID: 2647)
+[13-05-2025 16:05:24] =================== End   Ledger ===================
+[13-05-2025 16:05:28] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:28] NUM_MINERS: 1
+[13-05-2025 16:05:28] TX_POOL_SIZE: 50
+[13-05-2025 16:05:28] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:28] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:28] [CONTROLLER] Processo Logger começou (PID: 2656)
+[13-05-2025 16:05:30] =================== End   Ledger ===================
+[13-05-2025 16:05:28] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:28] NUM_MINERS: 1
+[13-05-2025 16:05:28] TX_POOL_SIZE: 50
+[13-05-2025 16:05:28] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:28] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:28] [CONTROLLER] Processo Miner começou (PID: 2655)
+[13-05-2025 16:05:28] [MINER] Processo Miner inicializado
+[13-05-2025 16:05:28] [MINER] Thread 0 inicializada
+[13-05-2025 16:05:30] [MINER] Thread 0 terminou
+[13-05-2025 16:05:30] [MINER] Processo Miner terminado
+[13-05-2025 16:05:28] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:28] NUM_MINERS: 1
+[13-05-2025 16:05:28] TX_POOL_SIZE: 50
+[13-05-2025 16:05:28] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:28] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:28] [CONTROLLER] Processo Statistics começou (PID: 2658)
+[13-05-2025 16:05:28] [STATISTICS] Processo Statistics inicializado (PID: 2658)
+[13-05-2025 16:05:30] [STATISTICS] Processo Statistics a terminar...
+[13-05-2025 16:05:30] [STATISTICS] Sinal SIGUSR1 recebido. Estatísticas atuais:
+[13-05-2025 16:05:30] Total de blocos recebidos: 0
+[13-05-2025 16:05:30] Total de blocos válidos: 0
+[13-05-2025 16:05:28] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:28] NUM_MINERS: 1
+[13-05-2025 16:05:28] TX_POOL_SIZE: 50
+[13-05-2025 16:05:28] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:28] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:28] [VALIDATOR] Processo Iniciado
+[13-05-2025 16:05:30] [VALIDATOR] Sinal de término recebido.
+[13-05-2025 16:05:30] [VALIDATOR] Erro ao abrir pipe
+[13-05-2025 16:05:28] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:28] NUM_MINERS: 1
+[13-05-2025 16:05:28] TX_POOL_SIZE: 50
+[13-05-2025 16:05:28] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:28] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:28] [CONTROLLER] Validator 0 criado 
+[13-05-2025 16:05:30] [SIGNAL] ^C detetado, a limpar recursos
+[13-05-2025 16:05:30] [SIGNAL] A terminar Miner
+[13-05-2025 16:05:30] [SIGNAL] A terminar Statistics
+[13-05-2025 16:05:30] [SIGNAL] A terminar Logger
+[13-05-2025 16:05:30] [SIGNAL] A terminar Validator(s)[13-05-2025 16:05:30] [CONTROLLER] A matar processos validator
+[13-05-2025 16:05:30] [CONTROLLER] Validator 0 terminado
+[13-05-2025 16:05:30] [CONTROLLER] Thread validator_manager a terminar.
+[13-05-2025 16:05:30] [CLEANUP] Recursos limpos, a terminar programa
+[13-05-2025 16:05:30] [CONTROLLER] Simulação terminou
+[13-05-2025 16:05:53] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:53] NUM_MINERS: 1
+[13-05-2025 16:05:53] TX_POOL_SIZE: 50
+[13-05-2025 16:05:53] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:53] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:53] [CONTROLLER] Processo Logger começou (PID: 2679)
+[13-05-2025 16:05:57] =================== Start Ledger ===================
+[13-05-2025 16:05:57] ||----  Block 0 --
+[13-05-2025 16:05:57] Block ID: BLOCK-Block-0-1747148757[13-05-2025 16:05:57] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:05:57] Block Timestamp: 1747148757[13-05-2025 16:05:57] Nonce: 241590[13-05-2025 16:05:57] Transactions:
+[13-05-2025 16:05:57] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:57] ||------------------------------
+[13-05-2025 16:05:58] =================== Start Ledger ===================
+[13-05-2025 16:05:58] ||----  Block 0 --
+[13-05-2025 16:05:58] Block ID: BLOCK-Block-0-1747148757[13-05-2025 16:05:58] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:05:58] Block Timestamp: 1747148757[13-05-2025 16:05:58] Nonce: 241590[13-05-2025 16:05:58] Transactions:
+[13-05-2025 16:05:58] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:58] ||------------------------------
+[13-05-2025 16:05:59] =================== Start Ledger ===================
+[13-05-2025 16:05:59] ||----  Block 0 --
+[13-05-2025 16:05:59] Block ID: BLOCK-Block-0-1747148757[13-05-2025 16:05:59] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:05:59] Block Timestamp: 1747148757[13-05-2025 16:05:59] Nonce: 241590[13-05-2025 16:05:59] Transactions:
+[13-05-2025 16:05:59] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:05:59] ||------------------------------
+[13-05-2025 16:06:00] =================== Start Ledger ===================
+[13-05-2025 16:06:00] ||----  Block 0 --
+[13-05-2025 16:06:00] Block ID: BLOCK-Block-0-1747148757[13-05-2025 16:06:00] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:06:00] Block Timestamp: 1747148757[13-05-2025 16:06:00] Nonce: 241590[13-05-2025 16:06:00] Transactions:
+[13-05-2025 16:06:00] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:00] ||------------------------------
+[13-05-2025 16:06:01] =================== Start Ledger ===================
+[13-05-2025 16:06:01] ||----  Block 0 --
+[13-05-2025 16:06:01] Block ID: BLOCK-Block-0-1747148757[13-05-2025 16:06:01] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:06:01] Block Timestamp: 1747148757[13-05-2025 16:06:01] Nonce: 241590[13-05-2025 16:06:01] Transactions:
+[13-05-2025 16:06:01] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:01] ||------------------------------
+[13-05-2025 16:06:02] =================== Start Ledger ===================
+[13-05-2025 16:06:02] ||----  Block 0 --
+[13-05-2025 16:06:02] Block ID: BLOCK-Block-0-1747148757[13-05-2025 16:06:02] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:06:02] Block Timestamp: 1747148757[13-05-2025 16:06:02] Nonce: 241590[13-05-2025 16:06:02] Transactions:
+[13-05-2025 16:06:02] [0] ID: Block-0-1747148759 | Reward: 808464432 | Value: 1714500912 | Timestamp: 4121696604584490853 [13-05-2025 16:06:02] [1] ID: ba924571e7fa692e445bd5f7a5bf15115744481979daf220 | Reward: 808597346 | Value: 862282032 | Timestamp: 3702297982209175654 [13-05-2025 16:06:02] [2] ID: d83b593ae647c9c9ccd9bb9567ba4fd2c | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] ||------------------------------
+[13-05-2025 16:06:02] ||----  Block 1 --
+[13-05-2025 16:06:02] Block ID: BLOCK-Block-0-1747148759[13-05-2025 16:06:02] Previous Hash: 0000051fe71d9539ba924571e7fa692e445bd5f7a5bf15115744481979daf220[13-05-2025 16:06:02] Block Timestamp: 1747148759[13-05-2025 16:06:02] Nonce: 1277830[13-05-2025 16:06:02] Transactions:
+[13-05-2025 16:06:02] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [8] [13-05-2025 16:05:53] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:53] NUM_MINERS: 1
+[13-05-2025 16:05:53] TX_POOL_SIZE: 50
+[13-05-2025 16:05:53] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:53] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:53] [VALIDATOR] Processo Iniciado
+[13-05-2025 16:05:57] [VALIDATOR] Bloco recebido do Miner : 0
+[13-05-2025 16:05:57] [VALIDATOR] Bloco do Miner 0 Aceite e Enviado para o Ledger
+[13-05-2025 16:06:02] [VALIDATOR] Bloco recebido do Miner : 0
+[13-05-2025 16:06:02] [VALIDATOR] Bloco do Miner 0 Aceite e Enviado para o Ledger
+[13-05-2025 16:06:04] [VALIDATOR] Sinal de término recebido.
+[13-05-2025 16:06:04] [VALIDATOR] Processo Terminado
+[13-05-2025 16:05:53] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:53] NUM_MINERS: 1
+[13-05-2025 16:05:53] TX_POOL_SIZE: 50
+[13-05-2025 16:05:53] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:53] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:53] [CONTROLLER] Processo Statistics começou (PID: 2680)
+[13-05-2025 16:05:53] [STATISTICS] Processo Statistics inicializado (PID: 2680)
+[13-05-2025 16:06:04] [STATISTICS] Processo Statistics a terminar...
+[13-05-2025 16:06:04] [STATISTICS] Sinal SIGUSR1 recebido. Estatísticas atuais:
+[13-05-2025 16:06:04] Miner 0 - Válidos: 2 | Inválidos: 0 | Créditos: 40
+[13-05-2025 16:06:04] Total de blocos recebidos: 2
+[13-05-2025 16:06:04] Total de blocos válidos: 2
+[13-05-2025 16:06:04] Tempo médio de verificação: -94268201031690.00 segundos
+ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:02] ||------------------------------
+[13-05-2025 16:06:03] =================== Start Ledger ===================
+[13-05-2025 16:06:03] ||----  Block 0 --
+[13-05-2025 16:06:03] Block ID: BLOCK-Block-0-1747148757[13-05-2025 16:06:03] Previous Hash: 00006a8e76f31ba74e21a092cca1015a418c9d5f4375e7a4fec676e1d2ec1436[13-05-2025 16:06:03] Block Timestamp: 1747148757[13-05-2025 16:06:03] Nonce: 241590[13-05-2025 16:06:03] Transactions:
+[13-05-2025 16:06:03] [0] ID: Block-0-1747148759 | Reward: 808464432 | Value: 1714500912 | Timestamp: 4121696604584490853 [13-05-2025 16:06:03] [1] ID: ba924571e7fa692e445bd5f7a5bf15115744481979daf220 | Reward: 808597346 | Value: 862282032 | Timestamp: 3702297982209175654 [13-05-2025 16:06:03] [2] ID: d83b593ae647c9c9ccd9bb9567ba4fd2c | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] ||------------------------------
+[13-05-2025 16:06:03] ||----  Block 1 --
+[13-05-2025 16:06:03] Block ID: BLOCK-Block-0-1747148759[13-05-2025 16:06:03] Previous Hash: 0000051fe71d9539ba924571e7fa692e445bd5f7a5bf15115744481979daf220[13-05-2025 16:06:03] Block Timestamp: 1747148759[13-05-2025 16:06:03] Nonce: 1277830[13-05-2025 16:06:03] Transactions:
+[13-05-2025 16:06:03] [0] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [1] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [2] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [3] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [4] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [5] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [6] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [7] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [8] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] [9] ID:  | Reward: 0 | Value: 0 | Timestamp: 0 [13-05-2025 16:06:03] ||------------------------------
+[13-05-2025 16:06:04] =================== End   Ledger ===================
+[13-05-2025 16:05:53] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:53] NUM_MINERS: 1
+[13-05-2025 16:05:53] TX_POOL_SIZE: 50
+[13-05-2025 16:05:53] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:53] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:53] [CONTROLLER] Processo Miner começou (PID: 2678)
+[13-05-2025 16:05:53] [MINER] Processo Miner inicializado
+[13-05-2025 16:05:53] [MINER] Thread 0 inicializada
+[13-05-2025 16:05:57] [MINER] Bloco Block-0-1747148757 enviado ao Validator
+[13-05-2025 16:06:02] [MINER] Bloco Block-0-1747148759 enviado ao Validator
+[13-05-2025 16:06:08] [MINER] Erro ao escrever no pipe
+[13-05-2025 16:06:08] [MINER] Thread 0 terminou
+[13-05-2025 16:06:08] [MINER] Processo Miner terminado
+[13-05-2025 16:05:53] [CONTROLLER] Simulação começou
+[13-05-2025 16:05:53] NUM_MINERS: 1
+[13-05-2025 16:05:53] TX_POOL_SIZE: 50
+[13-05-2025 16:05:53] TRANSACTIONS_PER_BLOCK: 10
+[13-05-2025 16:05:53] BLOCKCHAIN_BLOCKS: 50000
+[13-05-2025 16:05:53] [CONTROLLER] Validator 0 criado 
+[13-05-2025 16:06:04] [SIGNAL] ^C detetado, a limpar recursos
+[13-05-2025 16:06:04] [SIGNAL] A terminar Miner
+[13-05-2025 16:06:04] [SIGNAL] A terminar Statistics
+[13-05-2025 16:06:04] [SIGNAL] A terminar Logger
+[13-05-2025 16:06:04] [SIGNAL] A terminar Validator(s)[13-05-2025 16:06:04] [CONTROLLER] A matar processos validator
+[13-05-2025 16:06:04] [CONTROLLER] Validator 0 terminado
+[13-05-2025 16:06:04] [CONTROLLER] Thread validator_manager a terminar.
+[13-05-2025 16:06:04] [CLEANUP] Recursos limpos, a terminar programa
+[13-05-2025 16:06:08] [CONTROLLER] Simulação terminou

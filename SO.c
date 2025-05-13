@@ -46,6 +46,7 @@ bool finish_miner  = false;
 bool finish_validator = false;
 bool finish_statistics = false;
 bool finish_thread = false;
+bool finish_logger = false;
 
 
 FILE * file;
@@ -65,8 +66,8 @@ int transactions_per_block;
 
 //Váriaveis pra pids dos processos
 pid_t pid_miner=-1;
-pid_t pid_validator=-1;
 pid_t pid_statistics=-1;
+pid_t pid_logger = -1;
 
 
 //Váriaveis para estatísticas
@@ -112,6 +113,8 @@ void print_transactions(const Block * block);
 void spawn_validator(int index);
 void kill_validator(int index);
 void* validator_manager();
+void * ledger_logger();
+void logger_exit_handler(int signum);
 
 
 int main() {
@@ -179,23 +182,23 @@ void controller() {
         exit(0);
     }
 
-    // Lançar o primeiro Validator, o resto será controlado pela thread
-
-    /*
-    pid_validator = fork();
-    if (pid_validator < 0) {
-        log_file("[CONTROLLER] Erro ao criar o processo validator\n");
+    pid_logger = fork();
+    if (pid_logger < 0) {
+        #ifdef DEBUG
+        sprintf(msg,"Erro ao criar o processo logger\n");
+        log_file(msg);
+        #endif
         exit(1);
     }
-     else if (pid_validator == 0) {
-        sprintf(msg,"[CONTROLLER] Processo Validator 1 começou (PID: %d)\n", getpid());
+    else if (pid_logger == 0) {
+        // Processo filho (Logger)
+        sprintf(msg,"[CONTROLLER] Processo Logger começou (PID: %d)\n", getpid());
         log_file(msg);
+        //ignorar o sinal, apenas o controller o vai ver
         signal(SIGINT,SIG_IGN);
-        validator();
-        exit(0);
+        ledger_logger();
+      exit(0);
     }
-        */
-
     // Lançar processo Statistics
     pid_statistics = fork();
     if (pid_statistics < 0) {
@@ -211,7 +214,7 @@ void controller() {
 
     // Esperar pelos processos principais
     waitpid(pid_miner, NULL, 0);
-   // waitpid(pid_validator, NULL, 0);
+    waitpid(pid_logger,NULL,0);
     waitpid(pid_statistics, NULL, 0);
 
     //Apenas depois dos outros processos morrerem
@@ -796,6 +799,14 @@ bool validate_block(Block *block) {
         return false;
     }
 
+    // Verifica o hash do bloco
+    char hash_calc[HASH_SIZE];
+    compute_sha256(block, hash_calc);
+    if (strncmp(hash_calc, block->hash, HASH_SIZE) != 0) {
+        log_file("[VALIDATOR] Hash do bloco não corresponde ao conteúdo\n");
+        return false;
+    }
+
     // Checa por transações repetidas dentro do bloco
     for (int i = 0; i < block->transactions_count; ++i) {
         for (int j = i + 1; j < block->transactions_count; ++j) {
@@ -812,11 +823,8 @@ bool validate_block(Block *block) {
     // Valida cada transação
     for (int i = 0; i < block->transactions_count; ++i) {
         if (!validate_transaction(&block->transactions[i])) {
-            char buf[128];
-            sprintf(buf,
-                    "[VALIDATOR] Transação %d inválida: ID=%s\n",
-                    i, block->transactions[i].id);
-            log_file(buf);
+            sprintf(msg,"[VALIDATOR] Transação %d inválida: ID=%s\n",i, block->transactions[i].id);
+            log_file(msg);
             return false;
         }
     }
@@ -833,6 +841,16 @@ bool validate_block(Block *block) {
             return false;
         }
     }
+
+    // Verifica se o bloco já existe no ledger
+    for (int i = 0; i < ldgr->current_blocks; i++) {
+        if (strncmp(ldgr->blocks[i].hash, block->hash, HASH_SIZE) == 0) {
+            log_file("[VALIDATOR] Bloco duplicado no ledger\n");
+            sem_post(&ldgr->sem);
+            return false;
+        }
+    }
+    
 
     // Append ao ledger
     if (ldgr->current_blocks < ldgr->max_blocks) {
@@ -872,6 +890,56 @@ void return_transactions(const Block *block) {
     sem_post(&shrd->sem);
 }
 
+
+void logger_exit_handler(int signum) {
+    finish_logger = true;
+}
+
+void *ledger_logger() {
+    
+    signal(SIGTERM, logger_exit_handler);
+    
+    while (1)
+    {
+        if(finish_logger){
+            break;
+        }
+
+        sem_wait(&ldgr->sem);
+        if (ldgr->current_blocks == 0) {
+            sem_post(&ldgr->sem);
+            sleep(1);
+            continue;
+        }
+        log_file("=================== Start Ledger ===================\n");
+
+        for (int i = 0; i < ldgr->current_blocks; i++) {
+            Block *block = &ldgr->blocks[i];
+            sprintf(msg, "||----  Block %d --\n", i);
+            log_file(msg);
+            sprintf(msg, "Block ID: BLOCK-%s",block->id);
+            log_file(msg);
+            sprintf(msg, "Previous Hash: %s", block->previous_hash);
+            log_file(msg);
+            sprintf(msg, "Block Timestamp: %ld", block->timestamp);
+            log_file(msg);
+            sprintf(msg, "Nonce: %d", block->nonce);
+            log_file(msg);
+            log_file("Transactions:\n");
+            for (int j = 0; j < block->transactions_count; j++) {
+                sprintf(msg, "[%d] ID: %s | Reward: %d | Value: %d | Timestamp: %ld ", j,block->transactions[j].id, block->transactions[j].reward, block->transactions[j].value, block->transactions[j].timestamp);
+                log_file(msg);
+            }
+            sprintf(msg, "||------------------------------\n");
+            log_file(msg);
+        }
+        sem_post(&ldgr->sem);        
+        sleep(1);
+    }
+    
+    log_file("=================== End   Ledger ===================\n");
+}
+
 void remove_transactions(const Block *block) {
     //Remove as transações que já foram validadas num bloco da Transaction Pools
     sem_wait(&shrd->sem);
@@ -898,7 +966,6 @@ bool validate_transaction(const Transaction *tx) {
         log_file(buffer);
         return false;
     }
-
     // Verifica se reward ou value são negativos
     if (tx->reward < 0 || tx->value < 0) {
         log_file("[VALIDATOR] TX valores negativos\n");
@@ -1097,6 +1164,12 @@ void sigint_handler(int signum){
     sprintf(msg,"[SIGNAL] A terminar Statistics\n");
     log_file(msg);
     kill(pid_statistics, SIGTERM);
+    }
+
+    if (pid_logger > 0){
+    sprintf(msg,"[SIGNAL] A terminar Logger\n");
+    log_file(msg);
+    kill(pid_logger,SIGTERM);
     }
 
     sprintf(msg,"[SIGNAL] A terminar Validator(s)");
