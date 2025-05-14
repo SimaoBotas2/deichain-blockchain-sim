@@ -907,11 +907,6 @@ void *ledger_logger() {
         }
 
         sem_wait(&ldgr->sem);
-        if (ldgr->current_blocks == 0) {
-            sem_post(&ldgr->sem);
-            sleep(1);
-            continue;
-        }
         log_file("=================== Start Ledger ===================\n");
 
 
