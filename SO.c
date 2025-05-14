@@ -852,12 +852,19 @@ bool validate_block(Block *block) {
         }
     }
     
-
     // Append ao ledger
     if (ldgr->current_blocks < ldgr->max_blocks) {
         ldgr->blocks[ldgr->current_blocks] = *block;
+        //Adicionar as transações ao bloco na chain
+        for(int i =0;i<ldgr->blocks[ldgr->current_blocks].transactions_count;i++){
+            ldgr->blocks[ldgr->current_blocks].transactions[i] = block->transactions[i];
+        }
         ldgr->current_blocks++;
-    } 
+    }
+    
+    
+
+
     else {
         log_file("[VALIDATOR] Ledger cheio, bloco ignorado\n");
     }
