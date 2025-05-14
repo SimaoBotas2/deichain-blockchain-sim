@@ -438,7 +438,19 @@ void create_ipcs() {
     }
 
 
-    // Iniciar filas de mensagens, entre outros...
+    // Criar fila de mensagens
+    key_t key = ftok("/tmp", 'S');
+    msqid = msgget(key, 0666 | IPC_CREAT);
+    if (msqid == -1) {
+        #ifdef DEBUG
+        log_file("[STATISTICS] Erro ao criar/aceder à message queue\n");
+        #endif
+        free(valid_blocks);
+        free(invalid_blocks);
+        free(credits_by_miner);
+        pthread_exit(NULL);
+    }
+
     
 }
 
@@ -813,7 +825,6 @@ bool validate_block(Block *block) {
         }
     }
     
-    
     size_t block_size = offsetof(Block, transactions) + (config.TRANSACTIONS_PER_BLOCK * sizeof(Transaction));
     // Append ao ledger
     if (ldgr->current_blocks < ldgr->max_blocks) {
@@ -982,19 +993,6 @@ void *statistics() {
     sprintf(msg,"[STATISTICS] Processo Statistics inicializado (PID: %d)\n", getpid());
     log_file(msg);
 
-    // Criar fila de mensagens
-    key_t key = ftok("/tmp", 'S');
-    msqid = msgget(key, 0666 | IPC_CREAT);
-    if (msqid == -1) {
-        #ifdef DEBUG
-        log_file("[STATISTICS] Erro ao criar/aceder à message queue\n");
-        #endif
-        free(valid_blocks);
-        free(invalid_blocks);
-        free(credits_by_miner);
-        pthread_exit(NULL);
-    }
-
     StatMessage smsg;
 
     while (!finish_statistics) {
@@ -1025,9 +1023,6 @@ void *statistics() {
     free(invalid_blocks);
     free(credits_by_miner);
 
-      
-    log_file("[STATISTICS] Processo Statistics a terminar...\n");
-    pthread_exit(NULL); // Termina a execução do thread
 }
 
 void statistics_usr1_handler(int sig) {
