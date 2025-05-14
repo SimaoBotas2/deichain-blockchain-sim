@@ -46,7 +46,6 @@ bool finish_miner  = false;
 bool finish_validator = false;
 bool finish_statistics = false;
 bool finish_thread = false;
-bool finish_logger = false;
 
 
 FILE * file;
@@ -67,7 +66,6 @@ int transactions_per_block;
 //Váriaveis pra pids dos processos
 pid_t pid_miner=-1;
 pid_t pid_statistics=-1;
-pid_t pid_logger = -1;
 
 
 //Váriaveis para estatísticas
@@ -82,7 +80,7 @@ int verified_count = 0;
 
 int msqid;
 
-//teste varios validators
+//Controlo dos Validators
 pthread_t validator_manager_thread;
 pid_t validator_pids[3] = {-1, -1, -1};
 int active_validators = 0;
@@ -113,9 +111,7 @@ void print_transactions(const Block * block);
 void spawn_validator(int index);
 void kill_validator(int index);
 void* validator_manager();
-void * ledger_logger();
-void logger_exit_handler(int signum);
-
+void ledger_logger();
 
 int main() {
     //Abrir ficheiro para log, para evitar abrir várias vezes
@@ -148,7 +144,6 @@ void controller() {
 
     log_file("[CONTROLLER] Simulação começou\n");
 
-
     read_config("config.cfg");
 
     #ifdef DEBUG
@@ -164,10 +159,10 @@ void controller() {
 
     create_ipcs();
 
-
-    //thread para gestao de processos validator
+    //Gestão de processos validator
     if (pthread_create(&validator_manager_thread, NULL, validator_manager, NULL) != 0) {
         log_file("[CONTROLLER] Erro ao criar thread de gestao de validators\n");
+        exit(1);
     }
 
     pid_miner = fork();
@@ -175,53 +170,36 @@ void controller() {
         log_file("[CONTROLLER] Erro ao criar o processo miner\n");
         exit(1);
     } else if (pid_miner == 0) {
-        sprintf(msg,"[CONTROLLER] Processo Miner começou (PID: %d)\n", getpid());
+        sprintf(msg,"[CONTROLLER] Processo Miner começou\n");
         log_file(msg);
         signal(SIGINT,SIG_IGN);
         miner();
         exit(0);
     }
 
-    pid_logger = fork();
-    if (pid_logger < 0) {
-        #ifdef DEBUG
-        sprintf(msg,"Erro ao criar o processo logger\n");
-        log_file(msg);
-        #endif
-        exit(1);
-    }
-    else if (pid_logger == 0) {
-        // Processo filho (Logger)
-        sprintf(msg,"[CONTROLLER] Processo Logger começou (PID: %d)\n", getpid());
-        log_file(msg);
-        //ignorar o sinal, apenas o controller o vai ver
-        signal(SIGINT,SIG_IGN);
-        ledger_logger();
-      exit(0);
-    }
     // Lançar processo Statistics
     pid_statistics = fork();
     if (pid_statistics < 0) {
         log_file("[CONTROLLER] Erro ao criar o processo statistics\n");
         exit(1);
     } else if (pid_statistics == 0) {
-        sprintf(msg,"[CONTROLLER] Processo Statistics começou (PID: %d)\n", getpid());
+        sprintf(msg,"[CONTROLLER] Processo Statistics começou\n");
         log_file(msg);
         signal(SIGINT,SIG_IGN);
         statistics();
         exit(0);
     }
 
-    // Esperar pelos processos principais
+    // Esperar pelos processos
     waitpid(pid_miner, NULL, 0);
-    waitpid(pid_logger,NULL,0);
     waitpid(pid_statistics, NULL, 0);
-
-    //Apenas depois dos outros processos morrerem
     finish_thread = true;
-
     pthread_join(validator_manager_thread, NULL);
 
+    ledger_logger();
+
+    //Chamar cleanup após tudo
+    cleanup();
     log_file("[CONTROLLER] Simulação terminou\n");
 }
 
@@ -269,10 +247,6 @@ void* validator_manager() {
         float usage = ((float)shrd->transaction_pending_set / shrd->pool_size) * 100;
         sem_post(&shrd->sem);
         
-        /*
-        sprintf(msg,"[CONTROLLER] Usage atual : %f %%\n",usage);
-        log_file(msg);
-        */
 
         if(active_validators == 0){
             spawn_validator(0);
@@ -404,7 +378,6 @@ void create_ipcs() {
     }
 
     //Transaction Pool Fim
-
 
     //BlockChain Ledger Inicio
 
@@ -607,13 +580,6 @@ void *miner_action(void *arg) {
             }
         }
 
-        // Remove as transações coletadas do pool
-        
-        for (int j = 0; j < num_txs; j++) {
-            shrd->entries[collected_indices[j]].empty = true;
-        }
-        shrd->transaction_pending_set -= num_txs;
-        
         sem_post(&shrd->sem);
 
         // Prepara o bloco
@@ -862,9 +828,6 @@ bool validate_block(Block *block) {
         ldgr->current_blocks++;
     }
     
-    
-
-
     else {
         log_file("[VALIDATOR] Ledger cheio, bloco ignorado\n");
     }
@@ -898,53 +861,39 @@ void return_transactions(const Block *block) {
     sem_post(&shrd->sem);
 }
 
-
-void logger_exit_handler(int signum) {
-    finish_logger = true;
-}
-
-void *ledger_logger() {
+void ledger_logger() {
     
-    signal(SIGTERM, logger_exit_handler);
+    //signal(SIGTERM, logger_exit_handler);
     
-    while (1)
-    {
-        if(!finish_logger){
-           continue;
-        }
 
         sem_wait(&ldgr->sem);
         log_file("=================== Start Ledger ===================\n");
-
-
-        printf("QUANTIDADE DE BLOCOS  %d \n ",ldgr->current_blocks);
+       // printf("QUANTIDADE DE BLOCOS  %d \n ",ldgr->current_blocks);
 
         for (int i = 0; i < ldgr->current_blocks; i++) {
             Block *block = &ldgr->blocks[i];
             sprintf(msg, "||----  Block %d --\n", i);
             log_file(msg);
-            sprintf(msg, "Block ID: BLOCK-%s",block->id);
+            sprintf(msg, "Block ID: %s\n",block->id);
             log_file(msg);
-            sprintf(msg, "Previous Hash: %s", block->previous_hash);
+            sprintf(msg, "Previous Hash: %s\n", block->previous_hash);
             log_file(msg);
-            sprintf(msg, "Block Timestamp: %ld", block->timestamp);
+            sprintf(msg, "Block Timestamp: %ld\n", block->timestamp);
             log_file(msg);
-            sprintf(msg, "Nonce: %d", block->nonce);
+            sprintf(msg, "Nonce: %d\n", block->nonce);
             log_file(msg);
             log_file("Transactions:\n");
 
             for (int j = 0; j < block->transactions_count; j++) {
-                sprintf(msg, "[%d] ID: %s | Reward: %d | Value: %d | Timestamp: %ld ", j,block->transactions[j].id, block->transactions[j].reward, block->transactions[j].value, block->transactions[j].timestamp);
+                sprintf(msg, "[%d] ID: %s | Reward: %d | Value: %d | Timestamp: %ld \n", j,block->transactions[j].id, block->transactions[j].reward, block->transactions[j].value, block->transactions[j].timestamp);
                 log_file(msg);
             }
             sprintf(msg, "||------------------------------\n");
             log_file(msg);
         }
         sem_post(&ldgr->sem);
-        break;        
-    }
-    
-    
+       
+
     log_file("=================== End   Ledger ===================\n");
 }
 
@@ -1174,17 +1123,10 @@ void sigint_handler(int signum){
     kill(pid_statistics, SIGTERM);
     }
 
-    if (pid_logger > 0){
-    sprintf(msg,"[SIGNAL] A terminar Logger\n");
-    log_file(msg);
-    kill(pid_logger,SIGTERM);
-    }
-
-    sprintf(msg,"[SIGNAL] A terminar Validator(s)");
+    sprintf(msg,"[SIGNAL] A terminar Validator(s)\n");
     log_file(msg);
     pthread_mutex_lock(&control_mutex);
     finish_thread = true;
     pthread_mutex_unlock(&control_mutex);
 
-	cleanup();
 }
