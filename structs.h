@@ -38,12 +38,12 @@ typedef struct Transaction {
     int reward;
     int value;
     time_t timestamp; 
+    int age;
 } Transaction;
 
 //Estrutura para guardar dados sobre as transações
 typedef struct TransactionEntry{
     bool empty; //indica se a entry está disponível ou não
-    int age; //contador para idade da entry (usada no validator)
     Transaction tx;
 }TransactionEntry;
 
@@ -78,9 +78,9 @@ typedef struct Block {
 // Estrutura para a blockchain
 typedef struct Blockchain {
     int max_blocks;     // BLOCKCHAIN_BLOCKS
-    int current_blocks; // Quantos blocos já foram minerados
-    Block *blocks;    
+    int current_blocks; // Quantos blocos já foram minerado   
     sem_t sem;          // Semáforo para sincronizar acesso à Blockchain
+     Block blocks[]; 
 } Blockchain;
 
 typedef struct MinerStats {

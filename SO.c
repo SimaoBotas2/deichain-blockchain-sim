@@ -47,7 +47,6 @@ bool finish_validator = false;
 bool finish_statistics = false;
 bool finish_thread = false;
 
-
 FILE * file;
 
 int shmid;
@@ -398,8 +397,6 @@ void create_ipcs() {
 
     ldgr->max_blocks = config.BLOCKCHAIN_BLOCKS;
     ldgr->current_blocks = 0;
-  
-    ldgr->blocks = (Block*)((char*)ldgr + sizeof(Blockchain));
 
     if (sem_init(&ldgr->sem, 1, 1) == -1) {
         #ifdef DEBUG
@@ -559,7 +556,7 @@ void *miner_action(void *arg) {
             if (!shrd->entries[i].empty) {
                 if (collected < num_txs) {
                     txs[collected] = shrd->entries[i].tx;
-                    ages[collected] = shrd->entries[i].age;
+                    ages[collected] = shrd->entries[i].tx.age;
                     collected_indices[collected] = i;
                     collected++;
                 } else {
@@ -571,9 +568,9 @@ void *miner_action(void *arg) {
                     }
                     if (shrd->entries[i].tx.reward > txs[min_idx].reward ||
                         (shrd->entries[i].tx.reward == txs[min_idx].reward && 
-                         shrd->entries[i].age > ages[min_idx])) {
+                         shrd->entries[i].tx.age > ages[min_idx])) {
                         txs[min_idx] = shrd->entries[i].tx;
-                        ages[min_idx] = shrd->entries[i].age;
+                        ages[min_idx] = shrd->entries[i].tx.age;
                         collected_indices[min_idx] = i;
                     }
                 }
@@ -647,9 +644,7 @@ void *miner_action(void *arg) {
 void validator_exit_handler(int signum){
     log_file("[VALIDATOR] Sinal de término recebido.\n");
     finish_validator = true;
-    close(0); // força read a falhar
 }
-
 
 void *validator() {
     signal(SIGTERM, validator_exit_handler);
@@ -663,7 +658,7 @@ void *validator() {
         return NULL;
     }
 
-    const size_t header_sz = offsetof(Block, transactions);
+    const size_t header_sz = offsetof(Block,transactions);
     while (!finish_validator) {
         // 1) lê só o cabeçalho
         Block header;
@@ -818,13 +813,11 @@ bool validate_block(Block *block) {
         }
     }
     
+    
+    size_t block_size = offsetof(Block, transactions) + (config.TRANSACTIONS_PER_BLOCK * sizeof(Transaction));
     // Append ao ledger
     if (ldgr->current_blocks < ldgr->max_blocks) {
-        ldgr->blocks[ldgr->current_blocks] = *block;
-        //Adicionar as transações ao bloco na chain
-        for(int i =0;i<ldgr->blocks[ldgr->current_blocks].transactions_count;i++){
-            ldgr->blocks[ldgr->current_blocks].transactions[i] = block->transactions[i];
-        }
+        memcpy(&ldgr->blocks[ldgr->current_blocks], block, block_size);
         ldgr->current_blocks++;
     }
     
@@ -840,20 +833,20 @@ void return_transactions(const Block *block) {
     //Retorna transações que já tinham sido usadas noutro bloco para a transaction pool
     sem_wait(&shrd->sem);
     for (int i = 0; i < block->transactions_count; ++i) {
-        const Transaction *tx = &block->transactions[i];
+        Transaction *tx = &block->transactions[i];
         if (is_tx_confirmed(tx->id)) {
             continue;
         }
         for (int j = 0; j < shrd->pool_size; ++j) {
             if (shrd->entries[j].empty) {
                 //printf("tx devolvida : %s",tx->id);
-                shrd->entries[j].tx = *tx;
+                tx->age++;
                 shrd->entries[j].empty = false;
-                shrd->entries[j].age ++; //aumenta a age quando a tx volta à pool
-                if(shrd->entries[j].age % 50 == 0){
-                    shrd->entries[j].tx.reward++; //aumenta a reward dado a idade da tx
+                if(tx->age % 50 == 0){
+                    tx->reward++; //aumenta a reward dado a idade da tx
                 }
                 shrd->transaction_pending_set++;
+                shrd->entries[j].tx = *tx;
                 break;
             }
         }
