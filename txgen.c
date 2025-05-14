@@ -100,11 +100,11 @@ int main(int argc, char *argv[]) {
             new_tx.reward = reward;
             new_tx.value = (rand() % 100) + 1; // Valor random (diz no enunciado)
             new_tx.timestamp = time(NULL); // Timestamp atual
+            new_tx.age = 0;
 
             //Guardar na memoria partilhada
             shrd->entries[i].tx= new_tx;
             shrd->entries[i].empty = false;
-            shrd->entries[i].age = 0;
             shrd->transaction_pending_set++;
 
             printf("Transação %s gerada , com valor: %d\n", new_tx.id, new_tx.value);

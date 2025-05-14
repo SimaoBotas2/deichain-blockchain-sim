@@ -855,10 +855,6 @@ void return_transactions(const Block *block) {
 }
 
 void ledger_logger() {
-    
-    //signal(SIGTERM, logger_exit_handler);
-    
-
         sem_wait(&ldgr->sem);
         log_file("=================== Start Ledger ===================\n");
        // printf("QUANTIDADE DE BLOCOS  %d \n ",ldgr->current_blocks);
@@ -957,19 +953,16 @@ void print_transactions(const Block * block){
 
 }
 
-void statistics_exit_handler(int signum){
-    finish_statistics = true;
-}
 
 void *statistics() {
 
-    signal(SIGTERM, statistics_exit_handler);
-    signal(SIGUSR1, statistics_usr1_handler);
+    // Configuração dos handlers para SIGTERM e SIGUSR1
+    signal(SIGTERM, statistics_exit_handler);  // Para finalizar o processo
+    signal(SIGUSR1, statistics_usr1_handler);  // Para imprimir estatísticas sem finalizar o processo
 
     sem_wait(&config.sem);
     int NUM_MINER = config.NUM_MINER;
     sem_post(&config.sem);
-
 
     valid_blocks = malloc(NUM_MINER * sizeof(int));
     invalid_blocks = malloc(NUM_MINER * sizeof(int));
@@ -1017,7 +1010,7 @@ void *statistics() {
 
                 double duration = difftime(smsg.block_time, smsg.tx_start_time);
                 total_verification_time += duration;
-                printf("%d ",total_verification_time);
+                printf("%d ", total_verification_time);
                 verified_count++;
             } else {
                 invalid_blocks[id]++;
@@ -1027,39 +1020,43 @@ void *statistics() {
         }
     }
 
-    log_file("[STATISTICS] Processo Statistics a terminar...\n");
-    statistics_usr1_handler(SIGUSR1); // Imprime estatísticas finais
 
     free(valid_blocks);
     free(invalid_blocks);
     free(credits_by_miner);
+
+      
+    log_file("[STATISTICS] Processo Statistics a terminar...\n");
+    pthread_exit(NULL); // Termina a execução do thread
 }
 
-void statistics_usr1_handler(int sigum) {
-    log_file("[STATISTICS] Sinal SIGUSR1 recebido. Estatísticas atuais:\n");
+void statistics_usr1_handler(int sig) {
+    log_file("[STATISTICS] Estatísticas parciais (SIGUSR1):");
 
-    sem_wait(&config.sem);
-    int NUM_MINER = config.NUM_MINER;
-    sem_post(&config.sem);
-
-
-    for (int i = 0; i < NUM_MINER; i++) {
-        if (valid_blocks[i] || invalid_blocks[i]) {
-            sprintf(msg, "Miner %d - Válidos: %d | Inválidos: %d | Créditos: %d\n",
-                    i, valid_blocks[i], invalid_blocks[i], credits_by_miner[i]);
-            log_file(msg);
-        }
+    // Imprimir as estatísticas de todos os miners
+    for (int i = 0; i < config.NUM_MINER; i++) {
+        printf("Miner %d - Blocos Válidos: %d, Blocos Inválidos: %d, Créditos: %d\n", 
+               i, valid_blocks[i], invalid_blocks[i], credits_by_miner[i]);
     }
 
-    sprintf(msg, "Total de blocos recebidos: %d\n", total_blocks);
-    log_file(msg);
-    sprintf(msg, "Total de blocos válidos: %d\n", total_valid);
-    log_file(msg);
-    if (verified_count > 0) {
-        sprintf(msg, "Tempo médio de verificação: %.2f segundos\n", total_verification_time / verified_count);
-        log_file(msg);
- }
+
 }
+
+void statistics_exit_handler(int sig) {
+    // Imprime as estatísticas finais antes de terminar o processo
+    log_file("[STATISTICS] Estatísticas finais (SIGTERM):");
+
+    // Imprimir as estatísticas de todos os miners
+    for (int i = 0; i < config.NUM_MINER; i++) {
+        printf("Miner %d - Blocos Válidos: %d, Blocos Inválidos: %d, Créditos: %d\n", 
+               i, valid_blocks[i], invalid_blocks[i], credits_by_miner[i]);
+    }
+
+    // Marca o fim do processo
+    finish_statistics = 1; 
+
+}
+
 
 
 void cleanup() {
