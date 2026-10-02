@@ -40,11 +40,7 @@ Communication:
 - A mutex serializes miner writes to the pipe
 - Mutexes protect the shutdown flags shared with the controller threads
 
-<!-- TODO: explain the main synchronization decisions (why each lock exists, how deadlocks and starvation were avoided) -->
-
 ### Data flow
-
-<!-- TODO: compare with the synchronization diagram from the report and adjust -->
 
 ```mermaid
 sequenceDiagram
@@ -111,8 +107,6 @@ In another terminal, start one or more generators with a reward (1 to 3) and a s
 Print the current statistics with `SIGUSR1` sent to the Statistics process (its PID is written to the log), and stop everything with `Ctrl+C` in the `SO` terminal.
 
 Everything is logged to `DEIChain_log.txt`.
-
-<!-- TODO: add a short excerpt of the log or of the final statistics output -->
 
 ## Authors
 
