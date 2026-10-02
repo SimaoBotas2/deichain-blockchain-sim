@@ -1,0 +1,7 @@
+SO
+txgen
+structs
+*.o
+*.gch
+*_log.txt
+.vscode/
